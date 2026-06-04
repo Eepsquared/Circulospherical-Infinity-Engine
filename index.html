@@ -1,0 +1,2740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Circulospherical Infinity Engine 1.14</title>
+<style>
+:root{--spectral-grad:linear-gradient(90deg,#f00,#f60,#fa0,#ff0,#af0,#0f0,#0fa,#0ff,#0af,#06f,#00f,#60f,#f0f)}
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+#cie-main-area{display:flex;flex-direction:row;flex:1;overflow:hidden;min-height:0}
+#cie-canvas-container{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:grab;position:relative;min-width:0}
+#cie-canvas-container:active{cursor:grabbing}
+canvas{display:block}
+#cie-fps{position:absolute;bottom:0;font-size:12px;pointer-events:none;z-index:50;display:none;width:100%;text-align:center}
+#cie-tooltip{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);font-size:9px;color:#333;pointer-events:none;z-index:50;white-space:nowrap;opacity:1}
+
+/* FLOATING PANEL */
+.cie-controls{position:absolute;top:0;right:0;background:rgba(10,10,10,.82);display:flex;flex-direction:column;border:1px solid #333;z-index:100;max-height:100vh;caret-color:#fff;min-width:160px;width:260px;resize:none;overflow:hidden}
+.cie-controls:focus-within,.cie-controls.active-focus{background:rgba(10,10,10,1)}
+/* DOCKED */
+.cie-controls.docked{position:relative!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;height:100%!important;width:var(--dock-width, 256px)!important;max-height:none!important;border-left:1px solid #333;border-top:none;border-right:0;border-bottom:0;flex-shrink:0;resize:none}
+.cie-controls.docked .cie-content{display:flex!important;flex-direction:column;padding:0 4px;overflow-y:auto;flex:1;min-height:0}
+.cie-controls.docked .cie-tab-panel{display:flex!important;flex-direction:column;width:100%}
+.cie-controls.docked .cie-tabs{display:none!important}
+
+/* Dark Theme Scrollbars (AI Studio style) */
+.cie-controls.docked::-webkit-scrollbar,
+.cie-controls.docked .cie-content::-webkit-scrollbar,
+.config-list::-webkit-scrollbar,
+#cie-help-overlay::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.cie-controls.docked::-webkit-scrollbar-track,
+.cie-controls.docked .cie-content::-webkit-scrollbar-track,
+.config-list::-webkit-scrollbar-track,
+#cie-help-overlay::-webkit-scrollbar-track {
+  background: #0d0d0d;
+}
+.cie-controls.docked::-webkit-scrollbar-thumb,
+.cie-controls.docked .cie-content::-webkit-scrollbar-thumb,
+.config-list::-webkit-scrollbar-thumb,
+#cie-help-overlay::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+.cie-controls.docked::-webkit-scrollbar-thumb:hover,
+.cie-controls.docked .cie-content::-webkit-scrollbar-thumb:hover,
+.config-list::-webkit-scrollbar-thumb:hover,
+#cie-help-overlay::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+.cie-controls.docked,
+.cie-controls.docked .cie-content,
+.config-list,
+#cie-help-overlay {
+  scrollbar-width: thin;
+  scrollbar-color: #333 #0d0d0d;
+}
+/* RESIZE HANDLE (docked) */
+#cie-resize-handle{position:absolute;left:0;top:0;bottom:0;width:4px;cursor:col-resize;background:transparent;z-index:200}
+#cie-resize-handle:hover{background:rgba(255,255,255,.15)}
+.cie-controls:not(.docked) #cie-resize-handle{display:none}
+/* BOTTOM-LEFT RESIZE HANDLE (floating) */
+#cie-bl-resize-handle{position:absolute;left:0;bottom:0;width:12px;height:12px;cursor:nesw-resize;z-index:202;background:transparent}
+.cie-controls.docked #cie-bl-resize-handle{display:none}
+/* HEADER */
+.cie-header{padding:0;background:#111;border-bottom:1px solid #333;cursor:move;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:101;flex-shrink:0;user-select:none;-webkit-user-select:none;flex-wrap:wrap;gap:2px}
+.cie-controls.docked .cie-header{cursor:default}
+.cie-header-left{display:flex;align-items:center;gap:0;padding-left:0;flex-shrink:1;min-width:0;overflow:hidden}
+.cie-header-left span.hdr-text{font-size:10px;font-weight:800;color:#777;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cie-header-btns{display:flex;gap:5px;align-items:center;padding-right:4px;flex-shrink:0}
+.cie-btn-icon{background:none;border:0;color:#888;cursor:pointer;padding:0;font-size:13px;line-height:1;display:flex;align-items:center}
+.cie-btn-icon:hover{color:#fff}
+/* MINI VIZ */
+#cie-miniViz{width:100%;height:20px;display:none;border-bottom:1px solid #1a1a1a;flex-shrink:0}
+/* TABS */
+.cie-tabs{display:flex;border-bottom:1px solid #222;background:#0a0a0a;flex-shrink:0}
+.cie-tab{flex:1;font-size:10px;color:#888;padding:2px 0;text-align:center;cursor:pointer;border:0;background:none;text-transform:uppercase;}
+.cie-tab:hover{color:#aaa}
+.cie-tab.active{color:#fff;background-color:#555}
+.cie-tab-panel{display:none}
+.cie-tab-panel.active{display:flex;flex-direction:column}
+/* CONTENT */
+.cie-content{padding:0 4px;display:flex;flex-direction:column;gap:0;overflow-y:auto;flex:1;min-height:0}
+.cie-group{display:flex;flex-direction:column;gap:0;margin-bottom:0}
+.cie-row{display:flex;align-items:center;justify-content:space-between;gap:2px;padding:0}
+.cie-label{font-size:12px;color:#bbb}
+.cie-label.indented{margin-left:15px}
+.cie-box{border:1px solid #222;padding:0;margin:0;background:rgba(255,255,255,.02)}
+.cie-box-title{font-size:10px;color:#c3c3c3;font-weight:900;margin:0;padding-left:2px;text-align:center}
+.cie-box-title::after{content="";flex:1;border-bottom: 1px solid #222;margin-left:.5em;}
+.cie-box-title::before{content="";flex:1;border-bottom: 1px solid #222;margin-right:.5em;}
+.cie-sep{border-top:1px solid #1a1a1a}
+/* INPUTS */
+.cie-controls input[type=number]{background:inherit;color:#bbb;border:1px solid #222;font-size:11px;width:50px;padding:0 2px;margin:0}
+.cie-controls input[type=number]::-webkit-inner-spin-button,
+.cie-controls input[type=number]::-webkit-outer-spin-button {
+  /*-webkit-appearance: none;
+  display: block;
+  height: 100%;*/
+  width: 6px;
+  cursor: pointer;
+  filter: contrast(0.5) brightness(0.7);
+  margin-right:-6px;
+}
+.cie-controls input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:#333;outline:none;margin:3px 0}
+.cie-controls input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:8px;height:8px;background:rgba(255,255,255,.625);border-radius:50%;cursor:pointer}
+.cie-controls input[type=range]::-moz-range-thumb{width:8px;height:8px;background:rgba(255,255,255,.625);border-radius:50%;cursor:pointer;border:0}
+.cie-controls input[type=color]{appearance:none;-webkit-appearance:none;border:1px solid #333;width:12px;height:12px;padding:0;cursor:pointer;background:none}
+.cie-controls input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+.cie-controls input[type=color]::-webkit-color-swatch{border:0}
+.cie-controls input[type=text]{background:#000;color:#fff;border:1px solid #333;font-size:11px;width:100%}
+.cie-checkbox-group{display:flex;align-items:center;gap:3px;cursor:pointer;font-size:12px;color:#bbb}
+.cie-checkbox-group input[type=checkbox]{appearance:none;width:12px;height:12px;background:#333;border:1px solid #444;cursor:pointer;display:inline-grid;place-content:center;margin:0;flex-shrink:0}
+.cie-checkbox-group input[type=checkbox]:checked{background:#111;border-color:#666}
+.cie-checkbox-group input[type=checkbox]:checked::before{content:"";width:8px;height:8px;background:#aaa}
+.cie-radio-group{display:flex;align-items:center;gap:3px;cursor:pointer;font-size:12px;color:#888}
+.cie-radio-group input[type=radio]{appearance:none;width:10px;height:10px;background:#333;border:1px solid #444;border-radius:50%;cursor:pointer;display:inline-grid;place-content:center;margin:0;flex-shrink:0}
+.cie-radio-group input[type=radio]:checked{background:#111;border-color:#666}
+.cie-radio-group input[type=radio]:checked::before{content:"";width:4px;height:4px;background:#aaa;border-radius:50%}
+.cie-controls select{background:#000;color:#fff;border:1px solid #333;font-size:11px;border-radius:0;padding:0}
+.theme-spectral{background-image:var(--spectral-grad);background-clip:text;-webkit-background-clip:text;color:transparent}
+.cie-emoji-btn{background:none;border:0;color:#fff;padding:0;cursor:pointer;font-size:14px;opacity:.75;outline:none;display:flex;align-items:center}
+.cie-emoji-btn:hover{opacity:1}
+.cie-emoji-btn.active{opacity:1;filter:drop-shadow(0 0 2px #fff)}
+.cie-ping-pong{font-size:12px;opacity:.5}
+.cie-ping-pong.active{opacity:1;color:#fff}
+/* ACTION BAR */
+.cie-action-btns{display:flex;gap:4px;align-items:center;border-top:1px solid #222;background:#0a0a0a;flex-shrink:0;z-index:10}
+#cie-pauseBtn{width:100%;border:1px solid #555;justify-content:center;font-size:12px;opacity:.7}
+#cie-pauseBtn:hover{opacity:1}
+#cie-resetBtn{opacity:.5}
+#cie-resetBtn:hover{opacity:1}
+.cie-spacer{flex-grow:1}
+#cie-recBtn.recording{opacity:1;position:relative}
+#cie-recTimer{font-size:8px;color:#f33;font-weight:bold;margin-left:2px;display:none}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+/* DESIGNS */
+.config-list{max-height:80px;overflow-y:auto;border:0;background:#222}
+.config-item{display:flex;justify-content:space-between;align-items:center;padding:0 2px;font-size:12px;border-bottom:1px solid #111;gap:2px}
+.config-item:hover{background:#111}
+.config-name{flex-grow:1;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
+.config-name-edit{flex-grow:1;background:#111;color:#fff;border:1px solid #444;font-size:9px;padding:0 2px;min-width:0}
+.config-edit-btn{background:none;border:none;color:#888;cursor:pointer;padding:0;line-height:1;flex-shrink:0}
+.config-edit-btn:hover{color:#fff}
+.cie-disabled{opacity:.3;pointer-events:none}
+/* PRESET CHIPS */
+.cie-preset-bar{display:flex;flex-wrap:wrap;border-bottom:1px solid #1a1a1a}
+.cie-preset-chip{font-size:8px;color:#666;border:1px solid #1f1f1f;padding:1px 4px;cursor:pointer;background:#0a0a0a;white-space:nowrap}
+.cie-preset-chip:hover{color:#fff;border-color:#444;background:#1a1a1a}
+/* PRESET EDIT PANEL */
+#cie-preset-edit-panel{background:#0a0a0a;border:1px solid #2a2a2a;padding:4px;margin:2px 0;font-size:9px;display:none}
+#cie-preset-edit-panel.open{display:block}
+/* SLIDER LIMITS POPOVER */
+.cie-limits-popover{display:none;background:#0d0d0d;border:1px solid #444;padding:0;margin:0;font-size:9px;gap:4px;align-items:center;white-space:nowrap}
+.cie-limits-popover.open{display:flex}
+.cie-limits-popover input[type=number]{width:48px;font-size:9px;background:#000;color:#fff;border:1px solid #333;padding:0 2px}
+/* RESET-TO-DEFAULT BTN */
+.cie-reset-btn{background:none;border:0;color:#888;cursor:pointer;font-size:12px;padding:0;line-height:1;flex-shrink:0}
+.cie-reset-btn:hover{color:#fff}
+/* HELP MODAL */
+#cie-help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;overflow-y:auto;padding:0}
+#cie-help-overlay.visible{display:flex;align-items:flex-start;justify-content:center}
+#cie-help-box{background:#0d0d0d;border:1px solid #333;max-width:580px;width:100%;padding:0;font-size:11px;color:#bbb;position:relative;margin:auto}
+#cie-help-box h2{color:#fff;font-size:13px;margin:0;border-bottom:1px solid #222;padding:0}
+#cie-help-box h3{color:#aaa;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin:10px 0 4px}
+#cie-help-box .help-row{display:flex;gap:8px;margin-bottom:3px}
+#cie-help-box .help-key{font-weight:bold;min-width:130px;flex-shrink:0;font-size:10px}
+#cie-help-box .help-val{color:#888}
+#cie-help-box .kbd{display:inline-block;font-size:9px;color:#ccc;border:1px solid #444;padding:0 4px;border-radius:3px;background:#1a1a1a;margin:0 2px;font-family:monospace}
+#cie-help-close{position:absolute;top:0;right:0;background:none;border:0;color:#666;cursor:pointer;font-size:18px;line-height:1}
+#cie-help-close:hover{color:#fff}
+.cie-options-row{display:flex;align-items:center;justify-content:space-between}
+#cie-showBtn{position:absolute;top:0;right:0;background:#111;border:1px solid #333;color:#fff;padding:4px 8px;cursor:pointer;display:none;z-index:99;font-size:9px}
+.icon-dock-rect{width:10px;height:5px;border:1px solid currentColor;border-top:2px solid currentColor;display:inline-block;position:relative;top:1px}
+/* Invert tooltip */
+[data-tooltip]{position:relative;cursor:help}
+[data-tooltip]::after{content:attr(data-tooltip);position:absolute;right:0;top:100%;background:#111;border:1px solid #444;color:#aaa;font-size:9px;padding:0;margin:0;white-space:nowrap;z-index:200;display:none;pointer-events:none}
+[data-tooltip]:hover::after{display:block}
+
+/* Docked Section Header */
+.cie-docked-section-header {
+  display: none;
+}
+.cie-controls.docked .cie-docked-section-header {
+  display: block;
+  font-size: 10px;
+  color: #ccc;
+  background: #333;
+  text-transform: uppercase;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Slider limit overlay styles */
+.cie-slider-limit-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 4px;
+  pointer-events: none;
+  font-family: var(--font-mono), monospace;
+  font-size: 7px;
+  font-weight: bold;
+  z-index: 10;
+}
+.cie-limit-track {
+  position: absolute;
+  top: -9px;
+  height: 4px;
+  background: rgba(129, 129, 129, 0.5);
+  cursor: grab;
+}
+.cie-limit-track:active {
+  cursor: grabbing;
+}
+.cie-limit-marker {
+  position: absolute;
+  top: -12px;
+  transform: translateX(-50%);
+  line-height: 1;
+  font-size: 7px;
+  cursor: ew-resize;
+  width: max-content;
+}
+.cie-limit-track, .cie-limit-marker {
+  pointer-events: auto;
+}
+
+.cie-section-title{display:none;background:#151515;color:#ccc;font-size:10px;font-weight:900;text-transform:uppercase;padding:3px 6px;letter-spacing:.5px;border-bottom:1px solid #222;margin-bottom:4px;user-select:none}
+.cie-controls.docked .cie-section-title{display:block}
+
+/* Custom resize edges */
+.cie-resize-edge {
+  position: absolute;
+  z-index: 200;
+  background: transparent;
+}
+.cie-controls.docked .cie-resize-edge {
+  display: none !important;
+}
+.cie-resize-edge.n  { top: -4px; left: 4px; right: 4px; height: 8px; cursor: n-resize; }
+.cie-resize-edge.s  { bottom: -4px; left: 4px; right: 4px; height: 8px; cursor: s-resize; }
+.cie-resize-edge.e  { right: -4px; top: 4px; bottom: 4px; width: 8px; cursor: e-resize; }
+.cie-resize-edge.w  { left: -4px; top: 4px; bottom: 4px; width: 8px; cursor: w-resize; }
+.cie-resize-edge.nw { top: -4px; left: -4px; width: 8px; height: 8px; cursor: nw-resize; }
+.cie-resize-edge.ne { top: -4px; right: -4px; width: 8px; height: 8px; cursor: ne-resize; }
+.cie-resize-edge.sw { bottom: -4px; left: -4px; width: 8px; height: 8px; cursor: sw-resize; }
+.cie-resize-edge.se { bottom: -4px; right: -4px; width: 8px; height: 8px; cursor: se-resize; }
+</style>
+</head>
+<body>
+
+<!-- Help Modal -->
+<div id="cie-help-overlay">
+ <div id="cie-help-box">
+  <button id="cie-help-close" style="top:0;right:0">✕</button>
+  <h2 style="margin:0;padding:0">♾⚙ Circulospherical Infinity Engine 1.14 — Help</h2>
+  <div style="font-size:10px;color:#888;margin:6px 0;padding:0 0 4px;border-bottom:1px solid #222">
+    ©2026 <a href="http://tnlc.com/eep/circles/" target="_blank" style="color:yellow;text-decoration:underline">Eep²</a> (design/ideas, CSS tweaking) and AIs: Google Gemini (most programming and ideas) and Anthropic Claude (some programming)
+  </div>
+  <h3>Patterns</h3>
+  <div class="help-row"><span class="help-key">1-Way Horizontal/Vertical</span><span class="help-val">Circles grow from small to large in one direction from centre.</span></div>
+  <div class="help-row"><span class="help-key">2-Way Horizontal/Vertical</span><span class="help-val">Recursive circles branching symmetrically in one axis.</span></div>
+  <div class="help-row"><span class="help-key">2-Way Inv H/V</span><span class="help-val">Like 2-Way but circles grow larger toward the edges.</span></div>
+  <div class="help-row"><span class="help-key">4-Way + / Cross</span><span class="help-val">Both axes simultaneously.</span></div>
+  <div class="help-row"><span class="help-key">3D 2-Way Horizontal</span><span class="help-val">True 3D perspective 2-Way horizontal branching rotating in space.</span></div>
+  <div class="help-row"><span class="help-key">3D 4-Way +</span><span class="help-val">True 3D perspective recursive circles rotating in space.</span></div>
+  <div class="help-row"><span class="help-key">Kaleidoscope ×8/×12</span><span class="help-val">Mirrored wedge radial symmetry.</span></div>
+  <div class="help-row"><span class="help-key">Spiral</span><span class="help-val">Circles along a rotating expanding spiral arm.</span></div>
+  <div class="help-row"><span class="help-key">Fractal Tree</span><span class="help-val">Branching organic tree that sways and breathes.</span></div>
+  <div class="help-row"><span class="help-key">Lissajous</span><span class="help-val">Stacked harmonic orbit rings per depth level.</span></div>
+  <h3>Colour</h3>
+  <div class="help-row"><span class="help-key">Static</span><span class="help-val">Single theme colour, no cycling.</span></div>
+  <div class="help-row"><span class="help-key">Cycle</span><span class="help-val">Auto-advances through all themes in order.</span></div>
+  <div class="help-row"><span class="help-key">Random</span><span class="help-val">Picks a random theme each interval.</span></div>
+  <div class="help-row"><span class="help-key">Multi-strobe</span><span class="help-val">Each depth ring gets a different colour offset.</span></div>
+  <h3>Animation</h3>
+  <div class="help-row"><span class="help-key">Global speed</span><span class="help-val">Scales all animation speeds in unison.</span></div>
+  <div class="help-row"><span class="help-key">Frequency checkbox</span><span class="help-val">Enables pulse animation. The slider sets oscillation speed.</span></div>
+  <div class="help-row"><span class="help-key">Sync breath</span><span class="help-val">Syncs the pulse timing to the rotation timeline instead of the pulse timeline, aligning breathing swells with rotation.</span></div>
+  <div class="help-row"><span class="help-key">Pulse Distance</span><span class="help-val">How far circles breathe in and out.</span></div>
+  <div class="help-row"><span class="help-key">Pulse shift</span><span class="help-val">Phase offset per depth level, creating a ripple wave effect.</span></div>
+  <div class="help-row"><span class="help-key">Converge</span><span class="help-val">Collapses all circles toward a single concentric point. 0=normal, 1=fully collapsed.</span></div>
+  <div class="help-row"><span class="help-key">Orbiting depth rotation</span><span class="help-val">twist/rotate nested depths independently.</span></div>
+  <div class="help-row"><span class="help-key">Wobble Amplitude</span><span class="help-val">Secondary radius modulation layered on top of pulse.</span></div>
+  <div class="help-row"><span class="help-key">Wobble Frequency</span><span class="help-val">Speed of the wobble oscillation.</span></div>
+  <div class="help-row"><span class="help-key">Trail length</span><span class="help-val">Lower value = longer trails (less bg clear per frame).</span></div>
+  <div class="help-row"><span class="help-key">↔ Ping-pong</span><span class="help-val">Slider oscillates between its min and max automatically.</span></div>
+  <div class="help-row"><span class="help-key">🎚️ Limits button</span><span class="help-val">Set custom min/max extents for ping-pong animation.</span></div>
+  <div class="help-row"><span class="help-key">↺ Reset button</span><span class="help-val">Resets a single slider to its default value.</span></div>
+  <div class="help-row"><span class="help-key">Pattern Cycle/Random</span><span class="help-val">Auto-cycles through render patterns (similar to colour cycling).</span></div>
+  <h3>FX</h3>
+  <div class="help-row"><span class="help-key">Blend</span><span class="help-val">Canvas composite operation. Lighter=additive glow; Difference=inversion.</span></div>
+  <div class="help-row"><span class="help-key">Ripple</span><span class="help-val">Displaces each circle centre by an animated sine-wave offset.</span></div>
+  <div class="help-row"><span class="help-key">Chroma Split</span><span class="help-val">RGB lens aberration via screen-blend offset copies.</span></div>
+  <div class="help-row"><span class="help-key">Scanlines</span><span class="help-val">CRT-style horizontal lines overlay.</span></div>
+  <div class="help-row"><span class="help-key">Vignette</span><span class="help-val">Radial edge darkening.</span></div>
+  <div class="help-row"><span class="help-key">Feedback Echo</span><span class="help-val">Previous frame blended back in — high values create tunnel feedback.</span></div>
+  <h3>Keyboard & Controls</h3>
+  <div class="help-row"><span class="help-key"><kbd class="kbd">Space</kbd></span><span class="help-val">Pause / Resume</span></div>
+  <div class="help-row"><span class="help-key"><kbd class="kbd">R</kbd></span><span class="help-val">Random design</span></div>
+  <div class="help-row"><span class="help-key"><kbd class="kbd">F</kbd></span><span class="help-val">Fullscreen</span></div>
+  <div class="help-row"><span class="help-key"><kbd class="kbd">H</kbd></span><span class="help-val">Hide / show menu</span></div>
+  <div class="help-row"><span class="help-key"><kbd class="kbd">M</kbd></span><span class="help-val">Minimize menu</span></div>
+  <div class="help-row"><span class="help-key"><kbd class="kbd">W</kbd> <kbd class="kbd">A</kbd> <kbd class="kbd">S</kbd> <kbd class="kbd">D</kbd></span><span class="help-val">Pan canvas up / left / down / right</span></div>
+  <div class="help-row"><span class="help-key"><kbd class="kbd">Q</kbd> / <kbd class="kbd">E</kbd></span><span class="help-val">Rotate canvas left / right</span></div>
+  <div class="help-row"><span class="help-key"><kbd class="kbd">↑ ↓</kbd></span><span class="help-val">Zoom in / out</span></div>
+  <div class="help-row"><span class="help-key">Mouse Drag</span><span class="help-val">Pan · Shift+drag: rotate · Scroll/Pinch: zoom</span></div>
+ </div>
+</div>
+
+<div id="cie-main-area">
+ <div id="cie-canvas-container">
+  <canvas id="cie-canvas"></canvas>
+  <div id="cie-fps">-- fps</div>
+  <div id="cie-tooltip">drag · shift+drag rotate · scroll zoom · ? for help</div>
+ </div>
+
+ <div id="cie-controls" class="cie-controls docked" tabindex="0">
+  <!-- Custom resize edges for any side/corner resizing -->
+  <div class="cie-resize-edge n"></div>
+  <div class="cie-resize-edge s"></div>
+  <div class="cie-resize-edge e"></div>
+  <div class="cie-resize-edge w"></div>
+  <div class="cie-resize-edge nw"></div>
+  <div class="cie-resize-edge ne"></div>
+  <div class="cie-resize-edge sw"></div>
+  <div class="cie-resize-edge se"></div>
+  <div id="cie-resize-handle"></div>
+  <div id="cie-bl-resize-handle"></div>
+  <div id="cie-header" class="cie-header" title="Drag · Double-click to minimize">
+   <div class="cie-header-left">
+    <span style="font-size:14px">♾</span>
+    <span style="font-size:11px">⚙</span>
+    <span class="hdr-text">Circulospherical Infinity Engine 1.14</span>
+   </div>
+   <div class="cie-header-btns">
+    <button id="cie-helpBtn" class="cie-btn-icon" title="Help" style="font-size:11px;color:yellow">?</button>
+    <button id="cie-fsBtn"   class="cie-btn-icon" title="Fullscreen" style="font-size:11px">⛶</button>
+    <button id="cie-minBtn"  class="cie-btn-icon" title="Minimize [M]">_</button>
+    <button id="cie-dockBtn" class="cie-btn-icon" title="Float panel"><span style="font-size:10px;color:#888">⇤</span></button>
+    <button id="cie-hideBtn" class="cie-btn-icon" title="Hide Menu">🗙</button>
+   </div>
+  </div>
+
+  <canvas id="cie-miniViz"></canvas>
+
+  <div class="cie-tabs">
+   <button class="cie-tab active" data-tab="main">Main</button>
+   <button class="cie-tab" data-tab="anim">Anim</button>
+   <button class="cie-tab" data-tab="fx">FX</button>
+   <button class="cie-tab" data-tab="designs">Designs</button>
+   <button class="cie-tab" data-tab="options">Options</button>
+  </div>
+
+  <div id="cie-content" class="cie-content">
+
+   <!-- ═══ MAIN ═══ -->
+   <div class="cie-tab-panel active" data-panel="main">
+    <div class="cie-docked-section-header">Main</div>
+<!-- Pattern row with cycle/random -->
+    <div class="cie-group">
+     <div class="cie-row">
+      <label class="cie-label">♾ Pattern</label>
+      <select id="cie-mode">
+       <option value="1h">1-Way Horizontal</option>
+       <option value="1v">1-Way Vertical</option>
+       <option value="1hi">1-Way H Inverted</option>
+       <option value="1vi">1-Way V Inverted</option>
+       <option value="2h" selected>2-Way Horizontal</option>
+       <option value="2v">2-Way Vertical</option>
+       <option value="2h_inv">2-Way H Inverted</option>
+       <option value="2v_inv">2-Way Vertical Inverted</option>
+       <option value="3d2h">3D 2-Way Horizontal</option>
+       <option value="3d4plus">3D 4-Way +</option>
+       <option value="4plus">4-Way +</option>
+       <option value="4">4-Way Cross</option>
+       <option value="kaleid">Kaleidoscope ×8</option>
+       <option value="kaleid12">Kaleidoscope ×12</option>
+       <option value="fractal">Fractal Tree</option>
+       <option value="lissajous">Lissajous</option>
+       <option value="spiral">Spiral</option>
+      </select>
+     </div>
+     <!-- Mode cycle/random -->
+     <div style="padding:1px 0;display:flex;flex-direction:column;gap:1px">
+      <div style="display:flex;gap:4px;align-items:center;padding:1px 0">
+       <label class="cie-radio-group"><input type="radio" name="modeMode" id="cie-modeOff" value="off" checked><span class="cie-label" style="font-size:10px">Static</span></label>
+       <label class="cie-radio-group"><input type="radio" name="modeMode" id="cie-modeCycle" value="cycle"><span class="cie-label" style="font-size:10px">🔁Cycle</span></label>
+       <label class="cie-radio-group"><input type="radio" name="modeMode" id="cie-modeRandom" value="random"><span class="cie-label" style="font-size:10px">🔀Random</span></label>
+      </div>
+      <div class="cie-group" style="padding:0 0 0 2px" id="cie-modeSpeedRow">
+       <div class="cie-row">
+        <label class="cie-label indented" style="font-size:10px">Speed</label>
+        <div style="display:flex;align-items:center;gap:2px">
+         <button class="cie-reset-btn" data-reset="modeSpeed" title="Reset">↺</button>
+         <input type="number" id="cie-modeSpeedNum" step="any" value="1">
+         <button class="cie-emoji-btn cie-ping-pong" data-key="modeSpeed" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="modeSpeed" title="Ping-pong limits">🎚️</button>
+        </div>
+       </div>
+       <div class="cie-limits-popover" id="cie-limits-modeSpeed">Min:<input type="number" id="cie-lmin-modeSpeed"> Max:<input type="number" id="cie-lmax-modeSpeed"><button class="cie-reset-btn" id="cie-limits-modeSpeed-close">✕</button></div>
+       <input type="range" id="cie-modeSpeed" min="-10" max="10" value="1" step="any">
+      </div>
+     </div>
+    </div>
+    <div class="cie-group">
+     <div class="cie-row">
+      <label class="cie-label">Recursion depth</label>
+      <div style="display:flex;align-items:center;gap:2px">
+       <button class="cie-reset-btn" data-reset="depth" title="Reset">↺</button>
+       <input type="number" id="cie-depthNum" min="0" max="12" step="1">
+       <button class="cie-emoji-btn cie-ping-pong" data-key="depth" title="Ping-pong animation">↔</button>
+       <button class="cie-reset-btn cie-limits-btn" data-key="depth" title="Ping-pong limits">🎚️</button>
+      </div>
+     </div>
+     <div class="cie-limits-popover" id="cie-limits-depth">
+      Min:<input type="number" id="cie-lmin-depth"> Max:<input type="number" id="cie-lmax-depth">
+      <button class="cie-reset-btn" id="cie-limits-depth-close">✕</button>
+     </div>
+     <input type="range" id="cie-depth" min="0" max="12" value="8" step="1">
+    </div>
+    <div class="cie-box">
+     <div class="cie-box-title">➖Line➖</div>
+     <div class="cie-row">
+      <label class="cie-label">🎨Color</label>
+      <div style="display:flex;gap:2px;align-items:center">
+       <input type="color" id="cie-customColor" value="#ffffff" title="Custom color">
+       <select id="cie-theme" style="width:72px"></select>
+      </div>
+     </div>
+      <!-- Color cycle radios -->
+      <div style="padding:1px 2px 0;display:flex;flex-direction:column;gap:1px">
+       <div style="display:flex;gap:4px;align-items:center;padding:1px 0">
+        <label class="cie-radio-group"><input type="radio" name="cycleMode" id="cie-cycleOff" value="off" checked><span class="cie-label" style="font-size:10px">Static</span></label>
+        <label class="cie-radio-group"><input type="radio" name="cycleMode" id="cie-cycleCycle" value="cycle"><span class="cie-label" style="font-size:10px">🔁Cycle</span></label>
+        <label class="cie-radio-group"><input type="radio" name="cycleMode" id="cie-cycleRandom" value="random"><span class="cie-label" style="font-size:10px">🔀Random</span></label>
+       </div>
+      </div>
+      <div class="cie-group" style="padding:0 0 0 2px" id="cie-cycleSpeedRow">
+       <div class="cie-row">
+        <label class="cie-label indented" style="font-size:10px">Speed</label>
+        <div style="display:flex;align-items:center;gap:2px">
+         <button class="cie-reset-btn" data-reset="cSpeed" title="Reset">↺</button>
+         <input type="number" id="cie-cSpeedNum" step="any" value="1">
+         <button class="cie-emoji-btn cie-ping-pong" data-key="cSpeed" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="cSpeed" title="Ping-pong limits">🎚️</button>
+        </div>
+       </div>
+       <div class="cie-limits-popover" id="cie-limits-cSpeed">Min:<input type="number" id="cie-lmin-cSpeed"> Max:<input type="number" id="cie-lmax-cSpeed"><button class="cie-reset-btn" id="cie-limits-cSpeed-close">✕</button></div>
+       <input type="range" id="cie-cSpeed" min="0.01" max="10" value="1" step="any">
+      </div>
+     <!-- Multi-strobe -->
+     <div class="cie-group" style="padding:0 2px" id="cie-multiStrobeSection">
+      <div class="cie-row">
+       <div class="cie-checkbox-group">
+        <input type="checkbox" id="cie-multiStrobe">
+        <span style="font-size:10px">🌈</span>
+        <label for="cie-multiStrobe">Multi-strobe</label>
+       </div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="msSpeed" title="Reset">↺</button>
+        <input type="number" id="cie-msSpeedNum" step="any" value="1">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="msSpeed" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="msSpeed" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <div class="cie-limits-popover" id="cie-limits-msSpeed">Min:<input type="number" id="cie-lmin-msSpeed"> Max:<input type="number" id="cie-lmax-msSpeed"><button class="cie-reset-btn" id="cie-limits-msSpeed-close">✕</button></div>
+      <input type="range" id="cie-msSpeed" min="-10" max="10" value="1" step="any">
+      <div class="cie-row">
+       <label class="cie-checkbox-group" style="cursor:pointer;user-select:none"><input type="checkbox" id="cie-smoothFade" checked><span class="cie-label" style="font-size:10px">🌫️Smooth fade</span></label>
+      </div>
+     </div>
+     <!-- Width -->
+     <div class="cie-group" style="padding:0 2px">
+      <div class="cie-row">
+       <label class="cie-label">Width</label>
+       <label class="cie-checkbox-group" style="cursor:pointer"><input type="checkbox" id="cie-scaleWidth" title="Zoom scale" checked><span class="cie-label" style="font-size:10px">🔍⚖️</span></label>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="thick" title="Reset">↺</button>
+        <input type="number" id="cie-thickNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="thick" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="thick" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <div class="cie-limits-popover" id="cie-limits-thick">Min:<input type="number" id="cie-lmin-thick"> Max:<input type="number" id="cie-lmax-thick"><button class="cie-reset-btn" id="cie-limits-thick-close">✕</button></div>
+      <input type="range" id="cie-thick" min="0.1" max="10" value="1" step="any">
+     </div>
+     <!-- Opacity -->
+     <div class="cie-group" style="padding:0 2px">
+      <div class="cie-row">
+       <label class="cie-label">🧊Opacity</label>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="op" title="Reset">↺</button>
+        <input type="number" id="cie-opNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="op" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="op" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <div class="cie-limits-popover" id="cie-limits-op">Min:<input type="number" id="cie-lmin-op"> Max:<input type="number" id="cie-lmax-op"><button class="cie-reset-btn" id="cie-limits-op-close">✕</button></div>
+      <input type="range" id="cie-op" min="0" max="1" step="any" value="1">
+     </div>
+     <!-- Glow -->
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group">
+        <input type="checkbox" id="cie-glow">
+        <label for="cie-glow"><span style="text-shadow:0 0 5px rgba(255,255,255,.8);color:#fff">Glow</span> radius</label>
+       </div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="gRad" title="Reset">↺</button>
+        <input type="number" id="cie-gRadNum" step="any">
+         <button class="cie-emoji-btn cie-ping-pong" data-key="gRad" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="gRad" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <div class="cie-limits-popover" id="cie-limits-gRad">Min:<input type="number" id="cie-lmin-gRad"> Max:<input type="number" id="cie-lmax-gRad"><button class="cie-reset-btn" id="cie-limits-gRad-close">✕</button></div>
+      <input type="range" id="cie-gRad" min="0" max="40" value="8" step="any">
+     </div>
+     <!-- Trail length -->
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group">
+        <input type="checkbox" id="cie-trail">
+                <label for="cie-trail">👣Trail length</label>
+       </div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="tDens" title="Reset">↺</button>
+        <input type="number" id="cie-tDensNum" step="any">
+         <button class="cie-emoji-btn cie-ping-pong" data-key="tDens" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="tDens" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <div class="cie-limits-popover" id="cie-limits-tDens">Min:<input type="number" id="cie-lmin-tDens"> Max:<input type="number" id="cie-lmax-tDens"><button class="cie-reset-btn" id="cie-limits-tDens-close">✕</button></div>
+      <input type="range" id="cie-tDens" min="0.005" max="0.5" value="0.10" step="any">
+     </div>
+    </div>
+    <div class="cie-group">
+     <div class="cie-row">
+      <label class="cie-label">▨ Background color</label>
+      <div style="display:flex;gap:2px;align-items:center;margin-left:auto">
+       <input type="color" id="cie-bgColor" value="#000000" title="Background 1">
+       <input type="color" id="cie-bgColor2" value="#ffffff" title="Background 2">
+      </div>
+     </div>
+     <div class="cie-row">
+      <label class="cie-label indented">Fade</label>
+      <div style="display:flex;align-items:center;gap:2px">
+       <button class="cie-reset-btn" data-reset="bgFade" title="Reset">↺</button>
+       <input type="number" id="cie-bgFadeNum" step="any" value="0">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="bgFade" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="bgFade" title="Ping-pong limits">🎚️</button>
+      </div>
+     </div>
+     <div class="cie-limits-popover" id="cie-limits-bgFade">Min:<input type="number" id="cie-lmin-bgFade"> Max:<input type="number" id="cie-lmax-bgFade"><button class="cie-reset-btn" id="cie-limits-bgFade-close">✕</button></div>
+     <input type="range" id="cie-bgFade" min="0" max="1" value="0" step="any">
+    </div>
+
+    <div class="cie-group">
+     <div class="cie-row">
+      <label class="cie-label">🌓 Invert color</label>
+      <div style="display:flex;align-items:center;gap:2px">
+       <button class="cie-reset-btn" data-reset="invert" title="Reset">↺</button>
+       <input type="number" id="cie-invertNum" step="any" value="0">
+       <button class="cie-emoji-btn cie-ping-pong" data-key="invert" title="Ping-pong animation">↔</button>
+       <button class="cie-reset-btn cie-limits-btn" data-key="invert" title="Ping-pong limits">🎚️</button>
+      </div>
+     </div>
+     <div class="cie-limits-popover" id="cie-limits-invert">Min:<input type="number" id="cie-lmin-invert"> Max:<input type="number" id="cie-lmax-invert"><button class="cie-reset-btn" id="cie-limits-invert-close">✕</button></div>
+     <input type="range" id="cie-invert" min="0" max="1" value="0" step="any">
+    </div>
+   </div>
+
+   <!-- ═══ ANIM ═══ -->
+   <div class="cie-tab-panel" data-panel="anim">
+     <div class="cie-docked-section-header">Anim</div>
+     <!-- Global Speed Slider -->
+     <div class="cie-group" style="border-bottom:1px solid #222;">
+      <div class="cie-row">
+       <label class="cie-label">🌐 Global speed</label>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="globalSpeed" title="Reset">↺</button>
+        <input type="number" id="cie-globalSpeedNum" step="any" value="1">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="globalSpeed" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="globalSpeed" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <div class="cie-limits-popover" id="cie-limits-globalSpeed">Min:<input type="number" id="cie-lmin-globalSpeed"> Max:<input type="number" id="cie-lmax-globalSpeed"><button class="cie-reset-btn" id="cie-limits-globalSpeed-close">✕</button></div>
+      <input type="range" id="cie-globalSpeed" min="0" max="5" value="1" step="0.1">
+      </div>
+      <!-- Timeline Slider -->
+      <div class="cie-group" style="border-bottom:1px solid #222;">
+       <div class="cie-row">
+        <label class="cie-label">⏱️ Timeline</label>
+        <div style="display:flex;align-items:center;gap:2px">
+         <button class="cie-reset-btn" data-reset="timeline" title="Reset">↺</button>
+         <input type="number" id="cie-timelineNum" step="any" value="0">
+         <button class="cie-emoji-btn cie-ping-pong" data-key="timeline" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="timeline" title="Ping-pong limits">🎚️</button>
+        </div>
+       </div>
+       <div class="cie-limits-popover" id="cie-limits-timeline">Min:<input type="number" id="cie-lmin-timeline"> Max:<input type="number" id="cie-lmax-timeline"><button class="cie-reset-btn" id="cie-limits-timeline-close">✕</button></div>
+       <input type="range" id="cie-timeline" min="0" max="100" value="0" step="any">
+     </div>
+    <div class="cie-box">
+     <div class="cie-box-title">〰 Pulse</div>
+     <div class="cie-group" style="padding:0 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-animate"><label for="cie-animate">Frequency</label></div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="pSpeed" title="Reset">↺</button>
+        <input type="number" id="cie-pSpeedNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="pSpeed" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="pSpeed" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <div class="cie-limits-popover" id="cie-limits-pSpeed">Min:<input type="number" id="cie-lmin-pSpeed"> Max:<input type="number" id="cie-lmax-pSpeed"><button class="cie-reset-btn" id="cie-limits-pSpeed-close">✕</button></div>
+      <input type="range" id="cie-pSpeed" min="-10" max="10" value="1" step="any">
+     </div>
+     <div class="cie-group" style="padding:0 2px">
+      <div class="cie-row">
+       <label class="cie-label">📏Distance</label>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="pDepth" title="Reset">↺</button>
+        <input type="number" id="cie-pDepthNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="pDepth" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="pDepth" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <div class="cie-limits-popover" id="cie-limits-pDepth">Min:<input type="number" id="cie-lmin-pDepth"> Max:<input type="number" id="cie-lmax-pDepth"><button class="cie-reset-btn" id="cie-limits-pDepth-close">✕</button></div>
+      <input type="range" id="cie-pDepth" min="-1" max="1.0" value="0.05" step="any">
+     </div>
+     <!-- Pulse shift-->
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <label class="cie-label">⇄ Shift</label>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="phase" title="Reset">↺</button>
+        <input type="number" id="cie-phaseNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="phase" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="phase" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <div class="cie-limits-popover" id="cie-limits-phase">Min:<input type="number" id="cie-lmin-phase"> Max:<input type="number" id="cie-lmax-phase"><button class="cie-reset-btn" id="cie-limits-phase-close">✕</button></div>
+      <input type="range" id="cie-phase" min="0" max="2" value="0" step="any">
+     </div>
+     <!-- Convergence -->
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <label class="cie-label">Converge</label>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="converge" title="Reset">↺</button>
+        <input type="number" id="cie-convergeNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="converge" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="converge" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <div class="cie-limits-popover" id="cie-limits-converge">Min:<input type="number" id="cie-lmin-converge"> Max:<input type="number" id="cie-lmax-converge"><button class="cie-reset-btn" id="cie-limits-converge-close">✕</button></div>
+      <input type="range" id="cie-converge" min="0" max="1" value="0" step="any">
+     </div>
+    </div>
+    <div class="cie-box">
+     <div class="cie-box-title">Viewport</div>
+     <div class="cie-group" style="padding:0 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-rotateToggle"><span style="font-size:11px">🔄</span><label class="cie-label" for="cie-rotateToggle">Rotation</label></div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="rSpeed" title="Reset">↺</button>
+        <input type="number" id="cie-rSpeedNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="rSpeed" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="rSpeed" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <div class="cie-limits-popover" id="cie-limits-rSpeed">Min:<input type="number" id="cie-lmin-rSpeed"> Max:<input type="number" id="cie-lmax-rSpeed"><button class="cie-reset-btn" id="cie-limits-rSpeed-close">✕</button></div>
+      <input type="range" id="cie-rSpeed" min="-10" max="10" value="0" step="any">
+      </div>
+      <!-- Depth Nesting Rotation -->
+      <div class="cie-group" style="padding:0 2px">
+       <div class="cie-row">
+        <div class="cie-checkbox-group"><input type="checkbox" id="cie-rotDepths"><label class="cie-label" for="cie-rotDepths">Depth orbit</label></div>
+        <div style="display:flex;align-items:center;gap:2px">
+         <button class="cie-reset-btn" data-reset="rotDepthFactor" title="Reset">↺</button>
+         <input type="number" id="cie-rotDepthFactorNum" step="any" value="0.5">
+         <button class="cie-emoji-btn cie-ping-pong" data-key="rotDepthFactor" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="rotDepthFactor" title="Ping-pong limits">🎚️</button>
+        </div>
+       </div>
+       <div class="cie-limits-popover" id="cie-limits-rotDepthFactor">Min:<input type="number" id="cie-lmin-rotDepthFactor"> Max:<input type="number" id="cie-lmax-rotDepthFactor"><button class="cie-reset-btn" id="cie-limits-rotDepthFactor-close">✕</button></div>
+       <input type="range" id="cie-rotDepthFactor" min="-5" max="5" value="0.5" step="any">
+     </div>
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <div style="display:flex;align-items:center;gap:4px">
+        <label class="cie-label">🔍 Zoom</label>
+        <input type="checkbox" id="cie-infiniteZoom" title="Infinite zoom" style="background:#333;margin:0;cursor:pointer"><label>∞</label>
+       </div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="zoom" title="Reset">↺</button>
+        <input type="number" id="cie-zoomNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="zoom" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="zoom" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <input type="range" id="cie-zoom" min="-30" max="30" value="0" step="any">
+      <div class="cie-limits-popover" id="cie-limits-zoom">Min:<input type="number" id="cie-lmin-zoom"> Max:<input type="number" id="cie-lmax-zoom"><button class="cie-reset-btn" id="cie-limits-zoom-close">✕</button></div>
+     </div>
+    </div>
+    <div class="cie-row"><div class="cie-checkbox-group"><input type="checkbox" id="cie-sync"><label for="cie-sync">Sync breath</label></div></div>
+    <div class="cie-box">
+     <div class="cie-box-title">Wobble</div>
+     <div class="cie-group" style="padding:0 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-wobble"><label for="cie-wobble">Amplitude</label></div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="wobbleAmp" title="Reset">↺</button>
+        <input type="number" id="cie-wobbleAmpNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="wobbleAmp" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="wobbleAmp" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <input type="range" id="cie-wobbleAmp" min="-5" max="1.7753487851328" value="0.1" step="any">
+      <div class="cie-limits-popover" id="cie-limits-wobbleAmp">Min:<input type="number" id="cie-lmin-wobbleAmp"> Max:<input type="number" id="cie-lmax-wobbleAmp"><button class="cie-reset-btn" id="cie-limits-wobbleAmp-close">✕</button></div>
+     </div>
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <label class="cie-label">Frequency</label>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="wobbleFreq" title="Reset">↺</button>
+        <input type="number" id="cie-wobbleFreqNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="wobbleFreq" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="wobbleFreq" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <input type="range" id="cie-wobbleFreq" min="-5" max="5" value="1" step="any">
+      <div class="cie-limits-popover" id="cie-limits-wobbleFreq">Min:<input type="number" id="cie-lmin-wobbleFreq"> Max:<input type="number" id="cie-lmax-wobbleFreq"><button class="cie-reset-btn" id="cie-limits-wobbleFreq-close">✕</button></div>
+     </div>
+    </div>
+   </div>
+
+   <!-- ═══ FX ═══ -->
+   <div class="cie-tab-panel" data-panel="fx">
+    <div class="cie-docked-section-header">FX</div>
+    <div class="cie-row">
+     <label class="cie-label">Blend</label>
+     <select id="cie-blend" style="width:100px">
+      <option value="source-over">Normal</option>
+      <option value="lighter">Lighter (Add)</option>
+      <option value="multiply">Multiply</option>
+      <option value="screen">Screen</option>
+      <option value="overlay">Overlay</option>
+      <option value="difference">Difference</option>
+      <option value="exclusion">Exclusion</option>
+      <option value="color-dodge">Dodge</option>
+      <option value="color-burn">Burn</option>
+      <option value="hard-light">Hard Light</option>
+      <option value="soft-light">Soft Light</option>
+      <option value="xor">XOR</option>
+     </select>
+    </div>
+    <div class="cie-box">
+     <div class="cie-group" style="padding:0 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-distort"><label title="Distortion ripple on/off">Distortion ripple</label></div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="distortAmp" title="Reset">↺</button>
+        <input type="number" id="cie-distortAmpNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="distortAmp" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="distortAmp" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <input type="range" id="cie-distortAmp" min="0" max="50" value="10" step="any">
+      <div class="cie-limits-popover" id="cie-limits-distortAmp">Min:<input type="number" id="cie-lmin-distortAmp"> Max:<input type="number" id="cie-lmax-distortAmp"><button class="cie-reset-btn" id="cie-limits-distortAmp-close">✕</button></div>
+     </div>
+     <div class="cie-group" style="padding:0 2px 2px" id="cie-distortFreqGroup">
+      <div class="cie-row">
+       <label class="cie-label indented">Frequency</label>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="distortFreq" title="Reset">↺</button>
+        <input type="number" id="cie-distortFreqNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="distortFreq" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="distortFreq" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <input type="range" id="cie-distortFreq" min="0.5" max="10" value="3" step="any">
+      <div class="cie-limits-popover" id="cie-limits-distortFreq">Min:<input type="number" id="cie-lmin-distortFreq"> Max:<input type="number" id="cie-lmax-distortFreq"><button class="cie-reset-btn" id="cie-limits-distortFreq-close">✕</button></div>
+     </div>
+    </div>
+    <div class="cie-box">
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-chroma" title="On/Off"><label title="Chroma split on/off">Chroma Split</label></div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="chromaAmt" title="Reset">↺</button>
+        <input type="number" id="cie-chromaAmtNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="chromaAmt" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="chromaAmt" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <input type="range" id="cie-chromaAmt" min="0" max="20" value="4" step="any">
+      <div class="cie-limits-popover" id="cie-limits-chromaAmt">Min:<input type="number" id="cie-lmin-chromaAmt"> Max:<input type="number" id="cie-lmax-chromaAmt"><button class="cie-reset-btn" id="cie-limits-chromaAmt-close">✕</button></div>
+     </div>
+    </div>
+    <div class="cie-box">
+     <!--<div class="cie-box-title">Scanlines</div>-->
+     <div class="cie-group" style="padding:0 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-scanlines" title="On/Off"><label title="Scanlines On/Off">𝄚 Scanlines</label></div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="scanlinesOp" title="Reset">↺</button>
+        <input type="number" id="cie-scanlinesOpNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="scanlinesOp" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="scanlinesOp" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <input type="range" id="cie-scanlinesOp" min="0" max="1" value="0.3" step="any">
+      <div class="cie-limits-popover" id="cie-limits-scanlinesOp">Min:<input type="number" id="cie-lmin-scanlinesOp"> Max:<input type="number" id="cie-lmax-scanlinesOp"><button class="cie-reset-btn" id="cie-limits-scanlinesOp-close">✕</button></div>
+     </div>
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <label class="cie-label indented">↕ Spacing</label>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="scanlinesSp" title="Reset">↺</button>
+        <input type="number" id="cie-scanlinesSpNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="scanlinesSp" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="scanlinesSp" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <input type="range" id="cie-scanlinesSp" min="2" max="20" value="4" step="1">
+      <div class="cie-limits-popover" id="cie-limits-scanlinesSp">Min:<input type="number" id="cie-lmin-scanlinesSp"> Max:<input type="number" id="cie-lmax-scanlinesSp"><button class="cie-reset-btn" id="cie-limits-scanlinesSp-close">✕</button></div>
+     </div>
+    </div>
+    <div class="cie-box">
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-vignette" title="On/Off"><label title="Vignette on/off">Vignette</label></div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="vignetteAmt" title="Reset">↺</button>
+        <input type="number" id="cie-vignetteAmtNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="vignetteAmt">↔</button>
+       </div>
+      </div>
+      <input type="range" id="cie-vignetteAmt" min="0" max="1" value="0.5" step="any">
+     </div>
+    </div>
+    <div class="cie-box">
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-echo" title="On/Off"><label title="Feedback echo on/off">Feedback echo</label></div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="echoAmt" title="Reset">↺</button>
+        <input type="number" id="cie-echoAmtNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="echoAmt">↔</button>
+       </div>
+      </div>
+      <input type="range" id="cie-echoAmt" min="0" max="5" value="0.7" step="any">
+      </div>
+     </div>
+     <div class="cie-box">
+      <div class="cie-group" style="padding:0 2px 2px">
+       <div class="cie-row">
+        <div class="cie-checkbox-group"><input type="checkbox" id="cie-motionBlur" title="On/Off"><label for="cie-motionBlur" title="Motion blur on/off">Motion blur</label></div>
+        <div style="display:flex;align-items:center;gap:2px">
+         <button class="cie-reset-btn" data-reset="motionBlurAmt" title="Reset">↺</button>
+         <input type="number" id="cie-motionBlurAmtNum" step="any">
+         <button class="cie-emoji-btn cie-ping-pong" data-key="motionBlurAmt" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="motionBlurAmt" title="Ping-pong limits">🎚️</button>
+        </div>
+       </div>
+       <input type="range" id="cie-motionBlurAmt" min="0" max="1" value="0.5" step="any">
+       <div class="cie-limits-popover" id="cie-limits-motionBlurAmt">Min:<input type="number" id="cie-lmin-motionBlurAmt"> Max:<input type="number" id="cie-lmax-motionBlurAmt"><button class="cie-reset-btn" id="cie-limits-motionBlurAmt-close">✕</button></div>
+      </div>
+      <div class="cie-group" style="padding:0 2px 2px">
+       <div class="cie-row">
+        <label class="cie-label indented">Steps</label>
+        <div style="display:flex;align-items:center;gap:2px">
+         <button class="cie-reset-btn" data-reset="motionBlurSteps" title="Reset">↺</button>
+         <input type="number" id="cie-motionBlurStepsNum" step="any">
+         <button class="cie-emoji-btn cie-ping-pong" data-key="motionBlurSteps" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="motionBlurSteps" title="Ping-pong limits">🎚️</button>
+        </div>
+       </div>
+       <input type="range" id="cie-motionBlurSteps" min="1" max="15" value="5" step="1">
+       <div class="cie-limits-popover" id="cie-limits-motionBlurSteps">Min:<input type="number" id="cie-lmin-motionBlurSteps"> Max:<input type="number" id="cie-lmax-motionBlurSteps"><button class="cie-reset-btn" id="cie-limits-motionBlurSteps-close">✕</button></div>
+      </div>
+     </div>
+    </div>
+
+   <!-- ═══ DESIGNS ═══ -->
+   <div class="cie-tab-panel" data-panel="designs">
+    <div class="cie-docked-section-header">Designs</div>
+    <div style="font-size:12px;color:#bbb">Presets</div>
+    <div class="cie-preset-bar" id="cie-presets"></div>
+    <div id="cie-preset-edit-panel">
+     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
+      <span id="cie-preset-edit-title" style="font-size:9px;color:#aaa;font-weight:bold"></span>
+      <div style="display:flex;gap:3px">
+       <button id="cie-preset-save-params" class="cie-btn-icon" style="font-size:9px;color:#8a8" title="Save current params">✔ Save params</button>
+       <button id="cie-preset-close-edit" class="cie-btn-icon" style="font-size:11px">✕</button>
+      </div>
+     </div>
+     <div style="display:flex;align-items:center;gap:3px">
+      <label style="font-size:9px;color:#666">Name:</label>
+      <input type="text" id="cie-preset-edit-name" style="flex:1;background:#000;color:#fff;border:1px solid #333;font-size:9px;padding:1px 3px">
+      <button id="cie-preset-rename" class="cie-btn-icon" style="font-size:9px;color:#8a8">✔</button>
+     </div>
+    </div>
+    <div class="cie-sep"></div>
+    <div class="cie-row" style="padding:1px 0">
+     <label class="cie-label">Saved</label>
+     <select id="cie-sort" style="width:50px;font-size:8px"><option value="date">Date</option><option value="name">Name</option></select>
+    </div>
+    <div id="cie-configList" class="config-list"></div>
+    <div class="cie-row">
+     <input type="text" id="cie-configName" placeholder="Name or paste share code">
+     <div style="display:flex;gap:1px">
+      <button id="cie-saveBtn" class="cie-btn-icon" title="Save" style="font-size:12px">💾</button>
+      <button id="cie-inBtn"   class="cie-btn-icon" title="Import code" style="font-size:11px">📥</button>
+       <button id="cie-shareBtn" class="cie-btn-icon" title="Copy/share code" style="margin-left:1px"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="display:block;width:11px;height:11px"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg></button>
+     </div>
+    </div>
+   </div>
+
+   <!-- ═══ OPTIONS ═══ -->
+   <div class="cie-tab-panel" data-panel="options">
+    <div class="cie-docked-section-header">Options</div>
+    <div style="font-size:9px;color:#ccc;padding:2px 2px 0;text-transform:uppercase;text-align:center">Display</div>
+    <div class="cie-options-row"><label class="cie-checkbox-group" style="cursor:pointer"><input type="checkbox" id="opt-miniViz"><span class="cie-label">Mini visualizer</span></label></div>
+    <div class="cie-options-row"><label class="cie-checkbox-group" style="cursor:pointer"  title="Frames per second"><input type="checkbox" id="opt-fps"><span class="cie-label">🎞️<abbr title="frames per second">FPS</abbr> counter</span></label></div>
+    <div class="cie-sep"></div>
+    <div style="font-size:9px;color:#ccc;padding:1px 2px 0;text-transform:uppercase;text-align:center">🔊Audio Reactivity</div>
+    <div class="cie-options-row"><label class="cie-checkbox-group" style="cursor:pointer"><input type="checkbox" id="cie-audioEnable"><span class="cie-label">🎤Microphone input</span></label></div>
+    <div class="cie-options-row" style="display:flex;justify-content:space-between;align-items:center">
+      <span class="cie-label">✨Sensitivity</span>
+      <input type="range" id="cie-audioSens" min="0.1" max="5" value="1.5" step="any" style="width:120px;height:4px;background:#333;outline:none;margin:0">
+    </div>
+    <div class="cie-options-row" style="display:flex;justify-content:space-between;align-items:center">
+      <span class="cie-label">🌫️Smoothing</span>
+      <input type="range" id="cie-audioSmooth" min="0.1" max="0.99" value="0.8" step="any" style="width:120px;height:4px;background:#333;outline:none;margin:0">
+    </div>
+    <div class="cie-sep"></div>
+    <div style="font-size:9px;color:#ccc;text-transform:uppercase;text-align:center;display:flex;justify-content:center">Keyboard shortcuts<button id="cie-helpBtn-options" class="cie-btn-icon" title="Help" style="font-size:11px;color:yellow;margin-left:.5em">?</button></div>
+    <div style="font-size:11px;color:#aaa;display:flex;flex-wrap:wrap;justify-content:space-between">
+     <div><span style="color:#ccc;font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">Space</span> Pause</div>
+     <div><span style="color:#ccc;font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">R</span> 🔀Random &nbsp; <span style="color:#ccc;font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">F</span> Fullscreen</div>
+     <div><span style="color:#888;font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">H</span> Hide &nbsp; <span style="color:#888;font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">M</span> Minimize</div>
+     <div><span style="color:#888;font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">&uarr;&darr;</span> 🔍Zoom &nbsp; <div style="transform: rotate(246deg);display: inline-block">➤</div>👆
+     <svg xmlns="http://w3.org" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="miter" style="vertical-align:bottom"><path d="M8 4.5v7M4.5 8h7M2.5 4.5L8 1.5l5.5 3M2.5 11.5L8 14.5l5.5-3M4.5 2.5L1.5 8l3 5.5M11.5 2.5L14.5 8l-3 5.5"></path></svg>Drag: Pan &nbsp; <span style="font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">&uArr; Shift</span> + drag: Rotate</div>
+    </div>
+   </div>
+
+  </div><!-- end content -->
+
+  <!-- Action Bar -->
+  <div id="cie-action-bar" class="cie-action-btns">
+   <button id="cie-pauseBtn" class="cie-emoji-btn" title="Pause [Space]">⏸</button>
+   <button id="cie-recenterBtn" class="cie-btn-icon" style="font-size:13px" title="Re-center canvas">✛</button>
+   <button id="cie-resetBtn" class="cie-btn-icon" style="font-size:12px;color:yellow" title="Reset all">⚠</button>
+   <button id="cie-randBtn" class="cie-emoji-btn" style="font-size:12px" title="Random [R]">🔀</button>
+   <div class="cie-spacer"></div>
+   <button id="cie-expBtn" class="cie-emoji-btn" title="Save image">🖼️</button>
+   <div style="position:relative;display:flex;align-items:center">
+    <button id="cie-recBtn" class="cie-emoji-btn" title="Record video">🎦</button>
+    <span id="cie-recTimer">0:00</span>
+   </div>
+  </div>
+ </div>
+</div>
+<button id="cie-showBtn">SHOW MENU</button>
+
+<script>
+const canvas   = document.getElementById('cie-canvas');
+const ctx      = canvas.getContext('2d');
+const container= document.getElementById('cie-canvas-container');
+const mainArea = document.getElementById('cie-main-area');
+const controls = document.getElementById('cie-controls');
+const header   = document.getElementById('cie-header');
+const contentEl= document.getElementById('cie-content');
+const tabsEl   = document.querySelector('.cie-tabs');
+const actionBar= document.getElementById('cie-action-bar');
+const miniViz  = document.getElementById('cie-miniViz');
+const mvCtx    = miniViz.getContext('2d');
+const fpsEl    = document.getElementById('cie-fps');
+const rHandle  = document.getElementById('cie-resize-handle');
+const offCanvas= document.createElement('canvas');
+const offCtx   = offCanvas.getContext('2d');
+const echoCanvas=document.createElement('canvas');
+const echoCtx  = echoCanvas.getContext('2d');
+
+let zoomVal=1,panX=0,panY=0,manualRot=0,manualRotY=0;
+let currZFact=1,currLevelShift=0;
+let isDrag=false,isPanning=false,isRotating=false,isResizingPanel=false;
+let dragOffX=0,dragOffY=0,lastMX=0,lastMY=0;
+const pps={},ppd={};
+// Per-slider custom limits for ping-pong
+const ppLimits={}; // {key:{min,max}}
+const ppValues={}; // {key:currentHighPrecisionValue}
+const speedScales={}; // {key:string}
+let pTime=0,rTime=0,isPaused=false;
+let lastBGKey='',trailAlpha=1,themeAlpha=1;
+let prevTheme='white',currTheme='white',stTimer=0;
+let modeTimer=0,modeList=['2h','2v','4plus','kaleid','spiral','fractal','lissajous'];
+let mediaRecorder,recChunks=[],recStart;
+let fpsCnt=0,fpsLast=performance.now();
+let dockWidth=256,isDocked=true;
+let floatWidth='260px', floatHeight='', floatTop='0', floatRight='0', floatLeft='auto';
+const miniHistory=new Float32Array(120);let miniIdx=0;
+let editingPresetIdx=-1;
+let transformHistory=[];
+let lastStateSummary='';
+
+let sliderUndoStack=[];
+let sliderRedoStack=[];
+let isUndoRedoing=false;
+
+function pushSliderState(){
+  if(isUndoRedoing) return;
+  const state={};
+  Object.keys(uiMap).forEach(k=>{
+    const e=document.getElementById(uiMap[k]);
+    if(e) state[k]=e.value;
+  });
+  sliderUndoStack.push(state);
+  if(sliderUndoStack.length>100) sliderUndoStack.shift();
+  sliderRedoStack=[];
+}
+
+function undoSliderChange(){
+  if(sliderUndoStack.length<=1) return;
+  const cur=sliderUndoStack.pop();
+  sliderRedoStack.push(cur);
+  const prev=sliderUndoStack[sliderUndoStack.length-1];
+  applySliderState(prev);
+}
+
+function redoSliderChange(){
+  if(sliderRedoStack.length===0) return;
+  const next=sliderRedoStack.pop();
+  sliderUndoStack.push(next);
+  applySliderState(next);
+}
+
+function applySliderState(state){
+  isUndoRedoing=true;
+  Object.keys(uiMap).forEach(k=>{
+    if(state[k] !== undefined){
+      const slider=document.getElementById(uiMap[k]);
+      if(slider){
+        slider.value=state[k];
+        const isInt=(k==='depth'||k==='motionBlurSteps');
+        const num=document.getElementById(uiMap[k]+'Num');
+        if(num) num.value=fmtNum(parseFloat(state[k]),isInt);
+      }
+    }
+  });
+  enforceSafety();
+  isUndoRedoing=false;
+}
+
+let audioCtx = null;
+let audioAnalyser = null;
+let audioSrc = null;
+let audioDataArray = null;
+let audioBassVal = 0;
+let audioMidHighVal = 0;
+
+function initAudioAnalyzer() {
+  if (audioCtx) return;
+  try {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AudioContextClass();
+    audioAnalyser = audioCtx.createAnalyser();
+    audioAnalyser.fftSize = 256;
+    audioAnalyser.smoothingTimeConstant = parseFloat(el('cie-audioSmooth')?.value || 0.8);
+    
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(stream => {
+        audioSrc = audioCtx.createMediaStreamSource(stream);
+        audioSrc.connect(audioAnalyser);
+        audioDataArray = new Uint8Array(audioAnalyser.frequencyBinCount);
+      })
+      .catch(err => {
+        console.warn("Audio input error:", err);
+        el('cie-audioEnable').checked = false;
+        alert("Failed to access audio device. Please check microphone permissions.");
+      });
+  } catch (err) {
+    console.error("Web Audio API not supported", err);
+  }
+}
+
+const el  =id=>document.getElementById(id);
+const val =id=>parseFloat(el(id).value);
+const chk =id=>el(id).checked;
+
+// ── DEFAULT VALUES ──
+const SLIDER_DEFAULTS={
+  depth:8,pSpeed:1,pDepth:0.05,phase:0,rSpeed:0,gRad:8,tDens:0.10,thick:1,op:1,
+  msSpeed:1,cSpeed:1,bgFade:0,zoom:0,wobbleAmp:0.1,wobbleFreq:1,distortAmp:10,distortFreq:3,
+  chromaAmt:4,scanlinesOp:0.3,scanlinesSp:4,vignetteAmt:0.5,echoAmt:0.7,
+  converge:0,modeSpeed:1,globalSpeed:1,rotDepthFactor:0.5,
+  timeline:0,motionBlurAmt:0.5,motionBlurSteps:5,invert:0
+};
+
+function enforceSafety(){
+  if(el('cie-mode').value==='4'&&val('cie-depth')>7){el('cie-depth').value=7;el('cie-depthNum').value=7;}
+  if(el('cie-mode').value==='3d4plus'&&val('cie-depth')>6){el('cie-depth').value=6;el('cie-depthNum').value=6;}
+  if(el('cie-mode').value==='3d2h'&&val('cie-depth')>9){el('cie-depth').value=9;el('cie-depthNum').value=9;}
+}
+
+// ── SMART NUMBER DISPLAY ──
+function fmtNum(v,isInt){
+  if(isInt) return String(Math.round(v));
+  // Show integer as integer (no trailing zeros)
+  if(Number.isInteger(v)||Math.abs(v-Math.round(v))<0.0001) return String(Math.round(v));
+  return parseFloat(v.toFixed(3)).toString();
+}
+
+// ── SLIDER/NUMBER MAP ──
+const uiMap={
+  depth:'cie-depth',pSpeed:'cie-pSpeed',pDepth:'cie-pDepth',
+  phase:'cie-phase',rSpeed:'cie-rSpeed',gRad:'cie-gRad',
+  tDens:'cie-tDens',thick:'cie-thick',op:'cie-op',
+  msSpeed:'cie-msSpeed',cSpeed:'cie-cSpeed',bgFade:'cie-bgFade',zoom:'cie-zoom',
+  wobbleAmp:'cie-wobbleAmp',wobbleFreq:'cie-wobbleFreq',
+  distortAmp:'cie-distortAmp',distortFreq:'cie-distortFreq',
+  chromaAmt:'cie-chromaAmt',scanlinesOp:'cie-scanlinesOp',scanlinesSp:'cie-scanlinesSp',
+  vignetteAmt:'cie-vignetteAmt',echoAmt:'cie-echoAmt',
+  converge:'cie-converge',modeSpeed:'cie-modeSpeed',
+  globalSpeed:'cie-globalSpeed',rotDepthFactor:'cie-rotDepthFactor',
+  timeline:'cie-timeline',
+  motionBlurAmt:'cie-motionBlurAmt',
+  motionBlurSteps:'cie-motionBlurSteps',
+  invert:'cie-invert',
+};
+Object.keys(uiMap).forEach(key=>{
+  const isInt=(key==='depth' || key==='motionBlurSteps');
+  const slider=el(uiMap[key]); if(!slider) return;
+  const num=el(uiMap[key]+'Num');
+  if(num){
+    num.value=fmtNum(parseFloat(slider.value),isInt);
+    slider.addEventListener('input',()=>{
+      if(isInt) slider.value=Math.round(parseFloat(slider.value));
+      ppValues[key]=parseFloat(slider.value);
+      num.value=fmtNum(parseFloat(slider.value),isInt);
+      enforceSafety();
+    });
+    num.addEventListener('input',()=>{
+      let v=parseFloat(num.value);
+      const mn=parseFloat(slider.min),mx=parseFloat(slider.max);
+      if(isNaN(v)) return;
+      if(isInt) v=Math.round(v);
+      const finalV=Math.max(mn,Math.min(mx,v));
+      slider.value=finalV;
+      ppValues[key]=finalV;
+      enforceSafety();
+    });
+    slider.addEventListener('change',()=>{ pushSliderState(); });
+    num.addEventListener('change',()=>{ pushSliderState(); });
+  }
+});
+
+// Programmatically inject Speed checkboxes and Random buttons
+Object.keys(uiMap).forEach(k => {
+  const rst = document.querySelector('.cie-reset-btn[data-reset="' + k + '"]');
+  const lim = document.querySelector('.cie-limits-btn[data-key="' + k + '"]');
+
+  if (rst) {
+    const scaleContainer = document.createElement('div');
+    scaleContainer.className = 'cie-speed-scale-container';
+    scaleContainer.title = 'Speed Scale: Linear';
+    scaleContainer.style.cssText = 'position:relative;display:inline-flex;align-items:center;justify-content:center;margin:0 2px;cursor:pointer;user-select:none;width:12px;height:12px;line-height:1;vertical-align:middle;';
+    
+    scaleContainer.innerHTML = `
+      <span class="cie-speed-symbol" style="font-size:10px;color:#888;font-weight:bold;z-index:1;pointer-events:none;line-height:1">╭╯</span>
+      <select class="cie-speed-select" data-key="${k}" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:2;background:#000;color:#fff;border:none">
+        <option value="linear">Linear</option>
+        <option value="exponential">Exponential</option>
+        <option value="factorial">Factorial</option>
+        <option value="gompertz">Gompertz growth</option>
+        <option value="hyperbolic">Hyperbolic</option>
+        <option value="logarithmic">Logarithmic</option>
+        <option value="logistic">Logistic s-curve</option>
+        <option value="cubic">Polynomial (cubic)</option>
+        <option value="quadratic">Polynomial (quadratic)</option>
+      </select>
+    `;
+    
+    const speedSelect = scaleContainer.querySelector('select');
+    speedSelect.addEventListener('change', (e) => {
+      const val = e.target.value;
+      speedScales[k] = val;
+      scaleContainer.title = 'Speed Scale: ' + e.target.options[e.target.selectedIndex].text;
+      
+      const symbol = scaleContainer.querySelector('.cie-speed-symbol');
+      if (symbol) {
+        symbol.style.color = (val === 'linear') ? '#888' : 'yellow';
+      }
+      pushSliderState();
+    });
+    
+    rst.parentNode.insertBefore(scaleContainer, rst.nextSibling);
+  }
+
+  if (lim) {
+    const randBtn = document.createElement('button');
+    randBtn.className = 'cie-emoji-btn cie-random-slider-btn';
+    randBtn.dataset.key = k;
+    randBtn.title = '🎲 Random value within limits';
+    randBtn.innerHTML = '🎲';
+    randBtn.style.cssText = 'font-size:10px;cursor:pointer';
+    
+    randBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const slider = el(uiMap[k]);
+      if (!slider) return;
+      const limits = ppLimits[k] || {};
+      const mn = limits.min !== undefined ? limits.min : parseFloat(slider.min);
+      const mx = limits.max !== undefined ? limits.max : parseFloat(slider.max);
+      const range = mx - mn;
+      if (range > 0) {
+        let v = mn + Math.random() * range;
+        const isInt = (k === 'depth' || k === 'motionBlurSteps');
+        if (isInt) v = Math.round(v);
+        slider.value = v;
+        ppValues[k] = v;
+        const num = el(uiMap[k] + 'Num');
+        if (num) num.value = fmtNum(v, isInt);
+        enforceSafety();
+        pushSliderState();
+      }
+    });
+
+    lim.parentNode.insertBefore(randBtn, lim.nextSibling);
+  }
+});
+
+el('cie-timeline').addEventListener('input',()=>{
+  pTime=val('cie-timeline');
+  rTime=pTime*(val('cie-rSpeed')/(val('cie-pSpeed')||1)||0.5);
+});
+el('cie-timelineNum').addEventListener('input',()=>{
+  let v=parseFloat(el('cie-timelineNum').value);
+  if(!isNaN(v)){
+    pTime=v;
+    rTime=pTime*(val('cie-rSpeed')/(val('cie-pSpeed')||1)||0.5);
+  }
+});
+el('cie-timeline').addEventListener('change',()=>{ pushSliderState(); });
+el('cie-timelineNum').addEventListener('change',()=>{ pushSliderState(); });
+
+// ── RESET-TO-DEFAULT buttons ──
+document.querySelectorAll('.cie-reset-btn[data-reset]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const k=btn.dataset.reset;
+    if(SLIDER_DEFAULTS[k]===undefined) return;
+    const sliderId=uiMap[k]; if(!sliderId) return;
+    const slider=el(sliderId); if(!slider) return;
+    const isInt=(k==='depth');
+    slider.value=SLIDER_DEFAULTS[k];
+    ppValues[k]=SLIDER_DEFAULTS[k];
+    const num=el(sliderId+'Num'); if(num) num.value=fmtNum(SLIDER_DEFAULTS[k],isInt);
+    enforceSafety();
+    pushSliderState();
+  });
+});
+
+// ── SLIDER LIMITS for ping-pong ──
+function updateSliderLimitOverlay(k) {
+  const slider = el(uiMap[k]);
+  if (!slider) return;
+  const container = slider.parentNode;
+  if (!container) return;
+  
+  if (container.style.position !== 'relative') {
+    container.style.position = 'relative';
+  }
+  
+  let overlay = el('cie-limit-overlay-' + k);
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'cie-limit-overlay-' + k;
+    overlay.className = 'cie-slider-limit-overlay';
+    container.appendChild(overlay);
+  }
+  
+  const lim = ppLimits[k];
+  const hasLimits = lim && (lim.min !== undefined || lim.max !== undefined);
+  
+  if (!hasLimits) {
+    overlay.style.display = 'none';
+    return;
+  }
+  
+  overlay.style.display = 'block';
+  const sMin = parseFloat(slider.min) || 0;
+  const sMax = parseFloat(slider.max) || 10;
+  const sRange = sMax - sMin;
+  
+  const lMin = lim.min !== undefined ? lim.min : sMin;
+  const lMax = lim.max !== undefined ? lim.max : sMax;
+  
+  const pctMin = Math.max(0, Math.min(100, ((lMin - sMin) / (sRange || 1)) * 100));
+  const pctMax = Math.max(0, Math.min(100, ((lMax - sMin) / (sRange || 1)) * 100));
+  
+  overlay.innerHTML = `
+    <div class="cie-limit-track" style="left: ${pctMin}%; right: ${100 - pctMax}%"></div>
+    <div class="cie-limit-marker left" style="left: ${pctMin}%">&gt;|</div>
+    <div class="cie-limit-marker right" style="left: ${pctMax}%">|&lt;</div>
+  `;
+}
+
+// Function to setup dragging interaction for slider limit markers and the track in-between
+let hasSetupLimitDrag = false;
+function setupLimitDragOnce() {
+  if (hasSetupLimitDrag) return;
+  hasSetupLimitDrag = true;
+
+  let dragKey = null;
+  let dragType = null; // 'left', 'right', or 'track'
+  let startX = 0;
+  let startMin = 0;
+  let startMax = 0;
+
+  const onStart = (e) => {
+    const marker = e.target.closest('.cie-limit-marker');
+    const track = e.target.closest('.cie-limit-track');
+    if (!marker && !track) return;
+
+    const overlay = e.target.closest('.cie-slider-limit-overlay');
+    if (!overlay) return;
+
+    const k = overlay.id.replace('cie-limit-overlay-', '');
+    const slider = el(uiMap[k]);
+    if (!slider) return;
+
+    e.preventDefault();
+    dragKey = k;
+    dragType = marker ? (marker.classList.contains('left') ? 'left' : 'right') : 'track';
+    
+    const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX);
+    startX = clientX;
+
+    const lim = ppLimits[k] || {};
+    startMin = lim.min !== undefined ? lim.min : parseFloat(slider.min);
+    startMax = lim.max !== undefined ? lim.max : parseFloat(slider.max);
+
+    document.addEventListener('mousemove', onMove, { passive: false });
+    document.addEventListener('mouseup', onEnd);
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend', onEnd);
+  };
+
+  const onMove = (e) => {
+    if (!dragKey) return;
+    const slider = el(uiMap[dragKey]);
+    if (!slider) return;
+
+    const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX);
+    const dx = clientX - startX;
+    const rect = slider.getBoundingClientRect();
+    const sliderWidth = rect.width || 100;
+
+    const sMin = parseFloat(slider.min) || 0;
+    const sMax = parseFloat(slider.max) || 10;
+    const sRange = sMax - sMin;
+    const deltaVal = (dx / (sliderWidth || 1)) * sRange;
+
+    if (!ppLimits[dragKey]) ppLimits[dragKey] = {};
+
+    if (dragType === 'left') {
+      let val = startMin + deltaVal;
+      const currentMax = ppLimits[dragKey].max !== undefined ? ppLimits[dragKey].max : sMax;
+      val = Math.max(sMin, Math.min(currentMax - (sRange * 0.01), val));
+      ppLimits[dragKey].min = val;
+
+      const lmin = el('cie-lmin-' + dragKey);
+      if (lmin) lmin.value = val.toFixed(3);
+    } else if (dragType === 'right') {
+      let val = startMax + deltaVal;
+      const currentMin = ppLimits[dragKey].min !== undefined ? ppLimits[dragKey].min : sMin;
+      val = Math.min(sMax, Math.max(currentMin + (sRange * 0.01), val));
+      ppLimits[dragKey].max = val;
+
+      const lmax = el('cie-lmax-' + dragKey);
+      if (lmax) lmax.value = val.toFixed(3);
+    } else if (dragType === 'track') {
+      let dMin = startMin + deltaVal;
+      let dMax = startMax + deltaVal;
+      const span = startMax - startMin;
+      if (dMin < sMin) {
+        dMin = sMin;
+        dMax = sMin + span;
+      } else if (dMax > sMax) {
+        dMax = sMax;
+        dMin = sMax - span;
+      }
+      ppLimits[dragKey].min = dMin;
+      ppLimits[dragKey].max = dMax;
+
+      const lmin = el('cie-lmin-' + dragKey);
+      const lmax = el('cie-lmax-' + dragKey);
+      if (lmin) lmin.value = dMin.toFixed(3);
+      if (lmax) lmax.value = dMax.toFixed(3);
+    }
+
+    updateSliderLimitOverlay(dragKey);
+  };
+
+  const onEnd = () => {
+    dragKey = null;
+    dragType = null;
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onEnd);
+    document.removeEventListener('touchmove', onMove);
+    document.removeEventListener('touchend', onEnd);
+  };
+
+  controls.addEventListener('mousedown', onStart);
+  controls.addEventListener('touchstart', onStart, { passive: false });
+}
+
+// Auto-inject reset buttons next to each close button inside all limits popovers
+document.querySelectorAll('.cie-limits-popover').forEach(pop => {
+  const k = pop.id.replace('cie-limits-', '');
+  const slider = el(uiMap[k]);
+  if (!slider) return;
+
+  const closeBtn = pop.querySelector('button');
+  if (!closeBtn) return;
+
+  if (!pop.querySelector('.cie-limits-reset-btn')) {
+    const rstBtn = document.createElement('button');
+    rstBtn.className = 'cie-reset-btn cie-limits-reset-btn';
+    rstBtn.title = 'Reset ranges to defaults';
+    rstBtn.innerHTML = '↺';
+    rstBtn.style.marginRight = '4px';
+    
+    closeBtn.parentNode.insertBefore(rstBtn, closeBtn);
+
+    rstBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (ppLimits[k]) delete ppLimits[k];
+      const lmin = el('cie-lmin-' + k);
+      const lmax = el('cie-lmax-' + k);
+      if (lmin) lmin.value = slider.min;
+      if (lmax) lmax.value = slider.max;
+      updateSliderLimitOverlay(k);
+    });
+  }
+});
+
+// Setup click and drag triggers
+setupLimitDragOnce();
+
+document.querySelectorAll('.cie-limits-btn').forEach(btn=>{
+  btn.addEventListener('click',e=>{
+    e.stopPropagation();
+    const k=btn.dataset.key;
+    const pop=el('cie-limits-'+k); if(!pop) return;
+    // Init inputs if empty
+    const slider=el(uiMap[k]); if(!slider) return;
+    const lmin=el('cie-lmin-'+k),lmax=el('cie-lmax-'+k);
+    if(lmin&&!lmin.value) lmin.value=ppLimits[k]?.min??slider.min;
+    if(lmax&&!lmax.value) lmax.value=ppLimits[k]?.max??slider.max;
+    // Close all others first
+    document.querySelectorAll('.cie-limits-popover.open').forEach(p=>{if(p!==pop)p.classList.remove('open');});
+    pop.classList.toggle('open');
+    updateSliderLimitOverlay(k);
+  });
+});
+// Wire limit input changes
+Object.keys(uiMap).forEach(k=>{
+  const lmin=el('cie-lmin-'+k),lmax=el('cie-lmax-'+k);
+  if(lmin) lmin.addEventListener('input',()=>{ if(!ppLimits[k]) ppLimits[k]={}; ppLimits[k].min=parseFloat(lmin.value); if(isNaN(ppLimits[k].min)) delete ppLimits[k].min; updateSliderLimitOverlay(k); });
+  if(lmax) lmax.addEventListener('input',()=>{ if(!ppLimits[k]) ppLimits[k]={}; ppLimits[k].max=parseFloat(lmax.value); if(isNaN(ppLimits[k].max)) delete ppLimits[k].max; updateSliderLimitOverlay(k); });
+});
+// Close buttons
+document.querySelectorAll('.cie-limits-popover button').forEach(b=>{
+  if(b.id&&b.id.endsWith('-close')) b.addEventListener('click',()=>b.closest('.cie-limits-popover').classList.remove('open'));
+});
+// Close popover on outside click
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.cie-limits-popover')&&!e.target.classList.contains('cie-limits-btn'))
+    document.querySelectorAll('.cie-limits-popover.open').forEach(p=>p.classList.remove('open'));
+});
+
+// ── THEMES ──
+const themes={blue:'#3366ff',black:'#000000',cyan:'#00ffff',green:'#33ff33',orange:'#ff9900',
+  purple:'#cc33ff',red:'#ff3333',spectral:'spectral',white:'#ffffff',yellow:'#ffff33',
+  gold:'#ffd700',pink:'#ff69b4',teal:'#00ced1',custom:'custom'};
+const themeKeys=Object.keys(themes).filter(t=>t!=='custom').sort(); themeKeys.push('custom');
+const themeS=el('cie-theme');
+themeKeys.forEach(t=>{
+  const opt=document.createElement('option');
+  opt.value=t; opt.textContent=t[0].toUpperCase()+t.slice(1);
+  if(t==='spectral') opt.className='theme-spectral';
+  else if(t!=='custom') opt.style.color=themes[t];
+  if(t==='white') opt.selected=true;
+  themeS.appendChild(opt);
+});
+themeS.addEventListener('change',()=>{ prevTheme=currTheme; currTheme=themeS.value; themeAlpha=0; });
+
+// ── CYCLE MODE ──
+function getCycleMode(){ return document.querySelector('input[name="cycleMode"]:checked')?.value||'off'; }
+function getModeMode()  { return document.querySelector('input[name="modeMode"]:checked')?.value||'off'; }
+function updateCycleUI(){
+  const active=getCycleMode()!=='off';
+  el('cie-cycleSpeedRow').style.display = active ? 'flex' : 'none';
+  el('cie-multiStrobeSection').style.display = active ? 'flex' : 'none';
+  if(!active) el('cie-multiStrobe').checked=false;
+}
+function updateModeUI(){
+  const active=getModeMode()!=='off';
+  el('cie-modeSpeedRow').style.display = active ? 'flex' : 'none';
+}
+document.querySelectorAll('input[name="cycleMode"]').forEach(r=>r.addEventListener('change',updateCycleUI));
+document.querySelectorAll('input[name="modeMode"]').forEach(r=>r.addEventListener('change',updateModeUI));
+updateCycleUI(); updateModeUI();
+
+// ── DISTORT FREQ enabled only when Ripple is on ──
+function updateDistortUI(){
+  const on=chk('cie-distort');
+  el('cie-distortFreqGroup').classList.toggle('cie-disabled',!on);
+}
+el('cie-distort').addEventListener('change',updateDistortUI);
+updateDistortUI();
+
+// ── SIDE-EFFECT SLIDERS ──
+el('cie-glow').addEventListener('change',()=>{ if(chk('cie-glow')&&val('cie-gRad')===0){el('cie-gRad').value=8;el('cie-gRadNum').value=8;} });
+el('cie-gRad').addEventListener('input',()=>{ el('cie-gRadNum').value=fmtNum(val('cie-gRad'),false); el('cie-glow').checked=val('cie-gRad')>0; });
+el('cie-rSpeed').addEventListener('input',()=>{ el('cie-rSpeedNum').value=fmtNum(val('cie-rSpeed'),false); el('cie-rotateToggle').checked=Math.abs(val('cie-rSpeed'))>0.001; });
+
+// ── TABS ──
+document.querySelectorAll('.cie-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.cie-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.cie-tab-panel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelector('.cie-tab-panel[data-panel="'+tab.dataset.tab+'"]').classList.add('active');
+  });
+});
+
+// ── PING-PONG ──
+document.querySelectorAll('.cie-ping-pong').forEach(b=>{
+  b.addEventListener('click',()=>{ const k=b.dataset.key; pps[k]=!pps[k]; b.classList.toggle('active',pps[k]); ppd[k]=1; });
+});
+function runPP(){
+  if(isPaused) return;
+  for(const k in pps){
+    if(!pps[k]) continue;
+    const slider=el(uiMap[k]); if(!slider) continue;
+    const lim=ppLimits[k]||{};
+    const mn=lim.min!==undefined?lim.min:parseFloat(slider.min);
+    const mx=lim.max!==undefined?lim.max:parseFloat(slider.max);
+    const range=mx-mn; if(range<=0) continue;
+    
+    let gSpVal = parseFloat(el('cie-globalSpeed')?.value||1);
+    let step=(range/400)*(k==='globalSpeed' ? Math.max(0.05, gSpVal) : gSpVal);
+    
+    // Read from the persistent high-precision state state or fallback
+    if (ppValues[k] === undefined) {
+      ppValues[k] = parseFloat(slider.value) || 0;
+    }
+    
+    const scale = speedScales[k] || 'linear';
+    if (scale !== 'linear') {
+      const t = Math.max(0, Math.min(1, (ppValues[k] - mn) / range));
+      let m = 1.0;
+      if (scale === 'exponential') {
+        m = Math.pow(10, 2 * t - 1);
+      } else if (scale === 'factorial') {
+        const x = t * 4 + 1;
+        const fact = Math.pow(x, x) * Math.exp(-x) * Math.sqrt(2 * Math.PI * x);
+        m = fact / 8.0;
+      } else if (scale === 'gompertz') {
+        m = Math.exp(-3 * Math.exp(-4 * t)) * 2;
+      } else if (scale === 'hyperbolic') {
+        m = 0.2 / (1.05 - t);
+      } else if (scale === 'logarithmic') {
+        m = (Math.log(t * 9 + 1) / Math.LN10) * 2;
+      } else if (scale === 'logistic') {
+        m = 2 / (1 + Math.exp(-8 * (t - 0.5)));
+      } else if (scale === 'cubic') {
+        m = Math.pow(t, 3) * 3;
+      } else if (scale === 'quadratic') {
+        m = Math.pow(t, 2) * 2.5;
+      }
+      step = step * Math.max(0.01, m);
+    }
+    
+    let v=ppValues[k]+step*(ppd[k]||1);
+    if(v>=mx){v=mx;ppd[k]=-1;}else if(v<=mn){v=mn;ppd[k]=1;}
+    ppValues[k]=v;
+    slider.value=v;
+    
+    const num=el(slider.id+'Num'); if(num) num.value=fmtNum(v,k==='depth'||k==='motionBlurSteps');
+    // special: cSpeed ping-pong never crosses 0 (so color cycle doesn't stall)
+    if(k==='cSpeed'&&v<=0.01){v=0.01;ppd[k]=1;ppValues[k]=v;slider.value=v;}
+  }
+}
+
+// ── FOCUS ──
+controls.addEventListener('mousedown',()=>controls.classList.add('active-focus'));
+document.addEventListener('mousedown',e=>{ if(!controls.contains(e.target)) controls.classList.remove('active-focus'); });
+
+// ── HEADER DRAG ──
+header.addEventListener('mousedown',e=>{
+  if(isDocked||e.target.closest('button,input,select,label')) return;
+  isDrag=true;
+  const r=controls.getBoundingClientRect();
+  dragOffX=e.clientX-r.left; dragOffY=e.clientY-r.top;
+  e.preventDefault();
+});
+header.addEventListener('dblclick',()=>el('cie-minBtn').click());
+
+// ── CANVAS PAN/ROTATE ──
+container.addEventListener('mousedown',e=>{
+  if(e.button!==0) return;
+  lastMX=e.clientX; lastMY=e.clientY;
+  e.shiftKey?isRotating=true:isPanning=true;
+  e.preventDefault();
+});
+rHandle.addEventListener('mousedown',e=>{ if(!isDocked) return; isResizingPanel=true; lastMX=e.clientX; e.preventDefault(); });
+
+let activeResizeEdge = null;
+document.querySelectorAll('.cie-resize-edge').forEach(edge => {
+  edge.addEventListener('mousedown', e => {
+    if (isDocked) return;
+    const classes = Array.from(edge.classList);
+    const subClass = classes.find(c => c !== 'cie-resize-edge');
+    if (subClass) {
+      activeResizeEdge = subClass;
+      lastMX = e.clientX;
+      lastMY = e.clientY;
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  });
+});
+
+const blHandle = document.getElementById('cie-bl-resize-handle');
+let isResizingBLPanel = false;
+blHandle.addEventListener('mousedown', e => {
+  if (isDocked) return;
+  isResizingBLPanel = true;
+  lastMX = e.clientX;
+  lastMY = e.clientY;
+  e.preventDefault();
+});
+
+document.addEventListener('mousemove',e=>{
+  if(isDrag){
+    controls.style.left=(e.clientX-dragOffX)+'px';
+    controls.style.right='auto';
+    controls.style.top=Math.max(0,e.clientY-dragOffY)+'px';
+  }
+  if(isPanning){panX+=e.clientX-lastMX;panY+=e.clientY-lastMY;}
+  if(isRotating){
+    manualRot+=(e.clientX-lastMX)*0.01;
+    if(el('cie-mode').value.startsWith('3d')) {
+      manualRotY+=(e.clientY-lastMY)*0.01;
+    }
+  }
+  if(isResizingPanel){
+    dockWidth=Math.max(140,Math.min(window.innerWidth*0.7,dockWidth+(lastMX-e.clientX)));
+    controls.style.setProperty('--dock-width',dockWidth+'px');
+    // Update the hardcoded width for docked
+    controls.style.width=dockWidth+'px';
+    doResize();
+  }
+  if(isResizingBLPanel){
+    const rect = controls.getBoundingClientRect();
+    const dx = e.clientX - lastMX;
+    const dy = e.clientY - lastMY;
+    const newWidth = Math.max(140, rect.width - dx);
+    const newHeight = Math.max(100, rect.height + dy);
+    if (rect.width - dx >= 140) {
+      controls.style.left = (rect.left + dx) + 'px';
+      controls.style.width = newWidth + 'px';
+    }
+    controls.style.height = newHeight + 'px';
+    doResize();
+  }
+  if(activeResizeEdge){
+    const rect = controls.getBoundingClientRect();
+    const dx = e.clientX - lastMX;
+    const dy = e.clientY - lastMY;
+    
+    let newWidth = rect.width;
+    let newHeight = rect.height;
+    let newLeft = rect.left;
+    let newTop = rect.top;
+    
+    if (activeResizeEdge.includes('w')) {
+      const candidateWidth = rect.width - dx;
+      if (candidateWidth >= 140) {
+        newWidth = candidateWidth;
+        newLeft = rect.left + dx;
+      }
+    } else if (activeResizeEdge.includes('e')) {
+      newWidth = Math.max(140, rect.width + dx);
+    }
+    
+    if (activeResizeEdge.includes('n')) {
+      const candidateHeight = rect.height - dy;
+      if (candidateHeight >= 100) {
+        newHeight = candidateHeight;
+        newTop = rect.top + dy;
+      }
+    } else if (activeResizeEdge.includes('s')) {
+      newHeight = Math.max(100, rect.height + dy);
+    }
+    
+    controls.style.left = newLeft + 'px';
+    controls.style.right = 'auto';
+    controls.style.top = Math.max(0, newTop) + 'px';
+    controls.style.width = newWidth + 'px';
+    controls.style.height = newHeight + 'px';
+    
+    doResize();
+  }
+  lastMX=e.clientX; lastMY=e.clientY;
+});
+document.addEventListener('mouseup',()=>{ isDrag=false;isPanning=false;isRotating=false;isResizingPanel=false;isResizingBLPanel=false;activeResizeEdge=null; });
+
+container.addEventListener('wheel',e=>{
+  e.preventDefault();
+  const zs=el('cie-zoom');
+  const v=Math.max(-30,Math.min(30,parseFloat(zs.value)-e.deltaY*0.005));
+  zs.value=v; el('cie-zoomNum').value=fmtNum(v,false);
+},{passive:false});
+
+let lastTouchDist=null;
+container.addEventListener('touchstart',e=>{
+  if(e.touches.length===1){isPanning=true;lastMX=e.touches[0].clientX;lastMY=e.touches[0].clientY;}
+  else if(e.touches.length===2) lastTouchDist=Math.hypot(e.touches[1].clientX-e.touches[0].clientX,e.touches[1].clientY-e.touches[0].clientY);
+},{passive:true});
+container.addEventListener('touchmove',e=>{
+  if(e.touches.length===1&&isPanning){panX+=e.touches[0].clientX-lastMX;panY+=e.touches[0].clientY-lastMY;lastMX=e.touches[0].clientX;lastMY=e.touches[0].clientY;}
+  else if(e.touches.length===2&&lastTouchDist!==null){
+    const d=Math.hypot(e.touches[1].clientX-e.touches[0].clientX,e.touches[1].clientY-e.touches[0].clientY);
+    const zs=el('cie-zoom');zs.value=Math.max(-30,Math.min(30,parseFloat(zs.value)+(d-lastTouchDist)*0.02));lastTouchDist=d;
+  }
+},{passive:true});
+container.addEventListener('touchend',()=>{isPanning=false;lastTouchDist=null;},{passive:true});
+
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey || e.metaKey) && e.code==='KeyZ'){
+    e.preventDefault();
+    undoSliderChange();
+    return;
+  }
+  if((e.ctrlKey || e.metaKey) && e.code==='KeyY'){
+    e.preventDefault();
+    redoSliderChange();
+    return;
+  }
+  if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+  if(e.code==='Space'){e.preventDefault();el('cie-pauseBtn').click();}
+  if(e.code==='KeyR') el('cie-randBtn').click();
+  if(e.code==='KeyF') el('cie-fsBtn').click();
+  if(e.code==='KeyH'){controls.style.display==='none'?el('cie-showBtn').click():el('cie-hideBtn').click();}
+  if(e.code==='KeyM') el('cie-minBtn').click();
+  if(e.code==='ArrowUp'  ){const zs=el('cie-zoom');zs.value=Math.min(30,parseFloat(zs.value)+0.2);el('cie-zoomNum').value=fmtNum(parseFloat(zs.value),false);}
+  if(e.code==='ArrowDown'){const zs=el('cie-zoom');zs.value=Math.max(-30,parseFloat(zs.value)-0.2);el('cie-zoomNum').value=fmtNum(parseFloat(zs.value),false);}
+  if(e.code==='KeyW'){panY -= 10;}
+  if(e.code==='KeyS'){panY += 10;}
+  if(e.code==='KeyA'){panX -= 10;}
+  if(e.code==='KeyD'){panX += 10;}
+  if(e.code==='KeyQ'){manualRot -= 0.05;}
+  if(e.code==='KeyE'){manualRot += 0.05;}
+});
+
+el('cie-fsBtn').addEventListener('click',()=>{ document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen?.(); });
+document.querySelectorAll('#cie-helpBtn, #cie-helpBtn-options').forEach(b => {
+  b.addEventListener('click',()=>el('cie-help-overlay').classList.add('visible'));
+});
+el('cie-help-close').addEventListener('click',()=>el('cie-help-overlay').classList.remove('visible'));
+el('cie-help-overlay').addEventListener('click',e=>{ if(e.target===el('cie-help-overlay')) e.target.classList.remove('visible'); });
+
+// ── MINIMIZE ── (no lastBGKey reset)
+el('cie-minBtn').addEventListener('click',()=>{
+  const isMin=contentEl.style.display==='none';
+  contentEl.style.display=isMin?'':'none';
+  actionBar.style.display=isMin?'':'none';
+  tabsEl.style.display=isMin?'':'none';
+  if(chk('opt-miniViz')) miniViz.style.display=isMin?'block':'none';
+  else miniViz.style.display='none';
+  el('cie-minBtn').textContent=isMin?'_':'□';
+  // Use rAF to let layout settle before resizing canvas
+  requestAnimationFrame(doResize);
+});
+
+// ── DOCK ──
+el('cie-dockBtn').addEventListener('click',()=>{
+  isDocked=!isDocked;
+  if(isDocked){
+    // Save current floating styles before docking
+    floatTop = controls.style.top || '0';
+    floatLeft = controls.style.left || 'auto';
+    floatRight = controls.style.right || '0';
+    floatWidth = controls.style.width || '260px';
+    floatHeight = controls.style.height || '';
+
+    controls.classList.add('docked');
+    mainArea.appendChild(controls);
+    controls.style.cssText='';
+    controls.style.width=dockWidth+'px';
+    el('cie-dockBtn').title='Float panel';
+    el('cie-dockBtn').innerHTML='<span style="font-size:10px;color:#888">⇤</span>';
+    contentEl.style.display='';actionBar.style.display='';tabsEl.style.display='';
+    if(chk('opt-miniViz')) miniViz.style.display='block';
+    el('cie-minBtn').textContent='_';
+  } else {
+    controls.classList.remove('docked');
+    document.body.appendChild(controls);
+    controls.style.position='absolute';
+    controls.style.top=floatTop;
+    controls.style.left=floatLeft;
+    controls.style.right=floatRight;
+    controls.style.height=floatHeight;
+    controls.style.width=floatWidth;
+    el('cie-dockBtn').title='Dock to right';
+    el('cie-dockBtn').innerHTML='<span class="icon-dock-rect" style="transform:rotate(-90deg);display:inline-block"></span>';
+  }
+  requestAnimationFrame(doResize);
+});
+
+el('cie-hideBtn').addEventListener('click',()=>{ controls.style.display='none'; el('cie-showBtn').style.display='block'; });
+el('cie-showBtn').addEventListener('click',()=>{ controls.style.display='flex'; el('cie-showBtn').style.display='none'; });
+el('opt-miniViz').addEventListener('change',()=>{ miniViz.style.display=chk('opt-miniViz')?'block':'none'; requestAnimationFrame(doResize); });
+el('opt-fps').addEventListener('change',()=>{ fpsEl.style.display=chk('opt-fps')?'block':'none'; });
+
+// Recenter
+el('cie-recenterBtn').addEventListener('click',()=>{ panX=0; panY=0; });
+
+// ── PRESETS ──
+const PRESETS_DEFAULT=[
+  {name:'🌀 Vortex', s:{depth:9,mode:'kaleid',theme:'spectral',cycleMode:'cycle',cSpeed:2,anim:true,pSpeed:3,pDepth:0.18,rotate:true,rSpeed:1.5,trail:true,tDens:0.08,glow:true,gRad:12,thick:1.2,op:0.9,mirror:false,bg:'#000000',bg2:'#000000',bgFade:0,invert:false,multi:true,msSpeed:1,zoom:0,phase:0.5,sync:false,converge:0}},
+  {name:'💥 Nova',   s:{depth:7,mode:'4plus',theme:'orange',cycleMode:'off',anim:true,pSpeed:5,pDepth:0.35,rotate:true,rSpeed:0.8,trail:true,tDens:0.05,glow:true,gRad:25,thick:2,op:0.8,mirror:true,bg:'#000000',bg2:'#000000',bgFade:0,invert:false,multi:false,zoom:0,phase:1,sync:true,converge:0}},
+  {name:'❄️ Crystal',s:{depth:10,mode:'kaleid12',theme:'cyan',cycleMode:'off',anim:true,pSpeed:1,pDepth:0.07,rotate:true,rSpeed:0.3,trail:false,tDens:0.1,glow:true,gRad:8,thick:0.7,op:1,mirror:false,bg:'#000020',bg2:'#000020',bgFade:0,invert:false,multi:false,zoom:0,phase:0.3,sync:false,converge:0}},
+  {name:'🌿 Forest', s:{depth:8,mode:'fractal',theme:'green',cycleMode:'off',anim:true,pSpeed:1.5,pDepth:0.1,rotate:false,rSpeed:0,trail:true,tDens:0.15,glow:true,gRad:6,thick:1.5,op:0.9,mirror:false,bg:'#001500',bg2:'#001500',bgFade:0,invert:false,multi:false,zoom:0,phase:0.2,sync:false,converge:0}},
+  {name:'👾 Retro',  s:{depth:6,mode:'lissajous',theme:'green',cycleMode:'off',anim:true,pSpeed:2,pDepth:0.12,rotate:false,rSpeed:0,trail:true,tDens:0.12,glow:true,gRad:10,thick:1.5,op:1,mirror:false,bg:'#000000',bg2:'#000000',bgFade:0,invert:false,multi:false,zoom:0,phase:0.8,sync:false,converge:0}},
+  {name:'🔮 Dark',   s:{depth:9,mode:'4',theme:'purple',cycleMode:'off',anim:true,pSpeed:2,pDepth:0.2,rotate:true,rSpeed:0.5,trail:true,tDens:0.07,glow:true,gRad:20,thick:1,op:0.85,mirror:true,bg:'#050005',bg2:'#050005',bgFade:0,invert:false,multi:false,zoom:0,phase:0.6,sync:false,converge:0}},
+  {name:'🌀 Spiral', s:{depth:8,mode:'spiral',theme:'spectral',cycleMode:'cycle',cSpeed:1,anim:true,pSpeed:2,pDepth:0.15,rotate:true,rSpeed:0.6,trail:true,tDens:0.09,glow:true,gRad:10,thick:1.5,op:1,mirror:false,bg:'#000000',bg2:'#000000',bgFade:0,invert:false,multi:true,msSpeed:2,zoom:0,phase:0.4,sync:false,converge:0}},
+];
+let PRESETS=JSON.parse(localStorage.getItem('cie_presets')||'null')||PRESETS_DEFAULT.map(p=>({...p,s:{...p.s}}));
+function savePresetsToStorage(){ localStorage.setItem('cie_presets',JSON.stringify(PRESETS)); }
+
+function renderPresets(){
+  const bar=el('cie-presets'); bar.innerHTML='';
+  PRESETS.forEach((p,i)=>{
+    const wrap=document.createElement('span'); wrap.style.cssText='display:inline-flex;align-items:center';
+    const chip=document.createElement('button'); chip.className='cie-preset-chip'; chip.textContent=p.name;
+    chip.addEventListener('click',()=>loadSettings(p.s));
+    const eb=document.createElement('button');
+    eb.style.cssText='background:none;border:none;color:#333;cursor:pointer;font-size:9px;padding:0 1px;line-height:1';
+    eb.textContent='✏'; eb.title='Edit preset';
+    eb.addEventListener('click',e=>{ e.stopPropagation(); openPresetEdit(i); });
+    wrap.appendChild(chip); wrap.appendChild(eb); bar.appendChild(wrap);
+  });
+}
+function openPresetEdit(i){
+  editingPresetIdx=i;
+  el('cie-preset-edit-panel').classList.add('open');
+  el('cie-preset-edit-title').textContent='Editing: '+PRESETS[i].name;
+  el('cie-preset-edit-name').value=PRESETS[i].name;
+}
+el('cie-preset-close-edit').addEventListener('click',()=>{ el('cie-preset-edit-panel').classList.remove('open'); editingPresetIdx=-1; });
+el('cie-preset-save-params').addEventListener('click',()=>{
+  if(editingPresetIdx<0) return;
+  PRESETS[editingPresetIdx].s=getSettings();
+  savePresetsToStorage();
+  el('cie-preset-edit-title').textContent='✔ Saved: '+PRESETS[editingPresetIdx].name;
+});
+el('cie-preset-rename').addEventListener('click',()=>{
+  if(editingPresetIdx<0) return;
+  const n=el('cie-preset-edit-name').value.trim(); if(!n) return;
+  PRESETS[editingPresetIdx].name=n; el('cie-preset-edit-title').textContent='Editing: '+n;
+  savePresetsToStorage(); renderPresets();
+});
+renderPresets();
+
+// ── DESIGNS ──
+function renderConfigs(){
+  const raw=JSON.parse(localStorage.getItem('cie_designs')||'[]');
+  if(el('cie-sort').value==='name') raw.sort((a,b)=>a.name.localeCompare(b.name));
+  else raw.sort((a,b)=>b.date-a.date);
+  const list=el('cie-configList'); list.innerHTML='';
+  raw.forEach((d,i)=>{
+    const row=document.createElement('div'); row.className='config-item';
+    const ns=document.createElement('span'); ns.className='config-name'; ns.textContent=d.name; ns.title='Load';
+    ns.addEventListener('click',()=>{ const all=JSON.parse(localStorage.getItem('cie_designs')||'[]'); if(all[i]) loadSettings(all[i].data); });
+    const eb=document.createElement('button'); eb.className='config-edit-btn'; eb.textContent='✏'; eb.title='Rename';
+    eb.addEventListener('click',()=>startEdit(i,ns));
+    const db=document.createElement('button'); db.className='config-edit-btn'; db.textContent='🗑'; db.title='Delete'; db.style.color='#774444';
+    db.addEventListener('click',()=>{ const all=JSON.parse(localStorage.getItem('cie_designs')||'[]'); if(!confirm('Delete "'+all[i].name+'"?')) return; all.splice(i,1); localStorage.setItem('cie_designs',JSON.stringify(all)); renderConfigs(); });
+    row.appendChild(ns); row.appendChild(eb); row.appendChild(db); list.appendChild(row);
+  });
+}
+function startEdit(i,ns){
+  const designs=JSON.parse(localStorage.getItem('cie_designs')||'[]');
+  const inp=document.createElement('input'); inp.type='text'; inp.className='config-name-edit'; inp.value=designs[i].name;
+  ns.replaceWith(inp); inp.focus(); inp.select();
+  const commit=()=>{ designs[i].name=inp.value.trim()||designs[i].name; localStorage.setItem('cie_designs',JSON.stringify(designs)); renderConfigs(); };
+  inp.addEventListener('blur',commit);
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter') inp.blur(); if(e.key==='Escape') renderConfigs(); });
+}
+el('cie-sort').addEventListener('change',renderConfigs);
+el('cie-saveBtn').addEventListener('click',()=>{
+  const designs=JSON.parse(localStorage.getItem('cie_designs')||'[]');
+  const now=new Date(),ds=now.toLocaleDateString()+' '+now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  designs.push({name:el('cie-configName').value.trim()||'Design '+ds,date:Date.now(),data:getSettings()});
+  localStorage.setItem('cie_designs',JSON.stringify(designs)); renderConfigs(); el('cie-configName').value='';
+});
+el('cie-inBtn').addEventListener('click',()=>{
+  try{ loadSettings(JSON.parse(atob(el('cie-configName').value.trim()))); el('cie-configName').value=''; }
+  catch(e){ alert('Invalid share code'); }
+});
+el('cie-shareBtn').addEventListener('click',()=>{
+  const code=btoa(JSON.stringify(getSettings()));
+  el('cie-configName').value=code;
+  document.querySelectorAll('.cie-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.cie-tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelector('.cie-tab[data-tab="designs"]').classList.add('active');
+  document.querySelector('.cie-tab-panel[data-panel="designs"]').classList.add('active');
+  el('cie-configName').select();
+  navigator.clipboard?.writeText(code).catch(()=>{});
+});
+renderConfigs();
+
+// ── RESET / RANDOM ──
+const DEFAULTS={depth:8,mode:'2h',theme:'white',cycleMode:'off',cSpeed:1,bgFade:0,custom:'#ffffff',bg:'#000000',bg2:'#ffffff',invert:false,infiniteZoom:false,anim:false,pSpeed:1,pDepth:0.05,phase:0,rSpeed:0,zoom:0,sync:false,glow:false,gRad:8,trail:false,tDens:0.10,thick:1,op:1,pps:{},rotate:false,blend:'source-over',wobble:false,wobbleAmp:0.1,wobbleFreq:1,distort:false,distortAmp:10,distortFreq:3,chroma:false,chromaAmt:4,scanlines:false,scanlinesOp:0.3,scanlinesSp:4,vignette:false,vignetteAmt:0.5,echo:false,echoAmt:0.7,multi:false,smoothFade:true,msSpeed:1,scaleWidth:false,converge:0,modeMode:'off',modeSpeed:1,timeline:0,motionBlur:false,motionBlurAmt:0.5,motionBlurSteps:5};
+el('cie-resetBtn').addEventListener('click',()=>{ pTime=0;rTime=0;panX=0;panY=0;manualRot=0;manualRotY=0; transformHistory=[]; loadSettings(DEFAULTS); });
+el('cie-randBtn').addEventListener('click',()=>{
+  transformHistory=[];
+  const modes=['1h','1v','2h','2v','2h_inv','2v_inv','4plus','4','kaleid','kaleid12','spiral','fractal','lissajous','3d4plus','3d2h'];
+  const m=modes[Math.floor(Math.random()*modes.length)];
+  el('cie-mode').value=m;
+  const d=(m==='4'||m==='3d4plus')?Math.floor(Math.random()*6)+1:(m==='3d2h'?Math.floor(Math.random()*8)+1:Math.floor(Math.random()*10)+1);
+  el('cie-depth').value=d; el('cie-depthNum').value=d;
+  prevTheme=currTheme; currTheme=themeKeys[Math.floor(Math.random()*(themeKeys.length-1))]; themeS.value=currTheme; themeAlpha=0;
+  el('cie-blend').value=['source-over','lighter','screen','overlay','difference','exclusion'][Math.floor(Math.random()*6)];
+  el('cie-wobble').checked=Math.random()>.5; el('cie-trail').checked=Math.random()>.4;
+  el('cie-animate').checked=Math.random()>.2; el('cie-rotateToggle').checked=Math.random()>.4;
+  if(chk('cie-rotateToggle')){ el('cie-rSpeed').value=(Math.random()*4-2).toFixed(2); el('cie-rSpeedNum').value=el('cie-rSpeed').value; }
+  el('cie-glow').checked=Math.random()>.3;
+  const cm=['off','cycle','random'][Math.floor(Math.random()*3)];
+  document.querySelector('input[name="cycleMode"][value="'+cm+'"]').checked=true; updateCycleUI();
+  enforceSafety();
+});
+
+el('cie-pauseBtn').addEventListener('click',()=>{ isPaused=!isPaused; el('cie-pauseBtn').textContent=isPaused?'▶':'⏸'; });
+
+el('cie-expBtn').addEventListener('click',()=>{
+  canvas.toBlob(blob=>{
+    if(!blob){ alert('Export failed'); return; }
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download='infinity_'+Date.now()+'.png';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),5000);
+  },'image/png');
+});
+
+el('cie-recBtn').addEventListener('click',()=>{
+  if(mediaRecorder&&mediaRecorder.state==='recording'){mediaRecorder.stop();return;}
+  recChunks=[];
+  try{
+    const stream=canvas.captureStream(60);
+    mediaRecorder=new MediaRecorder(stream,{mimeType:'video/webm'});
+    mediaRecorder.ondataavailable=e=>recChunks.push(e.data);
+    mediaRecorder.onstop=()=>{
+      const blob=new Blob(recChunks,{type:'video/webm'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download='infinity_'+Date.now()+'.webm';
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(url),10000);
+      el('cie-recBtn').classList.remove('recording');el('cie-recTimer').style.display='none';
+      const ind=document.getElementById('cie-recInd');if(ind)ind.remove();
+    };
+    mediaRecorder.start();recStart=Date.now();
+    el('cie-recBtn').classList.add('recording');el('cie-recTimer').style.display='inline';
+    const ind=document.createElement('span');ind.id='cie-recInd';ind.style.cssText='position:absolute;top:0;left:0;font-size:6px;animation:blink 1s infinite';ind.textContent='🔴';
+    el('cie-recBtn').appendChild(ind);
+    setInterval(()=>{
+      if(!mediaRecorder||mediaRecorder.state!=='recording') return;
+      const s=Math.floor((Date.now()-recStart)/1000);
+      el('cie-recTimer').textContent=Math.floor(s/60)+':'+(s%60).toString().padStart(2,'0');
+    },500);
+  }catch(e){alert('Recording not supported: '+e.message);}
+});
+
+// ── GET/LOAD SETTINGS ──
+function getSettings(){
+  const s={pps:{...pps},ppLimits:{...ppLimits}};
+  Object.keys(uiMap).forEach(k=>{ const e2=el(uiMap[k]); if(e2) s[k]=e2.value; });
+  s.mode=el('cie-mode').value; s.theme=currTheme; s.cycleMode=getCycleMode(); s.modeMode=getModeMode();
+  s.multi=chk('cie-multiStrobe'); s.smoothFade=chk('cie-smoothFade'); s.custom=el('cie-customColor').value;
+  s.bg=el('cie-bgColor').value; s.bg2=el('cie-bgColor2').value;
+  s.infiniteZoom=chk('cie-infiniteZoom'); s.anim=chk('cie-animate'); s.sync=chk('cie-sync');
+  s.glow=chk('cie-glow'); s.trail=chk('cie-trail');
+  s.rotate=chk('cie-rotateToggle'); s.blend=el('cie-blend').value;
+  s.wobble=chk('cie-wobble'); s.distort=chk('cie-distort'); s.chroma=chk('cie-chroma');
+  s.scanlines=chk('cie-scanlines'); s.vignette=chk('cie-vignette'); s.echo=chk('cie-echo');
+  s.scaleWidth=chk('cie-scaleWidth');
+  s.motionBlur=chk('cie-motionBlur');
+  s.speedScales = {...speedScales};
+  return s;
+}
+function loadSettings(s){
+  transformHistory = [];
+  lastBGKey = '';
+  Object.keys(uiMap).forEach(k=>{
+    if(s[k]===undefined) return;
+    const e2=el(uiMap[k]); if(!e2) return;
+    const isInt=(k==='depth' || k==='motionBlurSteps');
+    let v = s[k];
+    if (k === 'invert') {
+      if (v === true) v = 1;
+      else if (v === false) v = 0;
+    }
+    e2.value=v;
+    const num=el(uiMap[k]+'Num'); if(num) num.value=fmtNum(parseFloat(v),isInt);
+  });
+  if(s.pps){ Object.keys(pps).forEach(k=>{pps[k]=false;const b=document.querySelector('.cie-ping-pong[data-key="'+k+'"]');if(b)b.classList.remove('active');}); Object.keys(s.pps).forEach(k=>{pps[k]=s.pps[k];const b=document.querySelector('.cie-ping-pong[data-key="'+k+'"]');if(b)b.classList.toggle('active',!!pps[k]);ppd[k]=1;}); }
+  if(s.ppLimits){ Object.assign(ppLimits,s.ppLimits); }
+  
+  // Speed Scales initialization
+  Object.keys(speedScales).forEach(k => delete speedScales[k]);
+  if (s.speedScales) {
+    Object.assign(speedScales, s.speedScales);
+  } else if (s.logSpeeds) {
+    Object.keys(s.logSpeeds).forEach(k => {
+      speedScales[k] = s.logSpeeds[k] ? 'logarithmic' : 'linear';
+    });
+  }
+  document.querySelectorAll('.cie-speed-select').forEach(sel => {
+    const k = sel.dataset.key;
+    const val = speedScales[k] || 'linear';
+    sel.value = val;
+    const container = sel.closest('.cie-speed-scale-container');
+    if (container) {
+      container.title = 'Speed Scale: ' + sel.options[sel.selectedIndex].text;
+      const symbol = container.querySelector('.cie-speed-symbol');
+      if (symbol) {
+        symbol.style.color = (val === 'linear') ? '#888' : 'yellow';
+      }
+    }
+  });
+
+  el('cie-mode').value=s.mode||'2h';
+  prevTheme=currTheme=s.theme||'white'; themeS.value=currTheme; themeAlpha=1;
+  const cm=s.cycleMode||(s.cycle?'cycle':'off');
+  const rb=document.querySelector('input[name="cycleMode"][value="'+cm+'"]');
+  if(rb)rb.checked=true; else el('cie-cycleOff').checked=true;
+  updateCycleUI();
+  const mm=s.modeMode||'off';
+  const mrb=document.querySelector('input[name="modeMode"][value="'+mm+'"]');
+  if(mrb)mrb.checked=true; else el('cie-modeOff').checked=true;
+  updateModeUI();
+  el('cie-multiStrobe').checked=!!s.multi;
+  el('cie-smoothFade').checked=s.smoothFade!==undefined?!!s.smoothFade:true;
+  el('cie-customColor').value=s.custom||'#ffffff';
+  el('cie-bgColor').value=s.bg||'#000000'; el('cie-bgColor2').value=s.bg2||'#ffffff';
+  el('cie-infiniteZoom').checked=!!s.infiniteZoom; el('cie-animate').checked=!!s.anim;
+  el('cie-sync').checked=!!s.sync; el('cie-glow').checked=!!s.glow;
+  el('cie-trail').checked=!!s.trail;
+  el('cie-rotateToggle').checked=!!s.rotate;
+  if(s.blend) el('cie-blend').value=s.blend;
+  el('cie-wobble').checked=!!s.wobble; el('cie-distort').checked=!!s.distort;
+  el('cie-chroma').checked=!!s.chroma; el('cie-scanlines').checked=!!s.scanlines;
+  el('cie-vignette').checked=!!s.vignette; el('cie-echo').checked=!!s.echo;
+  el('cie-scaleWidth').checked=!!s.scaleWidth;
+  el('cie-motionBlur').checked=!!s.motionBlur;
+  updateDistortUI();
+  enforceSafety();
+  pushSliderState();
+}
+
+// ── COLOR UTILS ──
+function getRGB(h){const r=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);return r?{r:parseInt(r[1],16),g:parseInt(r[2],16),b:parseInt(r[3],16)}:{r:0,g:0,b:0};}
+function getThemeRGB(d,md,t){
+  const map={white:{r:255,g:255,b:255},blue:{r:51,g:102,b:255},black:{r:0,g:0,b:0},cyan:{r:0,g:255,b:255},green:{r:51,g:255,b:51},orange:{r:255,g:153,b:0},purple:{r:204,g:51,b:255},red:{r:255,g:51,b:51},yellow:{r:255,g:255,b:51},gold:{r:255,g:215,b:0},pink:{r:255,g:105,b:180},teal:{r:0,g:206,b:209},custom:getRGB(el('cie-customColor').value)};
+  if(map[t]) return map[t];
+  const hue=(d/md)*360,h2=hue/60,c=255,x=c*(1-Math.abs(h2%2-1));
+  let r=0,g=0,b=0;if(h2<1){r=c;g=x;}else if(h2<2){r=x;g=c;}else if(h2<3){g=c;b=x;}else if(h2<4){g=x;b=c;}else if(h2<5){r=x;b=c;}else{r=c;b=x;}
+  return{r,g,b};
+}
+function getColor(d,md,al,opacity,mult){
+  let pt=prevTheme,at=currTheme;
+  if(mult&&getCycleMode()!=='off'){
+    const cnt=themeKeys.length-1;
+    const spd=val('cie-msSpeed');
+    const valOffset=d+(stTimer*spd*0.05);
+    
+    if (chk('cie-smoothFade')) {
+      const idx1 = Math.floor(valOffset) % cnt;
+      const idx2 = (Math.floor(valOffset) + 1) % cnt;
+      const fract = valOffset - Math.floor(valOffset);
+      
+      const pt1=themeKeys[(themeKeys.indexOf(prevTheme)+idx1)%cnt];
+      const at1=themeKeys[(themeKeys.indexOf(currTheme)+idx1)%cnt];
+      const pt2=themeKeys[(themeKeys.indexOf(prevTheme)+idx2)%cnt];
+      const at2=themeKeys[(themeKeys.indexOf(currTheme)+idx2)%cnt];
+      
+      const r1a=getThemeRGB(d,md,pt1), r2a=getThemeRGB(d,md,at1);
+      const r1b=getThemeRGB(d,md,pt2), r2b=getThemeRGB(d,md,at2);
+      
+      const mixedR1 = {
+        r: r1a.r + (r2a.r - r1a.r) * al,
+        g: r1a.g + (r2a.g - r1a.g) * al,
+        b: r1a.b + (r2a.b - r1a.b) * al
+      };
+      const mixedR2 = {
+        r: r1b.r + (r2b.r - r1b.r) * al,
+        g: r1b.g + (r2b.g - r1b.g) * al,
+        b: r1b.b + (r2b.b - r1b.b) * al
+      };
+      
+      const finalR = mixedR1.r + (mixedR2.r - mixedR1.r) * fract;
+      const finalG = mixedR1.g + (mixedR2.g - mixedR1.g) * fract;
+      const finalB = mixedR1.b + (mixedR2.b - mixedR1.b) * fract;
+      
+      return 'rgba('+Math.round(finalR)+','+Math.round(finalG)+','+Math.round(finalB)+','+opacity+')';
+    } else {
+      const off=Math.floor(valOffset)%cnt;
+      pt=themeKeys[(themeKeys.indexOf(prevTheme)+off)%cnt];
+      at=themeKeys[(themeKeys.indexOf(currTheme)+off)%cnt];
+    }
+  }
+  const r1=getThemeRGB(d,md,pt),r2=getThemeRGB(d,md,at);
+  return'rgba('+Math.round(r1.r+(r2.r-r1.r)*al)+','+Math.round(r1.g+(r2.g-r1.g)*al)+','+Math.round(r1.b+(r2.b-r1.b)*al)+','+opacity+')';
+}
+
+// ── DRAW MODES ──
+function drawRec(x,y,rad,d,md,o,levelShift=0){
+  const cv=o.converge||0;
+  ctx.save();
+  if(chk('cie-rotDepths')){
+    ctx.rotate(val('cie-rotDepthFactor') * rTime * 0.5);
+  }
+  const cx=x*(1-cv), cy=y*(1-cv);
+  let s=1;
+  if(o.pulse) s=1+Math.sin((o.sync?rTime:pTime)+(d*o.phase))*o.pDepth;
+  if(o.wobble) s*=1+o.wobbleAmp*Math.sin(pTime*o.wobbleFreq+d*0.7)*Math.cos(pTime*o.wobbleFreq*0.6+d*1.3);
+  const r=rad*s; if(r<0.05) { ctx.restore(); return; }
+  
+  if (chk('cie-infiniteZoom')) {
+    const maxDist = Math.max(canvas.width, canvas.height) / 2;
+    const screenX = cx * currZFact;
+    const screenY = cy * currZFact;
+    const screenR = r * currZFact;
+    const dFromCenter = Math.sqrt(screenX * screenX + screenY * screenY);
+    if (dFromCenter - screenR > maxDist) {
+      ctx.restore();
+      return;
+    }
+  }
+
+  let ox=0,oy=0;
+  if(o.distort){ox=o.distortAmp*Math.sin(pTime*o.distortFreq+cy*0.03+d);oy=o.distortAmp*Math.cos(pTime*o.distortFreq+cx*0.03+d);}
+  
+  if (d >= Math.max(0, levelShift - 2)) {
+    const col=getColor(Math.max(0, d - levelShift),md,themeAlpha,o.op,o.mult);
+    ctx.strokeStyle=col; ctx.lineWidth=o.thick;
+    ctx.shadowBlur=(o.glow&&Math.max(0, d - levelShift)<4)?o.gRad:0; ctx.shadowColor=col;
+    ctx.beginPath();ctx.arc(cx+ox,cy+oy,r,0,Math.PI*2);ctx.stroke();
+  }
+  
+  if(d<md+levelShift){
+    const nr=rad/2;
+    if(o.h){drawRec(x-nr,y,nr,d+1,md,o,levelShift);drawRec(x+nr,y,nr,d+1,md,o,levelShift);}
+    if(o.v){drawRec(x,y-nr,nr,d+1,md,o,levelShift);drawRec(x,y+nr,nr,d+1,md,o,levelShift);}
+  }
+  ctx.restore();
+}
+
+function drawOneWayNested(x, y, rad, d, md, o, axis, invert, levelShift=0) {
+  const cv=o.converge||0;
+  ctx.save();
+  if(chk('cie-rotDepths')){
+    ctx.rotate(val('cie-rotDepthFactor') * rTime * 0.5);
+  }
+  const cx=x*(1-cv), cy=y*(1-cv);
+  let s=1;
+  if(o.pulse) s=1+Math.sin((o.sync?rTime:pTime)+(d*o.phase))*o.pDepth;
+  if(o.wobble) s*=1+o.wobbleAmp*Math.sin(pTime*o.wobbleFreq+d*0.7)*Math.cos(pTime*o.wobbleFreq*0.6+d*1.3);
+  const r=rad*s; if(r<0.05) { ctx.restore(); return; }
+  
+  if (chk('cie-infiniteZoom')) {
+    const maxDist = Math.max(canvas.width, canvas.height) / 2;
+    const screenX = cx * currZFact;
+    const screenY = cy * currZFact;
+    const screenR = r * currZFact;
+    const dFromCenter = Math.sqrt(screenX * screenX + screenY * screenY);
+    if (dFromCenter - screenR > maxDist) {
+      ctx.restore();
+      return;
+    }
+  }
+
+  let ox=0,oy=0;
+  if(o.distort){ox=o.distortAmp*Math.sin(pTime*o.distortFreq+cy*0.03+d);oy=o.distortAmp*Math.cos(pTime*o.distortFreq+cx*0.03+d);}
+  
+  if (d >= Math.max(0, levelShift - 2)) {
+    const col=getColor(Math.max(0, d - levelShift),md,themeAlpha,o.op,o.mult);
+    ctx.strokeStyle=col; ctx.lineWidth=o.thick;
+    ctx.shadowBlur=(o.glow&&Math.max(0, d - levelShift)<4)?o.gRad:0; ctx.shadowColor=col;
+    ctx.beginPath();ctx.arc(cx+ox,cy+oy,r,0,Math.PI*2);ctx.stroke();
+  }
+  
+  if(d<md+levelShift){
+    const nr=rad/2;
+    const shift = invert ? -nr : nr;
+    if (axis === 'h') {
+      drawOneWayNested(x + shift, y, nr, d+1, md, o, 'h', invert, levelShift);
+    } else {
+      drawOneWayNested(x, y + shift, nr, d+1, md, o, 'v', invert, levelShift);
+    }
+  }
+  ctx.restore();
+}
+
+function draw3D4Plus(o, levelShift=0) {
+  const baseR = Math.min(canvas.width, canvas.height) / 2 * 0.85;
+  const md = Math.min(o.md, 6);
+  
+  function drawNode3D(x, y, z, rad, d) {
+    if (d > md + levelShift) return;
+    
+    const cosY = Math.cos(manualRotY);
+    const sinY = Math.sin(manualRotY);
+    const rotY = y * cosY - z * sinY;
+    const rotZ = y * sinY + z * cosY;
+    
+    const perspective = 300 / (300 + rotZ);
+    const px = x * perspective;
+    const py = rotY * perspective;
+    const pr = rad * perspective;
+    
+    let s = 1;
+    if (o.pulse) s = 1 + Math.sin((o.sync ? rTime : pTime) + (d * o.phase)) * o.pDepth;
+    if (o.wobble) s *= 1 + o.wobbleAmp * Math.sin(pTime * o.wobbleFreq + d * 0.7);
+    const r = pr * s;
+    if (r < 0.05) return;
+    
+    if (chk('cie-infiniteZoom')) {
+      const maxDist = Math.max(canvas.width, canvas.height) / 2;
+      const dFromCenter = Math.sqrt(px * px + py * py) * currZFact;
+      const screenR = r * currZFact;
+      if (dFromCenter - screenR > maxDist) {
+        return;
+      }
+    }
+    
+    if (d >= Math.max(0, levelShift - 2)) {
+      const col = getColor(Math.max(0, d - levelShift), md, themeAlpha, o.op, o.mult);
+      ctx.strokeStyle = col;
+      ctx.lineWidth = o.thick * perspective;
+      ctx.shadowBlur = (o.glow && Math.max(0, d - levelShift) < 4) ? o.gRad : 0;
+      ctx.shadowColor = col;
+      
+      ctx.beginPath();
+      ctx.arc(px, py, r, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    
+    if (d < md + levelShift) {
+      const nr = rad / 2;
+      const offset = rad * 0.75;
+      
+      let angle = pTime * 0.4 + d * 0.2;
+      if (chk('cie-rotDepths')) {
+        angle += val('cie-rotDepthFactor') * rTime * 0.5 * d;
+      }
+      const cosA = Math.cos(angle);
+      const sinA = Math.sin(angle);
+      
+      const z1 = z + offset * sinA;
+      const x1 = x - offset * cosA;
+      drawNode3D(x1, y, z1, nr, d + 1);
+      
+      const z2 = z - offset * sinA;
+      const x2 = x + offset * cosA;
+      drawNode3D(x2, y, z2, nr, d + 1);
+      
+      const z3 = z + offset * cosA;
+      const y3 = y - offset * sinA;
+      drawNode3D(x, y3, z3, nr, d + 1);
+      
+      const z4 = z - offset * cosA;
+      const y4 = y + offset * sinA;
+      drawNode3D(x, y4, z4, nr, d + 1);
+    }
+  }
+  
+  drawNode3D(0, 0, 0, baseR, 0);
+}
+
+function draw3D2H(o, levelShift=0) {
+  const baseR = Math.min(canvas.width, canvas.height) / 2 * 0.85;
+  const md = Math.min(o.md, 9);
+  
+  function drawNode3D(x, y, z, rad, d) {
+    if (d > md + levelShift) return;
+    
+    const cosY = Math.cos(manualRotY);
+    const sinY = Math.sin(manualRotY);
+    const rotY = y * cosY - z * sinY;
+    const rotZ = y * sinY + z * cosY;
+    
+    const perspective = 300 / (300 + rotZ);
+    const px = x * perspective;
+    const py = rotY * perspective;
+    const pr = rad * perspective;
+    
+    let s = 1;
+    if (o.pulse) s = 1 + Math.sin((o.sync ? rTime : pTime) + (d * o.phase)) * o.pDepth;
+    if (o.wobble) s *= 1 + o.wobbleAmp * Math.sin(pTime * o.wobbleFreq + d * 0.7);
+    const r = pr * s;
+    if (r < 0.05) return;
+    
+    if (chk('cie-infiniteZoom')) {
+      const maxDist = Math.max(canvas.width, canvas.height) / 2;
+      const dFromCenter = Math.sqrt(px * px + py * py) * currZFact;
+      const screenR = r * currZFact;
+      if (dFromCenter - screenR > maxDist) {
+        return;
+      }
+    }
+    
+    if (d >= Math.max(0, levelShift - 2)) {
+      const col = getColor(Math.max(0, d - levelShift), md, themeAlpha, o.op, o.mult);
+      ctx.strokeStyle = col;
+      ctx.lineWidth = o.thick * perspective;
+      ctx.shadowBlur = (o.glow && Math.max(0, d - levelShift) < 4) ? o.gRad : 0;
+      ctx.shadowColor = col;
+      
+      ctx.beginPath();
+      ctx.arc(px, py, r, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    
+    if (d < md + levelShift) {
+      const nr = rad / 2;
+      const offset = rad * 0.75;
+      
+      let angle = pTime * 0.4 + d * 0.2;
+      if (chk('cie-rotDepths')) {
+        angle += val('cie-rotDepthFactor') * rTime * 0.5 * d;
+      }
+      const cosA = Math.cos(angle);
+      const sinA = Math.sin(angle);
+      
+      const z1 = z + offset * sinA;
+      const x1 = x - offset * cosA;
+      drawNode3D(x1, y, z1, nr, d + 1);
+      
+      const z2 = z - offset * sinA;
+      const x2 = x + offset * cosA;
+      drawNode3D(x2, y, z2, nr, d + 1);
+    }
+  }
+  
+  drawNode3D(0, 0, 0, baseR, 0);
+}
+
+function drawOneWay(baseR,md,o,axis,invert,levelShift=0){
+  drawOneWayNested(0,0,baseR,0,Math.round(md),o,axis,invert,levelShift);
+}
+function drawSpiral(o){
+  const md=o.md,N=Math.round(md)*12+8,baseR=Math.min(canvas.width,canvas.height)/2*0.85;
+  for(let i=0;i<N;i++){
+    const t2=i/N,angle=t2*Math.PI*2*(md+1),r2=baseR*(0.05+0.95*t2);
+    const x=Math.cos(angle+pTime*0.5)*r2,y=Math.sin(angle+pTime*0.5)*r2;
+    const cr=baseR*(0.03+0.15*(1-t2))*(o.pulse?1+Math.sin(pTime+t2*o.phase*Math.PI*4)*o.pDepth:1);
+    const col=getColor(Math.round(t2*md),md,themeAlpha,o.op,o.mult);
+    ctx.strokeStyle=col;ctx.lineWidth=o.thick;ctx.shadowBlur=o.glow?o.gRad:0;ctx.shadowColor=col;
+    ctx.beginPath();ctx.arc(x,y,cr,0,Math.PI*2);ctx.stroke();
+  }
+}
+function drawFractal(o){
+  const baseR=Math.min(canvas.width,canvas.height)/2*0.85;
+  function branch(x,y,angle,len,depth){
+    if(depth<=0||len<1) return;
+    const s=(o.wobble?1+o.wobbleAmp*Math.sin(pTime*o.wobbleFreq+depth):1)*(o.pulse?1+Math.sin(pTime+depth*o.phase)*o.pDepth:1);
+    const col=getColor(o.md-depth,o.md,themeAlpha,o.op,o.mult);
+    ctx.strokeStyle=col;ctx.lineWidth=o.thick;ctx.shadowBlur=(o.glow&&depth>o.md-3)?o.gRad:0;ctx.shadowColor=col;
+    ctx.beginPath();ctx.arc(x,y,len*0.18*s,0,Math.PI*2);ctx.stroke();
+    branch(x+Math.cos(angle-0.4+pTime*0.05)*len,y+Math.sin(angle-0.4+pTime*0.05)*len,angle-0.4,len*0.67,depth-1);
+    branch(x+Math.cos(angle+0.4-pTime*0.05)*len,y+Math.sin(angle+0.4-pTime*0.05)*len,angle+0.4,len*0.67,depth-1);
+  }
+  branch(0,baseR*0.3,-Math.PI/2,baseR*0.32,Math.min(Math.round(o.md),9));
+}
+function drawLissajous(o){
+  const baseR=Math.min(canvas.width,canvas.height)/2*0.85,md=Math.round(o.md);
+  for(let ring=1;ring<=md;ring++){
+    const N=200+ring*30,r2=baseR*(0.2+0.8*ring/md);
+    const cr=baseR*0.04*(o.pulse?1+Math.sin(pTime+ring*o.phase)*o.pDepth:1);
+    const col=getColor(ring,md,themeAlpha,o.op,o.mult);
+    ctx.strokeStyle=col;ctx.lineWidth=o.thick;ctx.shadowBlur=o.glow?o.gRad:0;ctx.shadowColor=col;
+    for(let i=0;i<N;i+=6){const t2=(i/N)*Math.PI*2;ctx.beginPath();ctx.arc(Math.cos(ring*t2+pTime*0.3)*r2,Math.sin((ring+1)*t2+pTime*0.2)*r2,cr,0,Math.PI*2);ctx.stroke();}
+  }
+}
+
+function applyScanlines(w,h,sp,opacity){ctx.save();ctx.globalAlpha=opacity;ctx.globalCompositeOperation='multiply';ctx.fillStyle='#000';for(let y=0;y<h;y+=sp)ctx.fillRect(-w/2,y-h/2,w,1);ctx.restore();}
+function applyVignette(w,h,amt){ctx.save();const g=ctx.createRadialGradient(0,0,h*0.2,0,0,h*0.85);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,'+amt+')');ctx.fillStyle=g;ctx.fillRect(-w/2,-h/2,w,h);ctx.restore();}
+
+function updateMiniViz(r){
+  miniHistory[miniIdx%miniHistory.length]=r/(Math.min(canvas.width,canvas.height)/2*0.85||1);miniIdx++;
+  mvCtx.clearRect(0,0,miniViz.width,miniViz.height);
+  mvCtx.strokeStyle='#ccc';mvCtx.lineWidth=1;mvCtx.beginPath();
+  for(let i=0;i<miniHistory.length;i++){
+    const x=(i/miniHistory.length)*miniViz.width,y=miniViz.height-miniHistory[(miniIdx+i)%miniHistory.length]*miniViz.height*0.9;
+    i===0?mvCtx.moveTo(x,y):mvCtx.lineTo(x,y);
+  }
+  mvCtx.stroke();
+}
+
+const ALL_MODES=['1h','1v','1hi','1vi','2h','2v','2h_inv','2v_inv','4plus','4','kaleid','kaleid12','spiral','fractal','lissajous','3d4plus','3d2h'];
+let modeCycleIdx=0;
+
+// ── MAIN LOOP ──
+function update(){
+  if (chk('opt-fps')) {
+    fpsCnt++;
+    const now=performance.now();
+    if(now-fpsLast>500){
+      fpsEl.textContent=Math.round(fpsCnt*1000/(now-fpsLast))+' fps';
+      fpsCnt=0; fpsLast=now;
+    }
+  }
+
+  if (chk('cie-audioEnable')) {
+    if (!audioCtx) {
+      initAudioAnalyzer();
+    } else if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    
+    if (audioAnalyser && audioDataArray) {
+      audioAnalyser.smoothingTimeConstant = parseFloat(el('cie-audioSmooth').value) || 0.8;
+      audioAnalyser.getByteFrequencyData(audioDataArray);
+      let bassSum = 0, bassCount = 0;
+      let midHighSum = 0, midHighCount = 0;
+      
+      const len = audioDataArray.length;
+      for (let i = 0; i < len; i++) {
+        const val = audioDataArray[i] / 255;
+        if (i < len * 0.15) { // Bass
+          bassSum += val;
+          bassCount++;
+        } else { // Mid/High
+          midHighSum += val;
+          midHighCount++;
+        }
+      }
+      
+      const sens = parseFloat(el('cie-audioSens').value) || 1.5;
+      audioBassVal = (bassCount > 0 ? (bassSum / bassCount) : 0) * sens;
+      audioMidHighVal = (midHighCount > 0 ? (midHighSum / midHighCount) : 0) * sens;
+    }
+  } else {
+    audioBassVal = 0;
+    audioMidHighVal = 0;
+    if (audioCtx && audioCtx.state !== 'suspended') {
+      audioCtx.suspend();
+    }
+  }
+
+  if(!isPaused){
+    runPP();
+    const cm=getCycleMode();
+    if(cm!=='off'){
+      const spd=Math.max(0.01,val('cie-cSpeed'));
+      stTimer+=spd*0.5*val('cie-globalSpeed');
+      if(stTimer>80){
+        stTimer=0; prevTheme=currTheme;
+        if(cm==='random') currTheme=themeKeys[Math.floor(Math.random()*(themeKeys.length-1))];
+        else currTheme=themeKeys[(themeKeys.indexOf(currTheme)+1)%(themeKeys.length-1)];
+        themeS.value=currTheme; themeAlpha=0;
+      }
+    }
+    if(themeAlpha<1) themeAlpha+=0.04;
+    const mm=getModeMode();
+    if(mm!=='off'){
+      const mspd=Math.max(0.01,val('cie-modeSpeed'));
+      modeTimer+=mspd*0.3*val('cie-globalSpeed');
+      if(modeTimer>80){
+        modeTimer=0;
+        if(mm==='random') el('cie-mode').value=ALL_MODES[Math.floor(Math.random()*ALL_MODES.length)];
+        else{ modeCycleIdx=(modeCycleIdx+1)%ALL_MODES.length; el('cie-mode').value=ALL_MODES[modeCycleIdx]; }
+        enforceSafety();
+      }
+    }
+    if(chk('cie-animate') || (chk('cie-audioEnable') && audioBassVal > 0.01)) pTime+=val('cie-pSpeed')*0.02*val('cie-globalSpeed');
+    if(chk('cie-rotateToggle')) rTime+=val('cie-rSpeed')*0.01*val('cie-globalSpeed');
+
+    const timelineEl=el('cie-timeline');
+    if(timelineEl && !isPaused){
+      const tVal=pTime%100;
+      timelineEl.value=tVal;
+      const tNum=el('cie-timelineNum');
+      if(tNum && document.activeElement!==tNum) tNum.value=fmtNum(tVal,false);
+    }
+  }
+
+  const mode=el('cie-mode').value;
+  // Dynamic Title Bar Update (Circular vs Spherical)
+  const is3D = mode.startsWith('3d');
+  const titleText = is3D ? "Spherical Infinity Engine 1.14" : "Circular Infinity Engine 1.14";
+  const docTitle = is3D ? "Spherical Infinity Engine 1.14" : "Circular Infinity Engine 1.14";
+  
+  const hdrTextSpan = document.querySelector('.hdr-text');
+  if (hdrTextSpan && hdrTextSpan.textContent !== titleText) {
+    hdrTextSpan.textContent = titleText;
+  }
+  if (document.title !== docTitle) {
+    document.title = docTitle;
+  }
+  const zoomFactor=Math.pow(2,val('cie-zoom')/2);
+  const effectiveThick=chk('cie-scaleWidth')?val('cie-thick')/zoomFactor:val('cie-thick');
+
+  const isAudio = chk('cie-audioEnable');
+  const o={
+    md:val('cie-depth'),
+    h:(mode==='2h'||mode==='4'||mode==='4plus'), v:(mode==='2v'||mode==='4'||mode==='4plus'),
+    mult:chk('cie-multiStrobe')&&getCycleMode()!=='off',
+    pulse:chk('cie-animate') || (isAudio && audioBassVal > 0.01),
+    pDepth:val('cie-pDepth') + audioBassVal,
+    phase:val('cie-phase'),
+    sync:chk('cie-sync'), glow:chk('cie-glow'), gRad:val('cie-gRad'),
+    trail:chk('cie-trail'), tDens:val('cie-tDens'),
+    thick:effectiveThick, op:val('cie-op'),
+    invert:val('cie-invert'),
+    wobble:chk('cie-wobble') || (isAudio && audioMidHighVal > 0.01),
+    wobbleAmp:val('cie-wobbleAmp') + audioMidHighVal,
+    wobbleFreq:val('cie-wobbleFreq'),
+    distort:chk('cie-distort'), distortAmp:val('cie-distortAmp'), distortFreq:val('cie-distortFreq'),
+    converge:val('cie-converge'),
+  };
+  canvas.style.filter = o.invert > 0 ? `invert(${o.invert * 100}%)` : 'none';
+
+  const rgb1=getRGB(el('cie-bgColor').value),rgb2=getRGB(el('cie-bgColor2').value),t=val('cie-bgFade');
+  const bgRGB={r:Math.round(rgb1.r+(rgb2.r-rgb1.r)*t),g:Math.round(rgb1.g+(rgb2.g-rgb1.g)*t),b:Math.round(rgb1.b+(rgb2.b-rgb1.b)*t)};
+  const bgKey=bgRGB.r+','+bgRGB.g+','+bgRGB.b;
+  if(lastBGKey===''){
+    ctx.fillStyle='rgb('+bgKey+')'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    lastBGKey=bgKey;
+  } else if(bgKey!==lastBGKey){
+    lastBGKey=bgKey;
+  }
+  document.body.style.backgroundColor='rgb('+bgKey+')';
+
+  if(chk('cie-echo') && echoCanvas.width > 0 && echoCanvas.height > 0){ ctx.save();ctx.globalAlpha=Math.min(val('cie-echoAmt'),0.999);ctx.drawImage(echoCanvas,0,0);ctx.restore(); }
+
+  const tgt=o.trail?o.tDens:1; trailAlpha+=(tgt-trailAlpha)*Math.max(0.005,o.trail?0.08:0.4);
+  ctx.fillStyle='rgba('+bgKey+','+trailAlpha+')'; ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // Helper to draw a single state with specified opacity & options
+  const drawSingleState = (state, opacity, o, mode) => {
+    const old_pTime = pTime; const old_rTime = rTime; const old_stTimer = stTimer;
+    const old_themeAlpha = themeAlpha; const old_prevTheme = prevTheme; const old_currTheme = currTheme;
+    
+    pTime = state.pTime;
+    rTime = state.rTime;
+    stTimer = state.stTimer;
+    themeAlpha = state.themeAlpha;
+    prevTheme = state.prevTheme;
+    currTheme = state.currTheme;
+
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    const blendMode=el('cie-blend').value;
+    if(blendMode!=='source-over') ctx.globalCompositeOperation=blendMode;
+
+    const isInfinite = chk('cie-infiniteZoom');
+    let md = isInfinite ? ( (mode==='4'||mode==='3d4plus') ? 6 : (mode==='3d2h' ? 7 : 8) ) : o.md;
+    const finalO = {...o, md: md};
+
+    let levelShift = 0;
+    let zFact = Math.pow(2, state.zoom / 2);
+    if(isInfinite) {
+      levelShift = Math.floor(state.zoom / 2);
+      if(levelShift < 0) levelShift = 0;
+      const zoomFract = state.zoom - levelShift * 2;
+      zFact = Math.pow(2, zoomFract / 2);
+    }
+
+    ctx.translate(canvas.width/2+state.panX, canvas.height/2+state.panY);
+    ctx.scale(zFact, zFact);
+    ctx.rotate(state.rTime+state.manualRot);
+
+    const baseR=Math.min(canvas.width,canvas.height)/2*0.85;
+    if(mode==='spiral') drawSpiral(finalO);
+    else if(mode==='fractal') drawFractal(finalO);
+    else if(mode==='lissajous') drawLissajous(finalO);
+    else if(mode==='3d4plus') draw3D4Plus(finalO, levelShift);
+    else if(mode==='3d2h') draw3D2H(finalO, levelShift);
+    else if(mode==='1h')  drawOneWay(baseR,finalO.md,finalO,'h',false,levelShift);
+    else if(mode==='1v')  drawOneWay(baseR,finalO.md,finalO,'v',false,levelShift);
+    else if(mode==='1hi') drawOneWay(baseR,finalO.md,finalO,'h',true,levelShift);
+    else if(mode==='1vi') drawOneWay(baseR,finalO.md,finalO,'v',true,levelShift);
+    else if(mode==='2h_inv'){ drawOneWay(baseR,finalO.md,finalO,'h',false,levelShift); drawOneWay(baseR,finalO.md,finalO,'h',true,levelShift); }
+    else if(mode==='2v_inv'){ drawOneWay(baseR,finalO.md,finalO,'v',false,levelShift); drawOneWay(baseR,finalO.md,finalO,'v',true,levelShift); }
+    else if(mode==='kaleid'||mode==='kaleid12'){
+      const seg=mode==='kaleid12'?12:8;
+      for(let i=0;i<seg;i++){ctx.save();ctx.rotate((Math.PI*2/seg)*i);if(i%2===1)ctx.scale(1,-1);drawRec(0,0,baseR,0,finalO.md,{...finalO,h:true,v:false},levelShift);ctx.restore();}
+    } else if(mode==='4plus'){
+      drawRec(0,0,baseR,0,finalO.md,{...finalO,h:true,v:false},levelShift);
+      drawRec(0,0,baseR,0,finalO.md,{...finalO,h:false,v:true},levelShift);
+    } else drawRec(0,0,baseR,0,finalO.md,finalO,levelShift);
+
+    if(chk('cie-vignette')) applyVignette(canvas.width,canvas.height,val('cie-vignetteAmt'));
+    if(chk('cie-scanlines')) applyScanlines(canvas.width,canvas.height,parseInt(el('cie-scanlinesSp').value),val('cie-scanlinesOp'));
+    ctx.restore();
+
+    // Restore globals
+    pTime = old_pTime; rTime = old_rTime; stTimer = old_stTimer;
+    themeAlpha = old_themeAlpha; prevTheme = old_prevTheme; currTheme = old_currTheme;
+  };
+
+  // State recording
+  const stateSummary = `${pTime.toFixed(4)},${rTime.toFixed(4)},${panX},${panY},${manualRot.toFixed(4)},${val('cie-zoom')},${themeAlpha.toFixed(2)},${currTheme}`;
+  if (stateSummary !== lastStateSummary) {
+    transformHistory.push({
+      pTime: pTime,
+      rTime: rTime,
+      panX: panX,
+      panY: panY,
+      manualRot: manualRot,
+      zoom: val('cie-zoom'),
+      themeAlpha: themeAlpha,
+      prevTheme: prevTheme,
+      currTheme: currTheme,
+      stTimer: stTimer
+    });
+    if (transformHistory.length > 40) {
+      transformHistory.shift();
+    }
+    lastStateSummary = stateSummary;
+  }
+
+  // Draw past frames for Motion Blur
+  if (chk('cie-motionBlur') && transformHistory.length > 1) {
+    const steps = Math.min(transformHistory.length - 1, Math.round(val('cie-motionBlurSteps')));
+    const blurAmt = val('cie-motionBlurAmt');
+    const startIdx = transformHistory.length - 1 - steps;
+    for (let i = startIdx; i < transformHistory.length - 1; i++) {
+      const state = transformHistory[i];
+      const tIdx = i - startIdx + 1;
+      const totalT = transformHistory.length - 1 - startIdx;
+      const fraction = tIdx / totalT;
+      const opacity = Math.pow(fraction, 1.5) * blurAmt;
+      drawSingleState(state, opacity, o, mode);
+    }
+  }
+
+  // Draw current frame
+  const currentState = {
+    pTime: pTime,
+    rTime: rTime,
+    panX: panX,
+    panY: panY,
+    manualRot: manualRot,
+    zoom: val('cie-zoom'),
+    themeAlpha: themeAlpha,
+    prevTheme: prevTheme,
+    currTheme: currTheme,
+    stTimer: stTimer
+  };
+  drawSingleState(currentState, 1.0, o, mode);
+
+  const baseR=Math.min(canvas.width,canvas.height)/2*0.85;
+
+  if(chk('cie-chroma') && canvas.width > 0 && canvas.height > 0 && offCanvas.width > 0 && offCanvas.height > 0){
+    offCtx.clearRect(0,0,offCanvas.width,offCanvas.height); offCtx.drawImage(canvas,0,0);
+    const amt=val('cie-chromaAmt');
+    ctx.save();ctx.globalCompositeOperation='screen';ctx.globalAlpha=0.18;
+    ctx.drawImage(offCanvas,-amt,0);ctx.drawImage(offCanvas,amt,0);ctx.restore();
+  }
+  if(chk('cie-echo') && canvas.width > 0 && canvas.height > 0 && echoCanvas.width > 0 && echoCanvas.height > 0){ echoCtx.clearRect(0,0,echoCanvas.width,echoCanvas.height); echoCtx.drawImage(canvas,0,0); }
+  if(chk('opt-miniViz')){ updateMiniViz(baseR*(o.pulse?1+Math.sin(pTime)*o.pDepth:1)); }
+
+  requestAnimationFrame(update);
+}
+
+// ── RESIZE ──
+function doResize(){
+  const aw=container.clientWidth||window.innerWidth;
+  const ah=container.clientHeight||window.innerHeight;
+  if(canvas.width === aw && canvas.height === ah) return;
+
+  // Save current canvases contents before resize to prevent blanking
+  const tempCanvas = document.createElement('canvas');
+  tempCanvas.width = canvas.width;
+  tempCanvas.height = canvas.height;
+  const tempCtx = tempCanvas.getContext('2d');
+  if(tempCtx && canvas.width > 0 && canvas.height > 0 && tempCanvas.width > 0 && tempCanvas.height > 0) {
+    tempCtx.drawImage(canvas, 0, 0);
+  }
+
+  const tempEchoCanvas = document.createElement('canvas');
+  tempEchoCanvas.width = echoCanvas.width;
+  tempEchoCanvas.height = echoCanvas.height;
+  const tempEchoCtx = tempEchoCanvas.getContext('2d');
+  if(tempEchoCtx && echoCanvas.width > 0 && echoCanvas.height > 0 && tempEchoCanvas.width > 0 && tempEchoCanvas.height > 0) {
+    tempEchoCtx.drawImage(echoCanvas, 0, 0);
+  }
+
+  canvas.width=aw; canvas.height=ah;
+  offCanvas.width=aw; offCanvas.height=ah;
+  echoCanvas.width=aw; echoCanvas.height=ah;
+
+  // Restore preserved drawing contents
+  if(tempCtx && canvas.width > 0 && canvas.height > 0 && tempCanvas.width > 0 && tempCanvas.height > 0) {
+    ctx.drawImage(tempCanvas, 0, 0);
+  }
+  if(tempEchoCtx && echoCanvas.width > 0 && echoCanvas.height > 0 && tempEchoCanvas.width > 0 && tempEchoCanvas.height > 0) {
+    echoCtx.drawImage(tempEchoCanvas, 0, 0);
+  }
+
+  miniViz.width=controls.offsetWidth||210; miniViz.height=20;
+}
+window.addEventListener('resize',doResize);
+if(window.ResizeObserver){ new ResizeObserver(doResize).observe(container); }
+doResize();
+
+setTimeout(()=>{ const t=document.getElementById('cie-tooltip'); if(t) t.style.opacity='0'; },5000);
+update();
+</script>
+</body>
+</html>
