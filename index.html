@@ -195,6 +195,9 @@ canvas{display:block}
   text-transform: uppercase;
   font-weight: bold;
   text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 /* Slider limit overlay styles */
@@ -261,7 +264,7 @@ canvas{display:block}
 <div id="cie-help-overlay">
  <div id="cie-help-box">
   <button id="cie-help-close" style="top:0;right:0">✕</button>
-  <h2 style="margin:0;padding:0">♾⚙ Circulospherical Infinity Engine 1.14 — Help</h2>
+  <h2 id="cie-help-title" style="margin:0;padding:0">♾⚙ Circulospherical Infinity Engine 1.14 — Help</h2>
   <div style="font-size:10px;color:#888;margin:6px 0;padding:0 0 4px;border-bottom:1px solid #222">
     ©2026 <a href="http://tnlc.com/eep/circles/" target="_blank" style="color:yellow;text-decoration:underline">Eep²</a> (design/ideas, CSS tweaking) and AIs: Google Gemini (most programming and ideas) and Anthropic Claude (some programming)
   </div>
@@ -2512,19 +2515,7 @@ function update(){
     }
   }
 
-  const mode=el('cie-mode').value;
-  // Dynamic Title Bar Update (Circular vs Spherical)
-  const is3D = mode.startsWith('3d');
-  const titleText = is3D ? "Spherical Infinity Engine 1.14" : "Circular Infinity Engine 1.14";
-  const docTitle = is3D ? "Spherical Infinity Engine 1.14" : "Circular Infinity Engine 1.14";
-  
-  const hdrTextSpan = document.querySelector('.hdr-text');
-  if (hdrTextSpan && hdrTextSpan.textContent !== titleText) {
-    hdrTextSpan.textContent = titleText;
-  }
-  if (document.title !== docTitle) {
-    document.title = docTitle;
-  }
+  const mode = el('cie-mode').value;
   const zoomFactor=Math.pow(2,val('cie-zoom')/2);
   const effectiveThick=chk('cie-scaleWidth')?val('cie-thick')/zoomFactor:val('cie-thick');
 
@@ -2729,6 +2720,17 @@ function doResize(){
 
   miniViz.width=controls.offsetWidth||210; miniViz.height=20;
 }
+// Sync DOM titles to document.title so we only have to change it in one place (at the top of index.html)
+const cieAppName = document.title;
+const hdrTextSpan = document.querySelector('.hdr-text');
+if (hdrTextSpan) {
+  hdrTextSpan.textContent = cieAppName;
+}
+const helpTitle = document.getElementById('cie-help-title');
+if (helpTitle) {
+  helpTitle.textContent = "♾⚙ " + cieAppName + " — Help";
+}
+
 window.addEventListener('resize',doResize);
 if(window.ResizeObserver){ new ResizeObserver(doResize).observe(container); }
 doResize();

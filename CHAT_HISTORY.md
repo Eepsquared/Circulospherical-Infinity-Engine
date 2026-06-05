@@ -183,6 +183,17 @@ Because chat platform windows may refresh or clear across sessions, this file is
 
 ---
 
+### 📍 Version 1.15: Static Unified Title Sync & Interactive Sticky Section Headers
+* **User Intent:**
+  * Adopt a single global naming strategy starting with "Circulospherical Infinity Engine" without changing the header text or browser document title dynamically when swapping between 2D and 3D patterns.
+  * Facilitate effortless version editing in the future by automatically matching header references to the main HTML document title.
+  * Enhance docked sidebar navigation by making the segment signposts sticky; keeping the active section's header visible at the top of the pane during scroll ranges, until the subsequent section pushes it up.
+* **Implementation:**
+  * **Static Unified Title Synchronization**: Eliminated dynamic title text manipulation logic in the main loop. Programmed a lightweight startup script reading `document.title` and binding it instantly to both the header `.hdr-text` and help menu title header `#cie-help-title`, protecting static, seamless future version bumps.
+  * **Interactive Sticky CSS Headers**: Modified `.cie-docked-section-header` styles in CSS, applying `position: sticky; top: 0; z-index: 10;`. Anchored by the scrolling `.cie-content` body, headers now intelligently hover and stack sequentially on scroll, improving control visibility.
+
+---
+
 ## 🛠️ Complete Feature Index & Shortcuts
 
 | Hotkey / Control | Action | Details |
