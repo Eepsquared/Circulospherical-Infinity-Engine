@@ -8,7 +8,7 @@ Because chat platform windows may refresh or clear across sessions, this file is
 
 ## 📅 Project Metadata
 * **App Name:** Circulospherical Infinity Engine
-* **Current Version:** v1.155 (Stable)
+* **Current Version:** v1.16 (Stable)
 * **Status:** Build succeeds perfectly (`npm run build` is 100% green).
 * **Environment:** React-free high-performance pure HTML5 / JS Canvas hybrid structure for sub-millisecond drawing loops.
 
@@ -205,6 +205,21 @@ Because chat platform windows may refresh or clear across sessions, this file is
   * **Vignette Edge Fading**: Integrated elegant linear gradient text backgrounds with `background-clip: text;` masking edge limits selectively.
   * **Pulsed Echo Shadows**: Programmed oscillating text-shadow replicas moving and fading out outwards horizontally to emulate sonic or acoustic echo trails.
   * **Staircase Step Animation**: Restructured the "Steps" label to enclose each character individually. Configured stagger timing delays and vertical transformations so characters ascend sequentially to form a stair step.
+
+---
+
+### 📍 Version 1.16: Infinite Zoom Performance Optimizations, Color Refactoring, and FX Associations
+* **User Intent:**
+  * Fix the extreme zoom performance lag by resolving state culling limits.
+  * Assure all FX interactive checkbox label controls toggling functions dynamically sync with checking actions.
+  * Restructure visual inverting layouts, limit Background invert to background layer, and implement a dedicated independent Line color invert option.
+  * Apply aesthetic hover animations to Distance, Spacing, and Scanlines labels.
+  * Bump engine version to 1.16.
+* **Implementation:**
+  * **Infinite Zoom Spatial Culling Fix**: Identified that the global variable `currZFact` was never assigned the actual rendering scale, rendering screen bounding culls inactive at high zooms and causing drop to 11 FPS. Hooked progressive value assignments `currZFact = zFact` inside the core render frame loop, boosting rendering framerate to a smooth 60 FPS constraint.
+  * **Interactive Label Clicking Sync**: Associated all checkbox inputs directly with their accompanying visual label elements using custom inline `for` attributes, allowing users to toggle checkboxes cleanly by tapping anywhere on the text.
+  * **Line & Background Invert Separation**: Added a separate mathematical line-color invert slider `cie-lineInvert` right under Line Color section. Extracted background elements (background pickers, fading ranges, and background color invert toggles) into a beautifully self-contained `Background` option box, mathematically inverting and rendering colors independently without bulky global canvas filters.
+  * **Subtle Hover Animations**: Connected a `'s p a c e d  o u t'` spacing zoom transition to 'Spacing' and 'Distance' labels. Hooked a dynamic scanning animation to the 'Scanlines' parent label for instant interactive visual feedback.
 
 ---
 

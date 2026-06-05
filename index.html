@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Circulospherical Infinity Engine 1.155</title>
+<title>Circulospherical Infinity Engine 1.16</title>
 <style>
 :root{--spectral-grad:linear-gradient(90deg,#f00,#f60,#fa0,#ff0,#af0,#0f0,#0fa,#0ff,#0af,#06f,#00f,#60f,#f0f)}
 *{box-sizing:border-box}
@@ -268,6 +268,7 @@ canvas{display:block}
   display: inline-block;
   transition: all 0.2s ease;
   user-select: none;
+  text-shadow: -0.5px -0.25px 0 rgba(255,0,0,0.5), 0.5px 0.25px 0 rgba(0,255,255,0.5);
 }
 .cie-chroma-effect:hover, .cie-chroma-effect:active {
   color: #fff;
@@ -279,6 +280,8 @@ canvas{display:block}
   display: inline-block;
   transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
   transform-origin: left center;
+  filter: blur(0.25px);
+  text-shadow: -0.5px 0 0.5px rgba(255,255,255,0.25);
 }
 .cie-motionblur-effect:hover, .cie-motionblur-effect:active {
   color: #eee;
@@ -291,14 +294,25 @@ canvas{display:block}
   cursor: pointer;
 }
 
+@keyframes cie-vignette-anim {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 .cie-vignette-effect {
   display: inline-block;
   transition: all 0.3s ease;
-}
-.cie-vignette-effect:hover, .cie-vignette-effect:active {
-  background: linear-gradient(90deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,1) 25%, rgba(255,255,255,1) 75%, rgba(255,255,255,0.15) 100%);
+  background: linear-gradient(90deg, rgba(180,180,180,0.8) 0%, rgba(255,255,255,1) 20%, rgba(255,255,255,1) 80%, rgba(180,180,180,0.8) 100%);
+  background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+.cie-vignette-effect:hover, .cie-vignette-effect:active {
+  background: linear-gradient(90deg, rgba(230,230,230,0.2) 0%, rgba(255,255,255,1) 25%, rgba(255,255,255,1) 75%, rgba(230,230,230,0.2) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: cie-vignette-anim 1.5s infinite ease-in-out;
   cursor: pointer;
 }
 
@@ -323,10 +337,68 @@ canvas{display:block}
 .cie-echo-effect {
   display: inline-block;
   transition: all 0.3s ease;
+  text-shadow: 0.75px 0 0.5px rgba(255,255,255,0.25), 1.5px 0 1.0px rgba(255,255,255,0.1);
 }
 .cie-echo-effect:hover, .cie-echo-effect:active {
   color: #fff;
   animation: cie-echo-anim 0.8s infinite ease-in-out;
+  cursor: pointer;
+}
+
+@keyframes cie-scanlines-anim {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 12px; }
+}
+.cie-scanlines-effect {
+  display: inline-block;
+  transition: all 0.25s ease;
+  user-select: none;
+  background: linear-gradient(rgba(220,220,220,1) 50%, rgba(120,120,120,0.55) 50%);
+  background-size: 100% 3px;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.cie-scanlines-effect:hover, .cie-scanlines-effect:active {
+  color: #fff;
+  background: linear-gradient(rgba(255,255,255,1) 50%, rgba(255,220,220,0.3) 50%);
+  background-size: 100% 6px;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: cie-scanlines-anim 0.4s infinite linear;
+  cursor: pointer;
+}
+
+@keyframes cie-distort-anim {
+  0% { transform: skewX(-4deg) scaleY(1); filter: drop-shadow(0.5px 0 0.5px rgba(255,255,255,0.5)); }
+  25% { transform: skewX(4deg) scaleY(0.97); filter: drop-shadow(-0.5px 0.5px 0.5px rgba(255,255,255,0.4)); }
+  50% { transform: skewX(-4deg) scaleY(1.03); filter: drop-shadow(0.5px -0.5px 0.5px rgba(255,255,255,0.5)); }
+  75% { transform: skewX(2deg) scaleY(0.97); filter: drop-shadow(-0.5px -0.5px 0.5px rgba(255,255,255,0.4)); }
+  100% { transform: skewX(-4deg) scaleY(1); filter: drop-shadow(0.5px 0 0.5px rgba(255,255,255,0.5)); }
+}
+.cie-distort-effect {
+  display: inline-block;
+  transition: all 0.3s ease;
+  transform: skewX(-1.5deg);
+  filter: drop-shadow(0px 0px 0.15px rgba(255,255,255,0.2));
+}
+.cie-distort-effect:hover, .cie-distort-effect:active {
+  animation: cie-distort-anim 1s infinite ease-in-out;
+  cursor: pointer;
+}
+
+@keyframes cie-spacedout-anim {
+  0% { letter-spacing: 0.5px; }
+  50% { letter-spacing: 3.5px; }
+  100% { letter-spacing: 0.5px; }
+}
+.cie-spacedout-effect {
+  display: inline-block;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  letter-spacing: 0.5px;
+}
+.cie-spacedout-effect:hover, .cie-spacedout-effect:active {
+  color: #fff;
+  animation: cie-spacedout-anim 1.5s infinite ease-in-out;
   cursor: pointer;
 }
 
@@ -356,7 +428,7 @@ canvas{display:block}
 <div id="cie-help-overlay">
  <div id="cie-help-box">
   <button id="cie-help-close" style="top:0;right:0">✕</button>
-  <h2 id="cie-help-title" style="margin:0;padding:0">♾⚙ Circulospherical Infinity Engine 1.155 — Help</h2>
+  <h2 id="cie-help-title" style="margin:0;padding:0">♾⚙ Circulospherical Infinity Engine 1.16 — Help</h2>
   <div style="font-size:10px;color:#888;margin:6px 0;padding:0 0 4px;border-bottom:1px solid #222">
     ©2026 <a href="http://tnlc.com/eep/circles/" target="_blank" style="color:yellow;text-decoration:underline">Eep²</a> (design/ideas, CSS tweaking) and AIs: Google Gemini (most programming and ideas) and Anthropic Claude (some programming)
   </div>
@@ -434,7 +506,7 @@ canvas{display:block}
    <div class="cie-header-left">
     <span style="font-size:14px">♾</span>
     <span style="font-size:11px">⚙</span>
-    <span class="hdr-text">Circulospherical Infinity Engine 1.155</span>
+    <span class="hdr-text">Circulospherical Infinity Engine 1.16</span>
    </div>
    <div class="cie-header-btns">
     <button id="cie-helpBtn" class="cie-btn-icon" title="Help" style="font-size:11px;color:yellow">?</button>
@@ -573,6 +645,20 @@ canvas{display:block}
        <label class="cie-checkbox-group" style="cursor:pointer;user-select:none"><input type="checkbox" id="cie-smoothFade" checked><span class="cie-label" style="font-size:10px">🌫️Smooth fade</span></label>
       </div>
      </div>
+     <!-- Invert color (Line) -->
+     <div class="cie-group" style="padding:0 2px">
+      <div class="cie-row">
+       <label class="cie-label">🌓 Invert color</label>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="lineInvert" title="Reset">↺</button>
+        <input type="number" id="cie-lineInvertNum" step="any" value="0">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="lineInvert" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="lineInvert" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <div class="cie-limits-popover" id="cie-limits-lineInvert">Min:<input type="number" id="cie-lmin-lineInvert"> Max:<input type="number" id="cie-lmax-lineInvert"><button class="cie-reset-btn" id="cie-limits-lineInvert-close">✕</button></div>
+      <input type="range" id="cie-lineInvert" min="0" max="1" value="0" step="any">
+     </div>
      <!-- Width -->
      <div class="cie-group" style="padding:0 2px">
       <div class="cie-row">
@@ -637,39 +723,42 @@ canvas{display:block}
       <input type="range" id="cie-tDens" min="0.005" max="0.5" value="0.10" step="any">
      </div>
     </div>
-    <div class="cie-group">
-     <div class="cie-row">
-      <label class="cie-label">▨ Background color</label>
-      <div style="display:flex;gap:2px;align-items:center;margin-left:auto">
-       <input type="color" id="cie-bgColor" value="#000000" title="Background 1">
-       <input type="color" id="cie-bgColor2" value="#ffffff" title="Background 2">
+    <div class="cie-box">
+     <div class="cie-box-title">Background</div>
+     <div class="cie-group" style="padding:0 2px">
+      <div class="cie-row">
+       <label class="cie-label">▨ Colors</label>
+       <div style="display:flex;gap:2px;align-items:center;margin-left:auto">
+        <input type="color" id="cie-bgColor" value="#000000" title="Background 1">
+        <input type="color" id="cie-bgColor2" value="#ffffff" title="Background 2">
+       </div>
       </div>
-     </div>
-     <div class="cie-row">
-      <label class="cie-label indented">Fade</label>
-      <div style="display:flex;align-items:center;gap:2px">
-       <button class="cie-reset-btn" data-reset="bgFade" title="Reset">↺</button>
-       <input type="number" id="cie-bgFadeNum" step="any" value="0">
-        <button class="cie-emoji-btn cie-ping-pong" data-key="bgFade" title="Ping-pong animation">↔</button>
-        <button class="cie-reset-btn cie-limits-btn" data-key="bgFade" title="Ping-pong limits">🎚️</button>
+      <div class="cie-row">
+       <label class="cie-label indented">Fade</label>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="bgFade" title="Reset">↺</button>
+        <input type="number" id="cie-bgFadeNum" step="any" value="0">
+         <button class="cie-emoji-btn cie-ping-pong" data-key="bgFade" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="bgFade" title="Ping-pong limits">🎚️</button>
+       </div>
       </div>
+      <div class="cie-limits-popover" id="cie-limits-bgFade">Min:<input type="number" id="cie-lmin-bgFade"> Max:<input type="number" id="cie-lmax-bgFade"><button class="cie-reset-btn" id="cie-limits-bgFade-close">✕</button></div>
+      <input type="range" id="cie-bgFade" min="0" max="1" value="0" step="any">
      </div>
-     <div class="cie-limits-popover" id="cie-limits-bgFade">Min:<input type="number" id="cie-lmin-bgFade"> Max:<input type="number" id="cie-lmax-bgFade"><button class="cie-reset-btn" id="cie-limits-bgFade-close">✕</button></div>
-     <input type="range" id="cie-bgFade" min="0" max="1" value="0" step="any">
-    </div>
 
-    <div class="cie-group">
-     <div class="cie-row">
-      <label class="cie-label">🌓 Invert color</label>
-      <div style="display:flex;align-items:center;gap:2px">
-       <button class="cie-reset-btn" data-reset="invert" title="Reset">↺</button>
-       <input type="number" id="cie-invertNum" step="any" value="0">
-       <button class="cie-emoji-btn cie-ping-pong" data-key="invert" title="Ping-pong animation">↔</button>
-       <button class="cie-reset-btn cie-limits-btn" data-key="invert" title="Ping-pong limits">🎚️</button>
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <label class="cie-label">🌓 Invert</label>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="invert" title="Reset">↺</button>
+        <input type="number" id="cie-invertNum" step="any" value="0">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="invert" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="invert" title="Ping-pong limits">🎚️</button>
+       </div>
       </div>
+      <div class="cie-limits-popover" id="cie-limits-invert">Min:<input type="number" id="cie-lmin-invert"> Max:<input type="number" id="cie-lmax-invert"><button class="cie-reset-btn" id="cie-limits-invert-close">✕</button></div>
+      <input type="range" id="cie-invert" min="0" max="1" value="0" step="any">
      </div>
-     <div class="cie-limits-popover" id="cie-limits-invert">Min:<input type="number" id="cie-lmin-invert"> Max:<input type="number" id="cie-lmax-invert"><button class="cie-reset-btn" id="cie-limits-invert-close">✕</button></div>
-     <input type="range" id="cie-invert" min="0" max="1" value="0" step="any">
     </div>
    </div>
 
@@ -721,7 +810,7 @@ canvas{display:block}
      </div>
      <div class="cie-group" style="padding:0 2px">
       <div class="cie-row">
-       <label class="cie-label">📏Distance</label>
+       <label class="cie-label cie-spacedout-effect">📏Distance</label>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="pDepth" title="Reset">↺</button>
         <input type="number" id="cie-pDepthNum" step="any">
@@ -867,7 +956,7 @@ canvas{display:block}
     <div class="cie-box">
      <div class="cie-group" style="padding:0 2px">
       <div class="cie-row">
-       <div class="cie-checkbox-group"><input type="checkbox" id="cie-distort"><label title="Distortion ripple on/off">Distortion ripple</label></div>
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-distort"><label for="cie-distort" title="Distortion ripple on/off" class="cie-distort-effect">Distortion ripple</label></div>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="distortAmp" title="Reset">↺</button>
         <input type="number" id="cie-distortAmpNum" step="any">
@@ -895,7 +984,7 @@ canvas{display:block}
     <div class="cie-box">
      <div class="cie-group" style="padding:0 2px 2px">
       <div class="cie-row">
-       <div class="cie-checkbox-group"><input type="checkbox" id="cie-chroma" title="Chroma split on/off"><label title="Chroma split on/off" class="cie-chroma-effect">Chroma split</label></div>
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-chroma" title="Chroma split on/off"><label for="cie-chroma" title="Chroma split on/off" class="cie-chroma-effect">Chroma split</label></div>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="chromaAmt" title="Reset">↺</button>
         <input type="number" id="cie-chromaAmtNum" step="any">
@@ -911,7 +1000,7 @@ canvas{display:block}
      <!--<div class="cie-box-title">Scanlines</div>-->
      <div class="cie-group" style="padding:0 2px">
       <div class="cie-row">
-       <div class="cie-checkbox-group"><input type="checkbox" id="cie-scanlines" title="Scanlines on/off"><label title="Scanlines on/off">𝄚 Scanlines</label></div>
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-scanlines" title="Scanlines on/off"><label for="cie-scanlines" title="Scanlines on/off" class="cie-scanlines-effect">𝄚 Scanlines</label></div>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="scanlinesOp" title="Reset">↺</button>
         <input type="number" id="cie-scanlinesOpNum" step="any">
@@ -924,7 +1013,7 @@ canvas{display:block}
      </div>
      <div class="cie-group" style="padding:0 2px 2px">
       <div class="cie-row">
-       <label class="cie-label indented">↕ Spacing</label>
+       <label class="cie-label indented cie-spacedout-effect">↕ Spacing</label>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="scanlinesSp" title="Reset">↺</button>
         <input type="number" id="cie-scanlinesSpNum" step="any">
@@ -939,7 +1028,7 @@ canvas{display:block}
     <div class="cie-box">
      <div class="cie-group" style="padding:0 2px 2px">
       <div class="cie-row">
-       <div class="cie-checkbox-group"><input type="checkbox" id="cie-vignette" title="Vignette on/off"><label title="Vignette on/off" class="cie-vignette-effect">Vignette</label></div>
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-vignette" title="Vignette on/off"><label for="cie-vignette" title="Vignette on/off" class="cie-vignette-effect">Vignette</label></div>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="vignetteAmt" title="Reset">↺</button>
         <input type="number" id="cie-vignetteAmtNum" step="any">
@@ -952,7 +1041,7 @@ canvas{display:block}
     <div class="cie-box">
      <div class="cie-group" style="padding:0 2px 2px">
       <div class="cie-row">
-       <div class="cie-checkbox-group"><input type="checkbox" id="cie-echo" title="Feedback echo on/off"><label title="Feedback echo on/off" class="cie-echo-effect">Feedback echo</label></div>
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-echo" title="Feedback echo on/off"><label for="cie-echo" title="Feedback echo on/off" class="cie-echo-effect">Feedback echo</label></div>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="echoAmt" title="Reset">↺</button>
         <input type="number" id="cie-echoAmtNum" step="any">
@@ -1205,7 +1294,7 @@ const SLIDER_DEFAULTS={
   msSpeed:1,cSpeed:1,bgFade:0,zoom:0,wobbleAmp:0.1,wobbleFreq:1,distortAmp:10,distortFreq:3,
   chromaAmt:4,scanlinesOp:0.3,scanlinesSp:4,vignetteAmt:0.5,echoAmt:0.7,
   converge:0,modeSpeed:1,globalSpeed:1,rotDepthFactor:0.5,
-  timeline:0,motionBlurAmt:0.5,motionBlurSteps:5,invert:0
+  timeline:0,motionBlurAmt:0.5,motionBlurSteps:5,invert:0,lineInvert:0
 };
 
 function enforceSafety(){
@@ -1238,6 +1327,7 @@ const uiMap={
   motionBlurAmt:'cie-motionBlurAmt',
   motionBlurSteps:'cie-motionBlurSteps',
   invert:'cie-invert',
+  lineInvert:'cie-lineInvert',
 };
 Object.keys(uiMap).forEach(key=>{
   const isInt=(key==='depth' || key==='motionBlurSteps');
@@ -2037,7 +2127,7 @@ el('cie-shareBtn').addEventListener('click',()=>{
 renderConfigs();
 
 // ── RESET / RANDOM ──
-const DEFAULTS={depth:8,mode:'2h',theme:'white',cycleMode:'off',cSpeed:1,bgFade:0,custom:'#ffffff',bg:'#000000',bg2:'#ffffff',invert:false,infiniteZoom:false,anim:false,pSpeed:1,pDepth:0.05,phase:0,rSpeed:0,zoom:0,sync:false,glow:false,gRad:8,trail:false,tDens:0.10,thick:1,op:1,pps:{},rotate:false,blend:'source-over',wobble:false,wobbleAmp:0.1,wobbleFreq:1,distort:false,distortAmp:10,distortFreq:3,chroma:false,chromaAmt:4,scanlines:false,scanlinesOp:0.3,scanlinesSp:4,vignette:false,vignetteAmt:0.5,echo:false,echoAmt:0.7,multi:false,smoothFade:true,msSpeed:1,scaleWidth:false,converge:0,modeMode:'off',modeSpeed:1,timeline:0,motionBlur:false,motionBlurAmt:0.5,motionBlurSteps:5};
+const DEFAULTS={depth:8,mode:'2h',theme:'white',cycleMode:'off',cSpeed:1,bgFade:0,custom:'#ffffff',bg:'#000000',bg2:'#ffffff',invert:false,infiniteZoom:false,anim:false,pSpeed:1,pDepth:0.05,phase:0,rSpeed:0,zoom:0,sync:false,glow:false,gRad:8,trail:false,tDens:0.10,thick:1,op:1,pps:{},rotate:false,blend:'source-over',wobble:false,wobbleAmp:0.1,wobbleFreq:1,distort:false,distortAmp:10,distortFreq:3,chroma:false,chromaAmt:4,scanlines:false,scanlinesOp:0.3,scanlinesSp:4,vignette:false,vignetteAmt:0.5,echo:false,echoAmt:0.7,multi:false,smoothFade:true,msSpeed:1,scaleWidth:false,converge:0,modeMode:'off',modeSpeed:1,timeline:0,motionBlur:false,motionBlurAmt:0.5,motionBlurSteps:5,lineInvert:0};
 el('cie-resetBtn').addEventListener('click',()=>{ pTime=0;rTime=0;panX=0;panY=0;manualRot=0;manualRotY=0; transformHistory=[]; loadSettings(DEFAULTS); });
 el('cie-randBtn').addEventListener('click',()=>{
   transformHistory=[];
@@ -2122,7 +2212,7 @@ function loadSettings(s){
     const e2=el(uiMap[k]); if(!e2) return;
     const isInt=(k==='depth' || k==='motionBlurSteps');
     let v = s[k];
-    if (k === 'invert') {
+    if (k === 'invert' || k === 'lineInvert') {
       if (v === true) v = 1;
       else if (v === false) v = 0;
     }
@@ -2194,6 +2284,8 @@ function getThemeRGB(d,md,t){
   return{r,g,b};
 }
 function getColor(d,md,al,opacity,mult){
+  const invAmt = el('cie-lineInvert') ? val('cie-lineInvert') : 0;
+  const applyInv = (c) => Math.round(c + (255 - 2*c) * invAmt);
   let pt=prevTheme,at=currTheme;
   if(mult&&getCycleMode()!=='off'){
     const cnt=themeKeys.length-1;
@@ -2228,7 +2320,7 @@ function getColor(d,md,al,opacity,mult){
       const finalG = mixedR1.g + (mixedR2.g - mixedR1.g) * fract;
       const finalB = mixedR1.b + (mixedR2.b - mixedR1.b) * fract;
       
-      return 'rgba('+Math.round(finalR)+','+Math.round(finalG)+','+Math.round(finalB)+','+opacity+')';
+      return 'rgba('+applyInv(finalR)+','+applyInv(finalG)+','+applyInv(finalB)+','+opacity+')';
     } else {
       const off=Math.floor(valOffset)%cnt;
       pt=themeKeys[(themeKeys.indexOf(prevTheme)+off)%cnt];
@@ -2236,7 +2328,10 @@ function getColor(d,md,al,opacity,mult){
     }
   }
   const r1=getThemeRGB(d,md,pt),r2=getThemeRGB(d,md,at);
-  return'rgba('+Math.round(r1.r+(r2.r-r1.r)*al)+','+Math.round(r1.g+(r2.g-r1.g)*al)+','+Math.round(r1.b+(r2.b-r1.b)*al)+','+opacity+')';
+  const finR = r1.r+(r2.r-r1.r)*al;
+  const finG = r1.g+(r2.g-r1.g)*al;
+  const finB = r1.b+(r2.b-r1.b)*al;
+  return'rgba('+applyInv(finR)+','+applyInv(finG)+','+applyInv(finB)+','+opacity+')';
 }
 
 // ── DRAW MODES ──
@@ -2634,10 +2729,16 @@ function update(){
     distort:chk('cie-distort'), distortAmp:val('cie-distortAmp'), distortFreq:val('cie-distortFreq'),
     converge:val('cie-converge'),
   };
-  canvas.style.filter = o.invert > 0 ? `invert(${o.invert * 100}%)` : 'none';
+  canvas.style.filter = 'none';
 
   const rgb1=getRGB(el('cie-bgColor').value),rgb2=getRGB(el('cie-bgColor2').value),t=val('cie-bgFade');
-  const bgRGB={r:Math.round(rgb1.r+(rgb2.r-rgb1.r)*t),g:Math.round(rgb1.g+(rgb2.g-rgb1.g)*t),b:Math.round(rgb1.b+(rgb2.b-rgb1.b)*t)};
+  const baseBg={r:rgb1.r+(rgb2.r-rgb1.r)*t,g:rgb1.g+(rgb2.g-rgb1.g)*t,b:rgb1.b+(rgb2.b-rgb1.b)*t};
+  const invBG = val('cie-invert') || 0;
+  const bgRGB={
+    r: Math.round(baseBg.r + (255 - 2*baseBg.r)*invBG),
+    g: Math.round(baseBg.g + (255 - 2*baseBg.g)*invBG),
+    b: Math.round(baseBg.b + (255 - 2*baseBg.b)*invBG)
+  };
   const bgKey=bgRGB.r+','+bgRGB.g+','+bgRGB.b;
   if(lastBGKey===''){
     ctx.fillStyle='rgb('+bgKey+')'; ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -2681,6 +2782,7 @@ function update(){
       const zoomFract = state.zoom - levelShift * 2;
       zFact = Math.pow(2, zoomFract / 2);
     }
+    currZFact = zFact;
 
     ctx.translate(canvas.width/2+state.panX, canvas.height/2+state.panY);
     ctx.scale(zFact, zFact);
