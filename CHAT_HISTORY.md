@@ -7,8 +7,8 @@ Because chat platform windows may refresh or clear across sessions, this file is
 ---
 
 ## 📅 Project Metadata
-* **App Name:** Circular Infinity Engine
-* **Current Version:** v1.14 (Stable)
+* **App Name:** Circulospherical Infinity Engine
+* **Current Version:** v1.155 (Stable)
 * **Status:** Build succeeds perfectly (`npm run build` is 100% green).
 * **Environment:** React-free high-performance pure HTML5 / JS Canvas hybrid structure for sub-millisecond drawing loops.
 
@@ -191,6 +191,20 @@ Because chat platform windows may refresh or clear across sessions, this file is
 * **Implementation:**
   * **Static Unified Title Synchronization**: Eliminated dynamic title text manipulation logic in the main loop. Programmed a lightweight startup script reading `document.title` and binding it instantly to both the header `.hdr-text` and help menu title header `#cie-help-title`, protecting static, seamless future version bumps.
   * **Interactive Sticky CSS Headers**: Modified `.cie-docked-section-header` styles in CSS, applying `position: sticky; top: 0; z-index: 10;`. Anchored by the scrolling `.cie-content` body, headers now intelligently hover and stack sequentially on scroll, improving control visibility.
+
+---
+
+### 📍 Version 1.155: Interactive Hover & Tap Label Micro-Animations
+* **User Intent:**
+  * Add a gorgeous chromatic aberration style to the "Chroma split" label that splits red and cyan colors on hover or tap.
+  * Implement professional micro-effects for "Motion blur" (horizontal motion trailing blurs), "Vignette" (radial-like linear fade on start & end boundaries), "Steps" (stagger-animates letters vertically to form steps), and "Feedback echo" (layered echoing text-shadows).
+  * Increment the version number specifically by a minor bump of 0.5 to 1.155 to signify localized layout and styling modifications.
+* **Implementation:**
+  * **Chroma split Aberration**: Engineered keyframe animation `cie-chroma-anim` producing rapid, vibrant red and cyan shifting text-shadows to recreate realistic digital chromatic aberration on hover and tap configurations.
+  * **Velocity Motion Blur**: Built speed-tracking shadow tails translating elements horizontally with slight horizontal blurs (`filter: blur(0.6px)`) simulating motion traces.
+  * **Vignette Edge Fading**: Integrated elegant linear gradient text backgrounds with `background-clip: text;` masking edge limits selectively.
+  * **Pulsed Echo Shadows**: Programmed oscillating text-shadow replicas moving and fading out outwards horizontally to emulate sonic or acoustic echo trails.
+  * **Staircase Step Animation**: Restructured the "Steps" label to enclose each character individually. Configured stagger timing delays and vertical transformations so characters ascend sequentially to form a stair step.
 
 ---
 

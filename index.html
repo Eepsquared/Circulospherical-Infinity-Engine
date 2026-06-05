@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Circulospherical Infinity Engine 1.14</title>
+<title>Circulospherical Infinity Engine 1.155</title>
 <style>
 :root{--spectral-grad:linear-gradient(90deg,#f00,#f60,#fa0,#ff0,#af0,#0f0,#0fa,#0ff,#0af,#06f,#00f,#60f,#f0f)}
 *{box-sizing:border-box}
@@ -19,10 +19,10 @@ canvas{display:block}
 #cie-tooltip{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);font-size:9px;color:#333;pointer-events:none;z-index:50;white-space:nowrap;opacity:1}
 
 /* FLOATING PANEL */
-.cie-controls{position:absolute;top:0;right:0;background:rgba(10,10,10,.82);display:flex;flex-direction:column;border:1px solid #333;z-index:100;max-height:100vh;caret-color:#fff;min-width:160px;width:260px;resize:none;overflow:hidden}
+.cie-controls{position:absolute;top:0;right:0;background:rgba(10,10,10,.82);display:flex;flex-direction:column;border:1px solid #333;z-index:100;max-height:100vh;caret-color:#fff;min-width:160px;width:268px;resize:none;overflow:hidden}
 .cie-controls:focus-within,.cie-controls.active-focus{background:rgba(10,10,10,1)}
 /* DOCKED */
-.cie-controls.docked{position:relative!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;height:100%!important;width:var(--dock-width, 256px)!important;max-height:none!important;border-left:1px solid #333;border-top:none;border-right:0;border-bottom:0;flex-shrink:0;resize:none}
+.cie-controls.docked{position:relative!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;height:100%!important;width:var(--dock-width, 268px)!important;max-height:none!important;border-left:1px solid #333;border-top:none;border-right:0;border-bottom:0;flex-shrink:0;resize:none}
 .cie-controls.docked .cie-content{display:flex!important;flex-direction:column;padding:0 4px;overflow-y:auto;flex:1;min-height:0}
 .cie-controls.docked .cie-tab-panel{display:flex!important;flex-direction:column;width:100%}
 .cie-controls.docked .cie-tabs{display:none!important}
@@ -256,6 +256,98 @@ canvas{display:block}
 .cie-resize-edge.ne { top: -4px; right: -4px; width: 8px; height: 8px; cursor: ne-resize; }
 .cie-resize-edge.sw { bottom: -4px; left: -4px; width: 8px; height: 8px; cursor: sw-resize; }
 .cie-resize-edge.se { bottom: -4px; right: -4px; width: 8px; height: 8px; cursor: se-resize; }
+
+/* UI hover/tap micro-effects */
+@keyframes cie-chroma-anim {
+  0% { text-shadow: -1px -0.5px 0 rgba(255,0,0,0.85), 1px 0.5px 0 rgba(0,255,255,0.85); }
+  33% { text-shadow: 1px -1px 0 rgba(255,0,0,0.85), -1px 1px 0 rgba(0,255,255,0.85); }
+  66% { text-shadow: -1.5px 0.5px 0 rgba(255,0,0,0.85), 1.5px -0.5px 0 rgba(0,255,255,0.85); }
+  100% { text-shadow: -1px -0.5px 0 rgba(255,0,0,0.85), 1px 0.5px 0 rgba(0,255,255,0.85); }
+}
+.cie-chroma-effect {
+  display: inline-block;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.cie-chroma-effect:hover, .cie-chroma-effect:active {
+  color: #fff;
+  animation: cie-chroma-anim 0.25s infinite steps(2);
+  cursor: pointer;
+}
+
+.cie-motionblur-effect {
+  display: inline-block;
+  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transform-origin: left center;
+}
+.cie-motionblur-effect:hover, .cie-motionblur-effect:active {
+  color: #eee;
+  filter: blur(0.6px);
+  text-shadow: 
+    -1px 0 1px rgba(255,255,255,0.6),
+    -3px 0 3px rgba(255,255,255,0.3),
+    -6px 0 5px rgba(255,255,255,0.1);
+  transform: translateX(3px);
+  cursor: pointer;
+}
+
+.cie-vignette-effect {
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+.cie-vignette-effect:hover, .cie-vignette-effect:active {
+  background: linear-gradient(90deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,1) 25%, rgba(255,255,255,1) 75%, rgba(255,255,255,0.15) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  cursor: pointer;
+}
+
+@keyframes cie-echo-anim {
+  0% {
+    text-shadow: 
+      2px 0 1px rgba(255,255,255,0.35),
+      4px 0 2px rgba(255,255,255,0.15);
+  }
+  50% {
+    text-shadow: 
+      3.5px 0 2px rgba(255,255,255,0.4),
+      7px 0 3px rgba(255,255,255,0.2),
+      10.5px 0 4px rgba(255,255,255,0.05);
+  }
+  100% {
+    text-shadow: 
+      2px 0 1px rgba(255,255,255,0.35),
+      4px 0 2px rgba(255,255,255,0.15);
+  }
+}
+.cie-echo-effect {
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+.cie-echo-effect:hover, .cie-echo-effect:active {
+  color: #fff;
+  animation: cie-echo-anim 0.8s infinite ease-in-out;
+  cursor: pointer;
+}
+
+.cie-steps-wrapper {
+  display: inline-flex;
+  cursor: pointer;
+}
+.cie-steps-letter {
+  display: inline-block;
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.25s ease;
+}
+.cie-steps-parent:hover .cie-steps-letter:nth-child(1),
+.cie-steps-parent:active .cie-steps-letter:nth-child(1) { transform: translateY(0px); color: #888; }
+.cie-steps-parent:hover .cie-steps-letter:nth-child(2),
+.cie-steps-parent:active .cie-steps-letter:nth-child(2) { transform: translateY(-1.5px); color: #aaa; transition-delay: 0.02s; }
+.cie-steps-parent:hover .cie-steps-letter:nth-child(3),
+.cie-steps-parent:active .cie-steps-letter:nth-child(3) { transform: translateY(-3px); color: #ccc; transition-delay: 0.04s; }
+.cie-steps-parent:hover .cie-steps-letter:nth-child(4),
+.cie-steps-parent:active .cie-steps-letter:nth-child(4) { transform: translateY(-4.5px); color: #eee; transition-delay: 0.06s; }
+.cie-steps-parent:hover .cie-steps-letter:nth-child(5),
+.cie-steps-parent:active .cie-steps-letter:nth-child(5) { transform: translateY(-6px); color: #fff; transition-delay: 0.08s; }
 </style>
 </head>
 <body>
@@ -264,7 +356,7 @@ canvas{display:block}
 <div id="cie-help-overlay">
  <div id="cie-help-box">
   <button id="cie-help-close" style="top:0;right:0">✕</button>
-  <h2 id="cie-help-title" style="margin:0;padding:0">♾⚙ Circulospherical Infinity Engine 1.14 — Help</h2>
+  <h2 id="cie-help-title" style="margin:0;padding:0">♾⚙ Circulospherical Infinity Engine 1.155 — Help</h2>
   <div style="font-size:10px;color:#888;margin:6px 0;padding:0 0 4px;border-bottom:1px solid #222">
     ©2026 <a href="http://tnlc.com/eep/circles/" target="_blank" style="color:yellow;text-decoration:underline">Eep²</a> (design/ideas, CSS tweaking) and AIs: Google Gemini (most programming and ideas) and Anthropic Claude (some programming)
   </div>
@@ -342,7 +434,7 @@ canvas{display:block}
    <div class="cie-header-left">
     <span style="font-size:14px">♾</span>
     <span style="font-size:11px">⚙</span>
-    <span class="hdr-text">Circulospherical Infinity Engine 1.14</span>
+    <span class="hdr-text">Circulospherical Infinity Engine 1.155</span>
    </div>
    <div class="cie-header-btns">
     <button id="cie-helpBtn" class="cie-btn-icon" title="Help" style="font-size:11px;color:yellow">?</button>
@@ -532,7 +624,7 @@ canvas{display:block}
       <div class="cie-row">
        <div class="cie-checkbox-group">
         <input type="checkbox" id="cie-trail">
-                <label for="cie-trail">👣Trail length</label>
+                <label for="cie-trail">☄️Trail length</label>
        </div>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="tDens" title="Reset">↺</button>
@@ -616,7 +708,7 @@ canvas{display:block}
      <div class="cie-box-title">〰 Pulse</div>
      <div class="cie-group" style="padding:0 2px">
       <div class="cie-row">
-       <div class="cie-checkbox-group"><input type="checkbox" id="cie-animate"><label for="cie-animate">Frequency</label></div>
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-animate"><label for="cie-animate">˒﹚) Frequency</label></div>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="pSpeed" title="Reset">↺</button>
         <input type="number" id="cie-pSpeedNum" step="any">
@@ -657,7 +749,7 @@ canvas{display:block}
      <!-- Convergence -->
      <div class="cie-group" style="padding:0 2px 2px">
       <div class="cie-row">
-       <label class="cie-label">Converge</label>
+       <label class="cie-label">⚛︎ Converge</label>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="converge" title="Reset">↺</button>
         <input type="number" id="cie-convergeNum" step="any">
@@ -673,7 +765,9 @@ canvas{display:block}
      <div class="cie-box-title">Viewport</div>
      <div class="cie-group" style="padding:0 2px">
       <div class="cie-row">
-       <div class="cie-checkbox-group"><input type="checkbox" id="cie-rotateToggle"><span style="font-size:11px">🔄</span><label class="cie-label" for="cie-rotateToggle">Rotation</label></div>
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-rotateToggle">
+       <label class="cie-label" for="cie-rotateToggle">🔄Rotation</label>
+       </div>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="rSpeed" title="Reset">↺</button>
         <input type="number" id="cie-rSpeedNum" step="any">
@@ -687,7 +781,7 @@ canvas{display:block}
       <!-- Depth Nesting Rotation -->
       <div class="cie-group" style="padding:0 2px">
        <div class="cie-row">
-        <div class="cie-checkbox-group"><input type="checkbox" id="cie-rotDepths"><label class="cie-label" for="cie-rotDepths">Depth orbit</label></div>
+        <div class="cie-checkbox-group" title="Rotate nested depths independently"><input type="checkbox" id="cie-rotDepths"><label class="cie-label" for="cie-rotDepths">🌌Depth orbit</label></div>
         <div style="display:flex;align-items:center;gap:2px">
          <button class="cie-reset-btn" data-reset="rotDepthFactor" title="Reset">↺</button>
          <input type="number" id="cie-rotDepthFactorNum" step="any" value="0.5">
@@ -702,7 +796,10 @@ canvas{display:block}
       <div class="cie-row">
        <div style="display:flex;align-items:center;gap:4px">
         <label class="cie-label">🔍 Zoom</label>
-        <input type="checkbox" id="cie-infiniteZoom" title="Infinite zoom" style="background:#333;margin:0;cursor:pointer"><label>∞</label>
+        <div class="cie-checkbox-group" title="Infinite zoom">
+          <input type="checkbox" id="cie-infiniteZoom" style="background:#333;margin:0;cursor:pointer">
+          <label>∞</label>
+        </div>
        </div>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="zoom" title="Reset">↺</button>
@@ -715,7 +812,7 @@ canvas{display:block}
       <div class="cie-limits-popover" id="cie-limits-zoom">Min:<input type="number" id="cie-lmin-zoom"> Max:<input type="number" id="cie-lmax-zoom"><button class="cie-reset-btn" id="cie-limits-zoom-close">✕</button></div>
      </div>
     </div>
-    <div class="cie-row"><div class="cie-checkbox-group"><input type="checkbox" id="cie-sync"><label for="cie-sync">Sync breath</label></div></div>
+    <div class="cie-row"><div class="cie-checkbox-group"><input type="checkbox" id="cie-sync"><label for="cie-sync">🌬️Sync breath</label></div></div>
     <div class="cie-box">
      <div class="cie-box-title">Wobble</div>
      <div class="cie-group" style="padding:0 2px">
@@ -798,7 +895,7 @@ canvas{display:block}
     <div class="cie-box">
      <div class="cie-group" style="padding:0 2px 2px">
       <div class="cie-row">
-       <div class="cie-checkbox-group"><input type="checkbox" id="cie-chroma" title="On/Off"><label title="Chroma split on/off">Chroma Split</label></div>
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-chroma" title="Chroma split on/off"><label title="Chroma split on/off" class="cie-chroma-effect">Chroma split</label></div>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="chromaAmt" title="Reset">↺</button>
         <input type="number" id="cie-chromaAmtNum" step="any">
@@ -814,7 +911,7 @@ canvas{display:block}
      <!--<div class="cie-box-title">Scanlines</div>-->
      <div class="cie-group" style="padding:0 2px">
       <div class="cie-row">
-       <div class="cie-checkbox-group"><input type="checkbox" id="cie-scanlines" title="On/Off"><label title="Scanlines On/Off">𝄚 Scanlines</label></div>
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-scanlines" title="Scanlines on/off"><label title="Scanlines on/off">𝄚 Scanlines</label></div>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="scanlinesOp" title="Reset">↺</button>
         <input type="number" id="cie-scanlinesOpNum" step="any">
@@ -842,7 +939,7 @@ canvas{display:block}
     <div class="cie-box">
      <div class="cie-group" style="padding:0 2px 2px">
       <div class="cie-row">
-       <div class="cie-checkbox-group"><input type="checkbox" id="cie-vignette" title="On/Off"><label title="Vignette on/off">Vignette</label></div>
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-vignette" title="Vignette on/off"><label title="Vignette on/off" class="cie-vignette-effect">Vignette</label></div>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="vignetteAmt" title="Reset">↺</button>
         <input type="number" id="cie-vignetteAmtNum" step="any">
@@ -855,7 +952,7 @@ canvas{display:block}
     <div class="cie-box">
      <div class="cie-group" style="padding:0 2px 2px">
       <div class="cie-row">
-       <div class="cie-checkbox-group"><input type="checkbox" id="cie-echo" title="On/Off"><label title="Feedback echo on/off">Feedback echo</label></div>
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-echo" title="Feedback echo on/off"><label title="Feedback echo on/off" class="cie-echo-effect">Feedback echo</label></div>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="echoAmt" title="Reset">↺</button>
         <input type="number" id="cie-echoAmtNum" step="any">
@@ -868,7 +965,7 @@ canvas{display:block}
      <div class="cie-box">
       <div class="cie-group" style="padding:0 2px 2px">
        <div class="cie-row">
-        <div class="cie-checkbox-group"><input type="checkbox" id="cie-motionBlur" title="On/Off"><label for="cie-motionBlur" title="Motion blur on/off">Motion blur</label></div>
+        <div class="cie-checkbox-group"><input type="checkbox" id="cie-motionBlur" title="Motion blur on/off"><label for="cie-motionBlur" title="Motion blur on/off" class="cie-motionblur-effect">Motion blur</label></div>
         <div style="display:flex;align-items:center;gap:2px">
          <button class="cie-reset-btn" data-reset="motionBlurAmt" title="Reset">↺</button>
          <input type="number" id="cie-motionBlurAmtNum" step="any">
@@ -881,7 +978,7 @@ canvas{display:block}
       </div>
       <div class="cie-group" style="padding:0 2px 2px">
        <div class="cie-row">
-        <label class="cie-label indented">Steps</label>
+        <label class="cie-label indented cie-steps-parent">👣<span class="cie-steps-wrapper"><span class="cie-steps-letter">S</span><span class="cie-steps-letter">t</span><span class="cie-steps-letter">e</span><span class="cie-steps-letter">p</span><span class="cie-steps-letter">s</span></span></label>
         <div style="display:flex;align-items:center;gap:2px">
          <button class="cie-reset-btn" data-reset="motionBlurSteps" title="Reset">↺</button>
          <input type="number" id="cie-motionBlurStepsNum" step="any">
