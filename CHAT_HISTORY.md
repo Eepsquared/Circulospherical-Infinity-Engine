@@ -2,17 +2,13 @@
 
 This document serves as the persistent, durable **in-workspace archive** of the full design history, requested features, user decisions, and development checkpoints for the **Circular Infinity Engine**. 
 
-Because chat platform windows may refresh or clear across sessions, this file is **actively updated by the assistant at every checkpoint/version** to preserve 100% of your progress, documentation, and customization instructions.
-
----
+Because chat platform windows may refresh or clear across sessions, this file is **actively updated by the assistant at every checkpoint/version** to preserve 100% of the app's progress, documentation, and customization instructions.
 
 ## 📅 Project Metadata
 * **App Name:** Circulospherical Infinity Engine
-* **Current Version:** v1.16 (Stable)
+* **Current Version:** v1.167 (Stable)
 * **Status:** Build succeeds perfectly (`npm run build` is 100% green).
-* **Environment:** React-free high-performance pure HTML5 / JS Canvas hybrid structure for sub-millisecond drawing loops.
-
----
+* **Environment:** React-free high-performance pure HTML5 / JavaSript Canvas hybrid structure for sub-millisecond drawing loops.
 
 ## 🚀 Chronological Chat History & Feature Versions
 
@@ -55,8 +51,7 @@ Because chat platform windows may refresh or clear across sessions, this file is
   * Integrated a highly performant **Mini Audio/Value Visualizer** inside the options tab.
   * Updated the "Copy Share Code" action to use a modern, minimalist nested sharing SVG button:
     ```svg
-    <svg viewBox="0 0 24 24" width="11" height="11">...</svg>
-    ```
+    <svg viewBox="0 0 24 24" width="11" height="11">...</svg>```
 
 ### 📍 Version 1.06: Temporal Motion Blur, Global Timeline Scrubbing, and Control Polish
 * **User Intent:**
@@ -67,8 +62,6 @@ Because chat platform windows may refresh or clear across sessions, this file is
   * **Global speed Control Polish**: Lowercase-renamed the label and validated its CSS properties so that it inherits standard `.cie-label` properties without extra bolding or color overrides.
   * **Global Timeline Slider**: Placed a master Timeline slider right below Global speed in the Anim tab. Built custom bindings that dynamically animate the slider in loop-step with `pTime` during play, but instantly override `pTime` and proportional `rTime` if the user scrubs it manually (via mouse dragging or manual number field changes), updating the canvas immediately when paused.
   * **Temporal Motion Blur**: Configured a state history buffer (`transformHistory`) to cache previous transforms, zoom factors, and color theme phases on active frames. Created a localized state drawer `drawSingleState` to redraw previous snapshots with smooth exponential-decay opacities underneath the current frame. Natively incorporated "Enable", "Steps", and "Intensity" configs as third-wave parameters with reset/limit/ping-pong integrations inside the FX panel.
-
----
 
 ### 📍 Version 1.07: Audio Reactivity, Undo/Redo Shortcuts, Infinite Zoom, and Control Restructuring
 * **User Intent:**
@@ -84,8 +77,6 @@ Because chat platform windows may refresh or clear across sessions, this file is
   * **Action Bar Unification**: Unified `#cie-action-bar` as an integrated footer component inside `#cie-controls` window, preserving proper vertical scrolling of standard menus, and widened docked mode default setting to `256px` to keep headers on a single line.
   * **Refined Modes & Features**: Removed laggy nested `Mirror (H+V)` renders, and cleaned up redundant inverted modes (`2hi` / `2vi` replaced with standard geometric dual renders).
 
----
-
 ### 📍 Version 1.08: Visual Polish, Action-Bar Nesting, and Filter Fixes
 * **User Intent:**
   * Fix the CSS canvas invert filter behavior.
@@ -95,8 +86,6 @@ Because chat platform windows may refresh or clear across sessions, this file is
   * **Invert Action Correction**: Fixed the active Canvas invert state filter check so that default color-inverting behaves precisely under native filters without visual flickering.
   * **Action Bar DOM Nesting Refinement**: Moved `#cie-action-bar` inside the `.cie-content` DOM hierarchy, ensuring that all action items flow cohesively alongside options parameters and maintain strict scroll boundary limits inside the docked sidebar.
   * **High-Definition Sharing & Export Assets**: Upgraded the action button configurations, perfecting SVG viewBox styling dimensions to `12px` and updating the export button to use high-contrast multi-colored `🖼️` representations.
-
----
 
 ### 📍 Version 1.09: Infinite Zoom Performance Optimizations, Smooth Multi-Strobe Fading, 3D Pitch Control, and Visual Polish
 * **User Intent:**
@@ -114,16 +103,12 @@ Because chat platform windows may refresh or clear across sessions, this file is
   * **Control Renaming & Iconic Emojis**: Cleaned up the controls panel to use human, modern UI casing rules, renamed sliders (`Zoom scale width`, `Depth orbit`, etc.), removed raw "Enable" prefixes in checkboxes, added high-fidelity cursor status tooltips ("On/Off"), and integrated helpful iconic representation emojis (🌐, ⏱️, 📏, 🔍) across labels.
   * **Dynamic UI Auto-Hiding**: Programmed the sidebar to fully auto-collapse child inputs (`cie-cycleSpeedRow`, `cie-multiStrobeSection`, `cie-modeSpeedRow`) when dynamic parent settings are configured as static color or static mode, decluttering the options pane.
 
----
-
 ### 📍 Version 1.10: State-Preserved Floating Panel Transitions
 * **User Intent:**
   * Resolve a layout bug wherein the controls panel shrunk permanently to a narrow, squished 210px width upon being undocked (floated) from the right side of the workspace, which distorted control elements and gave the impression that an older, degraded version of the app interface was loaded.
 * **Implementation:**
   * **Interactive Floating State Capture**: Created memory-allocated storage indicators (`floatTop`, `floatLeft`, `floatRight`, `floatWidth`, `floatHeight`) that capture the exact bounding properties and positioning styles of the floating GUI panel immediately before docker integration transforms.
   * **Fidelity Transition Restoration**: Modified the `.cie-dockBtn` listener to swap the saved spatial coordinates and resized width dimensions seamlessly back onto the panel during float-conversion cycles. Replaced the static, disruptive `210px` reset with a smooth class fallback that preserves the signature 260px wide layouts or the user's custom-resized workspace configurations.
-
----
 
 ### 📍 Version 1.11: High-Precision Slider Limits, Drag-and-Drop Limit Overlays, Vertical Scroll Fixes, and Aesthetics
 * **User Intent:**
@@ -141,8 +126,6 @@ Because chat platform windows may refresh or clear across sessions, this file is
   * **HTML Tag Restructure & Unified Scrolling**: Identified and eliminated a premature duplicate closing `div` within the FX tab, preserving `#cie-content`'s coverage of 'designs' and 'options' panes. Formatted all panel scrollbar aesthetics with deep charcoal scrollbars mirroring Google AI Studio.
   * **Interactive Polish**: Mapped click listeners to both help buttons, configured a high-performance CSS filter toggler on the main canvas element to invert all canvas colors instantly on checkbox toggle, and skipped FPS calculations entirely by default.
 
----
-
 ### 📍 Version 1.12: Unified Docked Scrollbar Layouts, Dynamic Canvas Color Inversion, and Persistent Section Signposts
 * **User Intent:**
   * When the control panel is docked, keep the 'action bar' always visible at the bottom while the rest of the control panel vertically scrolls.
@@ -152,8 +135,6 @@ Because chat platform windows may refresh or clear across sessions, this file is
   * **Docked Footer Unification**: Repositioned the unified `#cie-action-bar` directly beneath the scrollable `#cie-content` DOM container within the parent `#cie-controls` div. Adjusted display structures to render `#cie-content` with full flexible vertical scrolling while keeping the action bar pinned statically to the bottom in docked view states.
   * **Persistent Section Headers**: Engineered custom CSS rules and added declarative `.cie-docked-section-header` signposts (Main, Anim, FX, Designs, Options) indicating section locations, contextually activated exclusively during docked Sidebar state layouts.
   * **Interactive Color Inversion Slider**: Restructured the hidden `#cie-invert` checkbox into an interactive range slider element inside its own dedicated 'Invert color' group, complete with reset listeners, manual precision numerical inputs, limit popovers, and automated logarithmic speed checkboxes/randomizations. Coerced legacy checkbox configurations to continuous floating-point numeric states dynamically inside the setting loader to ensure full backward compatibility.
-
----
 
 ### 📍 Version 1.13: 3D Spherical Infinity Engine Pattern Expansion, Default Control docking, and custom CSS Number inputs
 * **User Intent:**
@@ -168,8 +149,6 @@ Because chat platform windows may refresh or clear across sessions, this file is
   * **Default Docking Layout**: Transferred `#cie-controls` container to initial docked classing inside CSS and HTML, initialized startup coordinate states to `isDocked = true`, and configured the initial icon action mapping for the sidebar-dock toggle to Float Panel state.
   * **Built-in input Number Spinner Customization**: Styled the browser's built-in step buttons (`::-webkit-inner-spin-button`) with high-priority widths of `8px`, utilizing high-performance CSS filters (brightness/contrast combination) to shade them to a matching `#838383` visual tone without breaking native click functionality.
 
----
-
 ### 📍 Version 1.14: Multi-Scale Speed Dropdowns, Global speed Ping-pong Loop Fix, and Help Tooltips
 * **User Intent:**
   * Fix 'Global speed' ping-pong animation freeze/lock when values sweep below 0.05.
@@ -181,8 +160,6 @@ Because chat platform windows may refresh or clear across sessions, this file is
   * **High-Contrast Multi-Scale Speed Selectors**: Replaced speed checkboxes with a streamlined `╭╯` select container overlay. Features highlight indicators (color swaps from high-contrast yellow if active, to standard slate grey if linear) and standard tooltip mappings.
   * **Advanced Math Scale Evaluator**: Implemented mathematical equations for each selector setting inside `runPP()`, executing true factorial approximation, Gompertz growth curves, logistic S-curves, cubic/quadratic polynomials, log/exp curves, and hyperbolas inside the render-loop update thread.
 
----
-
 ### 📍 Version 1.15: Static Unified Title Sync & Interactive Sticky Section Headers
 * **User Intent:**
   * Adopt a single global naming strategy starting with "Circulospherical Infinity Engine" without changing the header text or browser document title dynamically when swapping between 2D and 3D patterns.
@@ -191,8 +168,6 @@ Because chat platform windows may refresh or clear across sessions, this file is
 * **Implementation:**
   * **Static Unified Title Synchronization**: Eliminated dynamic title text manipulation logic in the main loop. Programmed a lightweight startup script reading `document.title` and binding it instantly to both the header `.hdr-text` and help menu title header `#cie-help-title`, protecting static, seamless future version bumps.
   * **Interactive Sticky CSS Headers**: Modified `.cie-docked-section-header` styles in CSS, applying `position: sticky; top: 0; z-index: 10;`. Anchored by the scrolling `.cie-content` body, headers now intelligently hover and stack sequentially on scroll, improving control visibility.
-
----
 
 ### 📍 Version 1.155: Interactive Hover & Tap Label Micro-Animations
 * **User Intent:**
@@ -205,8 +180,6 @@ Because chat platform windows may refresh or clear across sessions, this file is
   * **Vignette Edge Fading**: Integrated elegant linear gradient text backgrounds with `background-clip: text;` masking edge limits selectively.
   * **Pulsed Echo Shadows**: Programmed oscillating text-shadow replicas moving and fading out outwards horizontally to emulate sonic or acoustic echo trails.
   * **Staircase Step Animation**: Restructured the "Steps" label to enclose each character individually. Configured stagger timing delays and vertical transformations so characters ascend sequentially to form a stair step.
-
----
 
 ### 📍 Version 1.16: Infinite Zoom Performance Optimizations, Color Refactoring, and FX Associations
 * **User Intent:**
@@ -221,7 +194,49 @@ Because chat platform windows may refresh or clear across sessions, this file is
   * **Line & Background Invert Separation**: Added a separate mathematical line-color invert slider `cie-lineInvert` right under Line Color section. Extracted background elements (background pickers, fading ranges, and background color invert toggles) into a beautifully self-contained `Background` option box, mathematically inverting and rendering colors independently without bulky global canvas filters.
   * **Subtle Hover Animations**: Connected a `'s p a c e d  o u t'` spacing zoom transition to 'Spacing' and 'Distance' labels. Hooked a dynamic scanning animation to the 'Scanlines' parent label for instant interactive visual feedback.
 
----
+### 📍 Version 1.165: Flawless, Continuous Infinite Zoom Rendering Engine with Seamless Coloring
+* **User Intent:**
+  * Adopt a fully recursive floating-point depth zoom pattern like the attached standard reference.
+  * Prevent structural popping/flickering of outer expanded boundaries and newborn inner cores.
+  * Ensure color transitions (both standard theme modes and strobe cycle states) flow flawlessly and continuously throughout infinite zoom loops.
+  * Set version to v1.165.
+* **Implementation:**
+  * **Recursive Continuous Depth Zoom**: Reformed the infinite zoom algorithm to trace floating-point layer values `layer = d - currProgress` (where `currProgress` is the fractional part of `state.zoom`). The rendering loop now maintains a perfectly constant, lightweight depth recurse tree from `0` to `md` (instead of compounding depth up to integer zoom bounds), eliminating the possibility of recursion depth blowout or micro-stutters.
+  * **Continuous Opacity Fading Curves**: Implemented continuous envelope functions: outer expanding horizons fade out gradually via `1 + layer` to 0, while newborn inner cores smoothly fade in proportionately via `(md - layer) / 2`.
+  * **Flicker-Free Color Gradients**: Extended the core `getThemeRGB` engine to accept continuous fractional depth parameters. By performing a safe floating-point modulo cycle `(d % md + md) % md` before color-mapping, hue values now glide continuously along gradients during zooms, entirely removing "color popping" artifacts.
+  * **Robust glow & 3D Integration**: Unified these smooth color, opacity and glow fading transformations across all interactive modes, including 3D rendering environments.
+
+### 📍 Version 1.166: Pixel-Perfect Infinite Zoom & Designs Ordering Fix
+* **User Intent:**
+  * Resolve line width halving/depleting issues at different zoom intervals (especially zooms 2 and 24).
+  * Ensure outer layers of recursive designs remain rendered gracefully until they are fully outside the canvas boundary.
+  * Add support for clicking the 'Zoom 🔍' label text direct to activate/deactivate Infinite Zoom.
+  * Correct saved designs sorting and loading order so they are chronologically preserved correctly.
+* **Implementation:**
+  * **Proportionally Rescale Infinite Widths**: Fixed line width thickness scaling during infinite zooms by basing thickness calculations directly on the fractional canvas coordinate scaler (`isInfinite ? zFact : Math.pow(2, zoom / 2)`), fully rectifying the line width halving/thinning anomaly at zoom levels 2 and 24.
+  * **Boundary Outer Circle Rendering**: Enabled complete out-of-screen recursive rendering paths down to the true edge bounds, ensuring outer circle frames remain fully drawn without getting culled prematurely.
+  * **Unified Label Action**: Cleanly associated the Infinite Zoom toggle input with a proper visual label `<label for="cie-infiniteZoom">` with cursor-pointing cues, aligning click responsiveness perfectly.
+  * **Original-Sorted Design Indices**: Rewrote `renderConfigs` to map each saved design item back to its true original Array index `originalIndex` in `localStorage` before sorting, preventing the dreaded index misalignment bug where renamed or reverse-dated slots loaded the incorrect preset data.
+
+### 📍 Version 1.167: High-Fidelity Continuous Infinite Zoom & Color Index Bounds Protection
+* **User Intent:**
+  * Fully resolve all remaining infinite zoom rendering artifacts, specifically visual shrinking/resets and premature culling/fade-outs during zooms.
+  * Assure that outer circles persist visible on-screen until they expand fully out of view.
+  * Guarantee that line widths remain mathematically continuous and constant on screen without halving/depleting throughout zooms.
+  * Enable clicking the main "Zoom 🔍" label text directly to toggle Infinite Zoom state.
+  * Restructure options and style menus smoothly, widening panes for optimal scrolling alignment (incorporating manual user polish).
+* **Implementation & Manual Fixes:**
+  * **Dynamic Geometry Scaling**: Corrected the geometry space starting radius by scaling standard `baseR` dynamically by `Math.pow(2, levelShift)` when `isInfinite` is enabled. This ensures circles smoothly double in size exactly in sync with canvas scale reductions, providing 100% continuous infinite zoom transitions.
+  * **Continuous Non-fading Bounds**: Removed the outer parent fading boundary constraints (`layer < 0`), permitting outer recursive layers to stay fully solid and visible (alpha = 1) until they naturally grow past screen limits.
+  * **High-Precision Pan-Aware Culling**: Upgraded boundary culling check to calculate `maxDist` using the screen's diagonal corner distance combined with high-frequency user pan offsets, preventing any clipping of panned outermost circles.
+  * **Dynamic Stroke Scaling**: Stabilized stroke thickness by dividing coordinate widths by zoom scale `zFact` when `Scale stroke` is checked (constant screen width), and scaling coordinate widths by `Math.pow(2, levelShift)` when unchecked (constant geometry width), avoiding any line width halving jumps.
+  * **Negative-proof Color Cycling**: Enhanced the color transition indices in `getColor` using floor-modulo indices, preventing index out-of-bound errors when layer depths go negative.
+  * **Label Trigger Link**: Added direct label associations connecting `🔍 Zoom` text with the `cie-infiniteZoom` checkbox state.
+  * **Micro-Animation Shadow & Filter Tuning (Manual Polish)**: Refined text shadow distances, blur filters, scanline vertical heights, and background sizing on hover/active text micro-animations (increased Chroma split text shadows to `-2px/-1px`, Motion blur to `0.5px`, Echo to `2px/1.5px`, Scanline spacing to `2px`, and scaled Pulse heading backgrounds to `100%`) for gorgeous, professional visual glow feedback.
+  * **FX Tab Panel Rearrangement (Manual Polish)**: Harmonized the FX panel markup structure, cleanly boxing and commenting compartments for Chroma Split, Feedback Echo, Motion Blur, Scanlines, and Vignette layouts.
+  * **Canvas & Select Dropdown Reset (Manual Polish)**: Instated elegant base rules `canvas { display: block }` and `option { min-block-size: unset; min-inline-size: unset; }` to eliminate chromium dropdown cell sizing variance.
+  * **Expanded Sidebar Docking Boundaries (Manual Polish)**: Widened the docked sidebar layout width bounds from `256px`/`260px` up to `274px` / `276px` in CSS rules and JavaScript state trackers. This protects control elements from getting squished or crowded on narrow aspect ratios and preserves pixel-perfect layouts during Floating Panel swaps.
+  * **Unified Background Swatch Group (Manual Polish)**: Merged the two custom background colors cleanly under a single, direct, space-optimized line titled `▨🎨Background color`, improving the visual rhythm of the panel options.
 
 ## 🛠️ Complete Feature Index & Shortcuts
 
@@ -241,8 +256,6 @@ Because chat platform windows may refresh or clear across sessions, this file is
 | **`Timeline` Slider** | Manual Scrubbing | Drag to manually drive and inspect specific geometric moments in real time |
 | **`Motion Blur` Setup** | Temporal Trail FX | Blends past frame transforms procedurally beneath the current scene |
 
----
-
 ## ⚙️ Build and Development Configuration
 Your environment is configured with **Vite** serving index.html instantly on Port 3000. Under the hood, the project is configured with zero external heavy frameworks to safeguard peak performance and render loop latency:
 
@@ -252,9 +265,13 @@ Your environment is configured with **Vite** serving index.html instantly on Por
   * `npm run dev` — local development server on port 3000 list.
   * `npm run build` — static compilation to `/dist` to guarantee fast delivery via Cloud Run.
 
----
-
 ## 📝 Guidelines for Next Sessions
 1. **Never Discard History:** The AI agent must always read `/CHAT_HISTORY.md` at the beginning of the journey to align with the complete state of the art.
 2. **Synchronous Updates:** When adding a new feature, slider, parameter mapping, or audio utility, append it to the [Chronological Chat History](#) sections above.
 3. **Save and Build Verify:** Complete validation with `compile_applet` before closing a turn.
+4. App version incrementing:
+   * Bug fixes increment version by 0.001 (1 thousandths)
+   * Minor changes (especially if mostly UI-related) increment app version by 0.01 (hundredths)
+   * Normal changes increment app version by 0.1 (tenths)
+   * Major changes (I will let you know when) increment app version by 1 (integers)
+   * If AI agent is unsure what constitutes "minor", "normal", and/or "major" changes, ask for clarification.

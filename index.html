@@ -6,23 +6,28 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Circulospherical Infinity Engine 1.16</title>
+<title>Circulospherical Infinity Engine 1.167</title>
 <style>
 :root{--spectral-grad:linear-gradient(90deg,#f00,#f60,#fa0,#ff0,#af0,#0f0,#0fa,#0ff,#0af,#06f,#00f,#60f,#f0f)}
 *{box-sizing:border-box}
 body{margin:0;padding:0;background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+canvas{display:block}
+option{min-block-size:unset;min-inline-size:unset}
+
 #cie-main-area{display:flex;flex-direction:row;flex:1;overflow:hidden;min-height:0}
+
 #cie-canvas-container{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:grab;position:relative;min-width:0}
 #cie-canvas-container:active{cursor:grabbing}
-canvas{display:block}
+
 #cie-fps{position:absolute;bottom:0;font-size:12px;pointer-events:none;z-index:50;display:none;width:100%;text-align:center}
+
 #cie-tooltip{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);font-size:9px;color:#333;pointer-events:none;z-index:50;white-space:nowrap;opacity:1}
 
 /* FLOATING PANEL */
 .cie-controls{position:absolute;top:0;right:0;background:rgba(10,10,10,.82);display:flex;flex-direction:column;border:1px solid #333;z-index:100;max-height:100vh;caret-color:#fff;min-width:160px;width:268px;resize:none;overflow:hidden}
 .cie-controls:focus-within,.cie-controls.active-focus{background:rgba(10,10,10,1)}
 /* DOCKED */
-.cie-controls.docked{position:relative!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;height:100%!important;width:var(--dock-width, 268px)!important;max-height:none!important;border-left:1px solid #333;border-top:none;border-right:0;border-bottom:0;flex-shrink:0;resize:none}
+.cie-controls.docked{position:relative!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;height:100%!important;width:var(--dock-width, 274px)!important;max-height:none!important;border-left:1px solid #333;border-top:none;border-right:0;border-bottom:0;flex-shrink:0;resize:none}
 .cie-controls.docked .cie-content{display:flex!important;flex-direction:column;padding:0 4px;overflow-y:auto;flex:1;min-height:0}
 .cie-controls.docked .cie-tab-panel{display:flex!important;flex-direction:column;width:100%}
 .cie-controls.docked .cie-tabs{display:none!important}
@@ -268,7 +273,7 @@ canvas{display:block}
   display: inline-block;
   transition: all 0.2s ease;
   user-select: none;
-  text-shadow: -0.5px -0.25px 0 rgba(255,0,0,0.5), 0.5px 0.25px 0 rgba(0,255,255,0.5);
+  text-shadow: -2px -1px 0 rgba(255,0,0,0.5), 2px 1px 0 rgba(0,255,255,0.5);
 }
 .cie-chroma-effect:hover, .cie-chroma-effect:active {
   color: #fff;
@@ -280,7 +285,7 @@ canvas{display:block}
   display: inline-block;
   transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
   transform-origin: left center;
-  filter: blur(0.25px);
+  filter: blur(0.5px);
   text-shadow: -0.5px 0 0.5px rgba(255,255,255,0.25);
 }
 .cie-motionblur-effect:hover, .cie-motionblur-effect:active {
@@ -303,7 +308,7 @@ canvas{display:block}
   display: inline-block;
   transition: all 0.3s ease;
   background: linear-gradient(90deg, rgba(180,180,180,0.8) 0%, rgba(255,255,255,1) 20%, rgba(255,255,255,1) 80%, rgba(180,180,180,0.8) 100%);
-  background-size: 200% auto;
+  background-size: 100% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -337,7 +342,7 @@ canvas{display:block}
 .cie-echo-effect {
   display: inline-block;
   transition: all 0.3s ease;
-  text-shadow: 0.75px 0 0.5px rgba(255,255,255,0.25), 1.5px 0 1.0px rgba(255,255,255,0.1);
+  text-shadow: 2px 0 0.5px rgba(255,255,255,0.25), 1.5px 0 1px rgba(255,255,255,0.1);
 }
 .cie-echo-effect:hover, .cie-echo-effect:active {
   color: #fff;
@@ -354,7 +359,7 @@ canvas{display:block}
   transition: all 0.25s ease;
   user-select: none;
   background: linear-gradient(rgba(220,220,220,1) 50%, rgba(120,120,120,0.55) 50%);
-  background-size: 100% 3px;
+  background-size: 100% 2px;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -428,7 +433,7 @@ canvas{display:block}
 <div id="cie-help-overlay">
  <div id="cie-help-box">
   <button id="cie-help-close" style="top:0;right:0">✕</button>
-  <h2 id="cie-help-title" style="margin:0;padding:0">♾⚙ Circulospherical Infinity Engine 1.16 — Help</h2>
+  <h2 id="cie-help-title" style="margin:0;padding:0">♾⚙ Circulospherical Infinity Engine 1.167 — Help</h2>
   <div style="font-size:10px;color:#888;margin:6px 0;padding:0 0 4px;border-bottom:1px solid #222">
     ©2026 <a href="http://tnlc.com/eep/circles/" target="_blank" style="color:yellow;text-decoration:underline">Eep²</a> (design/ideas, CSS tweaking) and AIs: Google Gemini (most programming and ideas) and Anthropic Claude (some programming)
   </div>
@@ -506,7 +511,7 @@ canvas{display:block}
    <div class="cie-header-left">
     <span style="font-size:14px">♾</span>
     <span style="font-size:11px">⚙</span>
-    <span class="hdr-text">Circulospherical Infinity Engine 1.16</span>
+    <span class="hdr-text">Circulospherical Infinity Engine 1.167</span>
    </div>
    <div class="cie-header-btns">
     <button id="cie-helpBtn" class="cie-btn-icon" title="Help" style="font-size:11px;color:yellow">?</button>
@@ -663,7 +668,7 @@ canvas{display:block}
      <div class="cie-group" style="padding:0 2px">
       <div class="cie-row">
        <label class="cie-label">Width</label>
-       <label class="cie-checkbox-group" style="cursor:pointer"><input type="checkbox" id="cie-scaleWidth" title="Zoom scale" checked><span class="cie-label" style="font-size:10px">🔍⚖️</span></label>
+       <label class="cie-checkbox-group" style="cursor:pointer" title="Zoom scale"><input type="checkbox" id="cie-scaleWidth" checked><span class="cie-label" style="font-size:10px">🔍⚖️</span></label>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="thick" title="Reset">↺</button>
         <input type="number" id="cie-thickNum" step="any">
@@ -723,11 +728,10 @@ canvas{display:block}
       <input type="range" id="cie-tDens" min="0.005" max="0.5" value="0.10" step="any">
      </div>
     </div>
-    <div class="cie-box">
-     <div class="cie-box-title">Background</div>
+    <div class="cie-box"><!--Background color-->
      <div class="cie-group" style="padding:0 2px">
       <div class="cie-row">
-       <label class="cie-label">▨ Colors</label>
+       <label class="cie-label">▨🎨Background color</label>
        <div style="display:flex;gap:2px;align-items:center;margin-left:auto">
         <input type="color" id="cie-bgColor" value="#000000" title="Background 1">
         <input type="color" id="cie-bgColor2" value="#ffffff" title="Background 2">
@@ -748,7 +752,7 @@ canvas{display:block}
 
      <div class="cie-group" style="padding:0 2px 2px">
       <div class="cie-row">
-       <label class="cie-label">🌓 Invert</label>
+       <label class="cie-label"><span style="filter:invert(1);">🌓</span> Invert</label>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="invert" title="Reset">↺</button>
         <input type="number" id="cie-invertNum" step="any" value="0">
@@ -865,7 +869,7 @@ canvas{display:block}
        </div>
       </div>
       <div class="cie-limits-popover" id="cie-limits-rSpeed">Min:<input type="number" id="cie-lmin-rSpeed"> Max:<input type="number" id="cie-lmax-rSpeed"><button class="cie-reset-btn" id="cie-limits-rSpeed-close">✕</button></div>
-      <input type="range" id="cie-rSpeed" min="-10" max="10" value="0" step="any">
+      <input type="range" id="cie-rSpeed" min="-10" max="10" value="1" step="any">
       </div>
       <!-- Depth Nesting Rotation -->
       <div class="cie-group" style="padding:0 2px">
@@ -884,10 +888,10 @@ canvas{display:block}
      <div class="cie-group" style="padding:0 2px 2px">
       <div class="cie-row">
        <div style="display:flex;align-items:center;gap:4px">
-        <label class="cie-label">🔍 Zoom</label>
+        <label class="cie-label" for="cie-infiniteZoom" style="cursor:pointer" title="Toggle Infinite Zoom">🔍 Zoom</label>
         <div class="cie-checkbox-group" title="Infinite zoom">
-          <input type="checkbox" id="cie-infiniteZoom" style="background:#333;margin:0;cursor:pointer">
-          <label>∞</label>
+          <input type="checkbox" id="cie-infiniteZoom">
+          <label class="cie-label" for="cie-infiniteZoom" style="cursor:pointer">∞</label>
         </div>
        </div>
        <div style="display:flex;align-items:center;gap:2px">
@@ -931,28 +935,6 @@ canvas{display:block}
       <div class="cie-limits-popover" id="cie-limits-wobbleFreq">Min:<input type="number" id="cie-lmin-wobbleFreq"> Max:<input type="number" id="cie-lmax-wobbleFreq"><button class="cie-reset-btn" id="cie-limits-wobbleFreq-close">✕</button></div>
      </div>
     </div>
-   </div>
-
-   <!-- ═══ FX ═══ -->
-   <div class="cie-tab-panel" data-panel="fx">
-    <div class="cie-docked-section-header">FX</div>
-    <div class="cie-row">
-     <label class="cie-label">Blend</label>
-     <select id="cie-blend" style="width:100px">
-      <option value="source-over">Normal</option>
-      <option value="lighter">Lighter (Add)</option>
-      <option value="multiply">Multiply</option>
-      <option value="screen">Screen</option>
-      <option value="overlay">Overlay</option>
-      <option value="difference">Difference</option>
-      <option value="exclusion">Exclusion</option>
-      <option value="color-dodge">Dodge</option>
-      <option value="color-burn">Burn</option>
-      <option value="hard-light">Hard Light</option>
-      <option value="soft-light">Soft Light</option>
-      <option value="xor">XOR</option>
-     </select>
-    </div>
     <div class="cie-box">
      <div class="cie-group" style="padding:0 2px">
       <div class="cie-row">
@@ -981,7 +963,29 @@ canvas{display:block}
       <div class="cie-limits-popover" id="cie-limits-distortFreq">Min:<input type="number" id="cie-lmin-distortFreq"> Max:<input type="number" id="cie-lmax-distortFreq"><button class="cie-reset-btn" id="cie-limits-distortFreq-close">✕</button></div>
      </div>
     </div>
-    <div class="cie-box">
+   </div>
+
+   <!-- ═══ FX ═══ -->
+   <div class="cie-tab-panel" data-panel="fx">
+    <div class="cie-docked-section-header">FX</div>
+    <div class="cie-row">
+     <label class="cie-label">Blend</label>
+     <select id="cie-blend" style="width:100px">
+      <option value="source-over">Normal</option>
+      <option value="lighter">Lighter (Add)</option>
+      <option value="multiply">Multiply</option>
+      <option value="screen">Screen</option>
+      <option value="overlay">Overlay</option>
+      <option value="difference">Difference</option>
+      <option value="exclusion">Exclusion</option>
+      <option value="color-dodge">Dodge</option>
+      <option value="color-burn">Burn</option>
+      <option value="hard-light">Hard Light</option>
+      <option value="soft-light">Soft Light</option>
+      <option value="xor">XOR</option>
+     </select>
+    </div>
+    <div class="cie-box"><!--Chroma split-->
      <div class="cie-group" style="padding:0 2px 2px">
       <div class="cie-row">
        <div class="cie-checkbox-group"><input type="checkbox" id="cie-chroma" title="Chroma split on/off"><label for="cie-chroma" title="Chroma split on/off" class="cie-chroma-effect">Chroma split</label></div>
@@ -996,49 +1000,7 @@ canvas{display:block}
       <div class="cie-limits-popover" id="cie-limits-chromaAmt">Min:<input type="number" id="cie-lmin-chromaAmt"> Max:<input type="number" id="cie-lmax-chromaAmt"><button class="cie-reset-btn" id="cie-limits-chromaAmt-close">✕</button></div>
      </div>
     </div>
-    <div class="cie-box">
-     <!--<div class="cie-box-title">Scanlines</div>-->
-     <div class="cie-group" style="padding:0 2px">
-      <div class="cie-row">
-       <div class="cie-checkbox-group"><input type="checkbox" id="cie-scanlines" title="Scanlines on/off"><label for="cie-scanlines" title="Scanlines on/off" class="cie-scanlines-effect">𝄚 Scanlines</label></div>
-       <div style="display:flex;align-items:center;gap:2px">
-        <button class="cie-reset-btn" data-reset="scanlinesOp" title="Reset">↺</button>
-        <input type="number" id="cie-scanlinesOpNum" step="any">
-        <button class="cie-emoji-btn cie-ping-pong" data-key="scanlinesOp" title="Ping-pong animation">↔</button>
-         <button class="cie-reset-btn cie-limits-btn" data-key="scanlinesOp" title="Ping-pong limits">🎚️</button>
-       </div>
-      </div>
-      <input type="range" id="cie-scanlinesOp" min="0" max="1" value="0.3" step="any">
-      <div class="cie-limits-popover" id="cie-limits-scanlinesOp">Min:<input type="number" id="cie-lmin-scanlinesOp"> Max:<input type="number" id="cie-lmax-scanlinesOp"><button class="cie-reset-btn" id="cie-limits-scanlinesOp-close">✕</button></div>
-     </div>
-     <div class="cie-group" style="padding:0 2px 2px">
-      <div class="cie-row">
-       <label class="cie-label indented cie-spacedout-effect">↕ Spacing</label>
-       <div style="display:flex;align-items:center;gap:2px">
-        <button class="cie-reset-btn" data-reset="scanlinesSp" title="Reset">↺</button>
-        <input type="number" id="cie-scanlinesSpNum" step="any">
-        <button class="cie-emoji-btn cie-ping-pong" data-key="scanlinesSp" title="Ping-pong animation">↔</button>
-         <button class="cie-reset-btn cie-limits-btn" data-key="scanlinesSp" title="Ping-pong limits">🎚️</button>
-       </div>
-      </div>
-      <input type="range" id="cie-scanlinesSp" min="2" max="20" value="4" step="1">
-      <div class="cie-limits-popover" id="cie-limits-scanlinesSp">Min:<input type="number" id="cie-lmin-scanlinesSp"> Max:<input type="number" id="cie-lmax-scanlinesSp"><button class="cie-reset-btn" id="cie-limits-scanlinesSp-close">✕</button></div>
-     </div>
-    </div>
-    <div class="cie-box">
-     <div class="cie-group" style="padding:0 2px 2px">
-      <div class="cie-row">
-       <div class="cie-checkbox-group"><input type="checkbox" id="cie-vignette" title="Vignette on/off"><label for="cie-vignette" title="Vignette on/off" class="cie-vignette-effect">Vignette</label></div>
-       <div style="display:flex;align-items:center;gap:2px">
-        <button class="cie-reset-btn" data-reset="vignetteAmt" title="Reset">↺</button>
-        <input type="number" id="cie-vignetteAmtNum" step="any">
-        <button class="cie-emoji-btn cie-ping-pong" data-key="vignetteAmt">↔</button>
-       </div>
-      </div>
-      <input type="range" id="cie-vignetteAmt" min="0" max="1" value="0.5" step="any">
-     </div>
-    </div>
-    <div class="cie-box">
+    <div class="cie-box"><!--Feedback echo-->
      <div class="cie-group" style="padding:0 2px 2px">
       <div class="cie-row">
        <div class="cie-checkbox-group"><input type="checkbox" id="cie-echo" title="Feedback echo on/off"><label for="cie-echo" title="Feedback echo on/off" class="cie-echo-effect">Feedback echo</label></div>
@@ -1051,7 +1013,7 @@ canvas{display:block}
       <input type="range" id="cie-echoAmt" min="0" max="5" value="0.7" step="any">
       </div>
      </div>
-     <div class="cie-box">
+     <div class="cie-box"><!--Motion blur-->
       <div class="cie-group" style="padding:0 2px 2px">
        <div class="cie-row">
         <div class="cie-checkbox-group"><input type="checkbox" id="cie-motionBlur" title="Motion blur on/off"><label for="cie-motionBlur" title="Motion blur on/off" class="cie-motionblur-effect">Motion blur</label></div>
@@ -1079,7 +1041,48 @@ canvas{display:block}
        <div class="cie-limits-popover" id="cie-limits-motionBlurSteps">Min:<input type="number" id="cie-lmin-motionBlurSteps"> Max:<input type="number" id="cie-lmax-motionBlurSteps"><button class="cie-reset-btn" id="cie-limits-motionBlurSteps-close">✕</button></div>
       </div>
      </div>
+    <div class="cie-box"><!--Scanlines-->
+     <div class="cie-group" style="padding:0 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-scanlines" title="Scanlines on/off"><label for="cie-scanlines" title="Scanlines on/off" class="cie-scanlines-effect">𝄚 Scanlines</label></div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="scanlinesOp" title="Reset">↺</button>
+        <input type="number" id="cie-scanlinesOpNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="scanlinesOp" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="scanlinesOp" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <input type="range" id="cie-scanlinesOp" min="0" max="1" value="0.3" step="any">
+      <div class="cie-limits-popover" id="cie-limits-scanlinesOp">Min:<input type="number" id="cie-lmin-scanlinesOp"> Max:<input type="number" id="cie-lmax-scanlinesOp"><button class="cie-reset-btn" id="cie-limits-scanlinesOp-close">✕</button></div>
+     </div>
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <label class="cie-label indented cie-spacedout-effect">↕ Spacing</label>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="scanlinesSp" title="Reset">↺</button>
+        <input type="number" id="cie-scanlinesSpNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="scanlinesSp" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="scanlinesSp" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <input type="range" id="cie-scanlinesSp" min="2" max="20" value="4" step="1">
+      <div class="cie-limits-popover" id="cie-limits-scanlinesSp">Min:<input type="number" id="cie-lmin-scanlinesSp"> Max:<input type="number" id="cie-lmax-scanlinesSp"><button class="cie-reset-btn" id="cie-limits-scanlinesSp-close">✕</button></div>
+     </div>
     </div>
+    <div class="cie-box"><!--Vignette-->
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-vignette" title="Vignette on/off"><label for="cie-vignette" title="Vignette on/off" class="cie-vignette-effect">Vignette</label></div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="vignetteAmt" title="Reset">↺</button>
+        <input type="number" id="cie-vignetteAmtNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="vignetteAmt">↔</button>
+       </div>
+      </div>
+      <input type="range" id="cie-vignetteAmt" min="0" max="1" value="0.5" step="any">
+     </div>
+    </div>
+   </div>
 
    <!-- ═══ DESIGNS ═══ -->
    <div class="cie-tab-panel" data-panel="designs">
@@ -1183,7 +1186,7 @@ const echoCanvas=document.createElement('canvas');
 const echoCtx  = echoCanvas.getContext('2d');
 
 let zoomVal=1,panX=0,panY=0,manualRot=0,manualRotY=0;
-let currZFact=1,currLevelShift=0;
+let currZFact=1,currLevelShift=0,currProgress=0;
 let isDrag=false,isPanning=false,isRotating=false,isResizingPanel=false;
 let dragOffX=0,dragOffY=0,lastMX=0,lastMY=0;
 const pps={},ppd={};
@@ -1197,8 +1200,8 @@ let prevTheme='white',currTheme='white',stTimer=0;
 let modeTimer=0,modeList=['2h','2v','4plus','kaleid','spiral','fractal','lissajous'];
 let mediaRecorder,recChunks=[],recStart;
 let fpsCnt=0,fpsLast=performance.now();
-let dockWidth=256,isDocked=true;
-let floatWidth='260px', floatHeight='', floatTop='0', floatRight='0', floatLeft='auto';
+let dockWidth=276,isDocked=true;
+let floatWidth='276px', floatHeight='', floatTop='0', floatRight='0', floatLeft='auto';
 const miniHistory=new Float32Array(120);let miniIdx=0;
 let editingPresetIdx=-1;
 let transformHistory=[];
@@ -1290,7 +1293,7 @@ const chk =id=>el(id).checked;
 
 // ── DEFAULT VALUES ──
 const SLIDER_DEFAULTS={
-  depth:8,pSpeed:1,pDepth:0.05,phase:0,rSpeed:0,gRad:8,tDens:0.10,thick:1,op:1,
+  depth:8,pSpeed:1,pDepth:0.05,phase:0,rSpeed:1,gRad:8,tDens:0.10,thick:1,op:1,
   msSpeed:1,cSpeed:1,bgFade:0,zoom:0,wobbleAmp:0.1,wobbleFreq:1,distortAmp:10,distortFreq:3,
   chromaAmt:4,scanlinesOp:0.3,scanlinesSp:4,vignetteAmt:0.5,echoAmt:0.7,
   converge:0,modeSpeed:1,globalSpeed:1,rotDepthFactor:0.5,
@@ -1996,7 +1999,7 @@ el('cie-dockBtn').addEventListener('click',()=>{
     floatTop = controls.style.top || '0';
     floatLeft = controls.style.left || 'auto';
     floatRight = controls.style.right || '0';
-    floatWidth = controls.style.width || '260px';
+    floatWidth = controls.style.width || '276px';
     floatHeight = controls.style.height || '';
 
     controls.classList.add('docked');
@@ -2080,18 +2083,20 @@ renderPresets();
 
 // ── DESIGNS ──
 function renderConfigs(){
-  const raw=JSON.parse(localStorage.getItem('cie_designs')||'[]');
-  if(el('cie-sort').value==='name') raw.sort((a,b)=>a.name.localeCompare(b.name));
-  else raw.sort((a,b)=>b.date-a.date);
+  const all=JSON.parse(localStorage.getItem('cie_designs')||'[]');
+  const mapped = all.map((d, index) => ({...d, originalIndex: index}));
+  if(el('cie-sort').value==='name') mapped.sort((a,b)=>a.name.localeCompare(b.name));
+  else mapped.sort((a,b)=>b.date-a.date);
   const list=el('cie-configList'); list.innerHTML='';
-  raw.forEach((d,i)=>{
+  mapped.forEach((d)=>{
+    const origIdx = d.originalIndex;
     const row=document.createElement('div'); row.className='config-item';
     const ns=document.createElement('span'); ns.className='config-name'; ns.textContent=d.name; ns.title='Load';
-    ns.addEventListener('click',()=>{ const all=JSON.parse(localStorage.getItem('cie_designs')||'[]'); if(all[i]) loadSettings(all[i].data); });
+    ns.addEventListener('click',()=>{ const allDesigns=JSON.parse(localStorage.getItem('cie_designs')||'[]'); if(allDesigns[origIdx]) loadSettings(allDesigns[origIdx].data); });
     const eb=document.createElement('button'); eb.className='config-edit-btn'; eb.textContent='✏'; eb.title='Rename';
-    eb.addEventListener('click',()=>startEdit(i,ns));
+    eb.addEventListener('click',()=>startEdit(origIdx,ns));
     const db=document.createElement('button'); db.className='config-edit-btn'; db.textContent='🗑'; db.title='Delete'; db.style.color='#774444';
-    db.addEventListener('click',()=>{ const all=JSON.parse(localStorage.getItem('cie_designs')||'[]'); if(!confirm('Delete "'+all[i].name+'"?')) return; all.splice(i,1); localStorage.setItem('cie_designs',JSON.stringify(all)); renderConfigs(); });
+    db.addEventListener('click',()=>{ const allDesigns=JSON.parse(localStorage.getItem('cie_designs')||'[]'); if(!confirm('Delete "'+allDesigns[origIdx].name+'"?')) return; allDesigns.splice(origIdx,1); localStorage.setItem('cie_designs',JSON.stringify(allDesigns)); renderConfigs(); });
     row.appendChild(ns); row.appendChild(eb); row.appendChild(db); list.appendChild(row);
   });
 }
@@ -2279,7 +2284,7 @@ function getRGB(h){const r=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);r
 function getThemeRGB(d,md,t){
   const map={white:{r:255,g:255,b:255},blue:{r:51,g:102,b:255},black:{r:0,g:0,b:0},cyan:{r:0,g:255,b:255},green:{r:51,g:255,b:51},orange:{r:255,g:153,b:0},purple:{r:204,g:51,b:255},red:{r:255,g:51,b:51},yellow:{r:255,g:255,b:51},gold:{r:255,g:215,b:0},pink:{r:255,g:105,b:180},teal:{r:0,g:206,b:209},custom:getRGB(el('cie-customColor').value)};
   if(map[t]) return map[t];
-  const hue=(d/md)*360,h2=hue/60,c=255,x=c*(1-Math.abs(h2%2-1));
+  const hue=((d % md + md) % md / md)*360,h2=hue/60,c=255,x=c*(1-Math.abs(h2%2-1));
   let r=0,g=0,b=0;if(h2<1){r=c;g=x;}else if(h2<2){r=x;g=c;}else if(h2<3){g=c;b=x;}else if(h2<4){g=x;b=c;}else if(h2<5){r=x;b=c;}else{r=c;b=x;}
   return{r,g,b};
 }
@@ -2287,20 +2292,26 @@ function getColor(d,md,al,opacity,mult){
   const invAmt = el('cie-lineInvert') ? val('cie-lineInvert') : 0;
   const applyInv = (c) => Math.round(c + (255 - 2*c) * invAmt);
   let pt=prevTheme,at=currTheme;
+  const wrapIdx = (v, m) => ((v % m) + m) % m;
   if(mult&&getCycleMode()!=='off'){
     const cnt=themeKeys.length-1;
     const spd=val('cie-msSpeed');
     const valOffset=d+(stTimer*spd*0.05);
     
     if (chk('cie-smoothFade')) {
-      const idx1 = Math.floor(valOffset) % cnt;
-      const idx2 = (Math.floor(valOffset) + 1) % cnt;
-      const fract = valOffset - Math.floor(valOffset);
+      const idx1 = Math.floor(valOffset);
+      const idx2 = idx1 + 1;
+      const fract = valOffset - idx1;
       
-      const pt1=themeKeys[(themeKeys.indexOf(prevTheme)+idx1)%cnt];
-      const at1=themeKeys[(themeKeys.indexOf(currTheme)+idx1)%cnt];
-      const pt2=themeKeys[(themeKeys.indexOf(prevTheme)+idx2)%cnt];
-      const at2=themeKeys[(themeKeys.indexOf(currTheme)+idx2)%cnt];
+      const themeIdx1 = wrapIdx(themeKeys.indexOf(prevTheme) + idx1, cnt);
+      const themeIdx2 = wrapIdx(themeKeys.indexOf(currTheme) + idx1, cnt);
+      const themeIdx3 = wrapIdx(themeKeys.indexOf(prevTheme) + idx2, cnt);
+      const themeIdx4 = wrapIdx(themeKeys.indexOf(currTheme) + idx2, cnt);
+      
+      const pt1=themeKeys[themeIdx1];
+      const at1=themeKeys[themeIdx2];
+      const pt2=themeKeys[themeIdx3];
+      const at2=themeKeys[themeIdx4];
       
       const r1a=getThemeRGB(d,md,pt1), r2a=getThemeRGB(d,md,at1);
       const r1b=getThemeRGB(d,md,pt2), r2b=getThemeRGB(d,md,at2);
@@ -2322,9 +2333,9 @@ function getColor(d,md,al,opacity,mult){
       
       return 'rgba('+applyInv(finalR)+','+applyInv(finalG)+','+applyInv(finalB)+','+opacity+')';
     } else {
-      const off=Math.floor(valOffset)%cnt;
-      pt=themeKeys[(themeKeys.indexOf(prevTheme)+off)%cnt];
-      at=themeKeys[(themeKeys.indexOf(currTheme)+off)%cnt];
+      const off=Math.floor(valOffset);
+      pt=themeKeys[wrapIdx(themeKeys.indexOf(prevTheme)+off, cnt)];
+      at=themeKeys[wrapIdx(themeKeys.indexOf(currTheme)+off, cnt)];
     }
   }
   const r1=getThemeRGB(d,md,pt),r2=getThemeRGB(d,md,at);
@@ -2347,8 +2358,11 @@ function drawRec(x,y,rad,d,md,o,levelShift=0){
   if(o.wobble) s*=1+o.wobbleAmp*Math.sin(pTime*o.wobbleFreq+d*0.7)*Math.cos(pTime*o.wobbleFreq*0.6+d*1.3);
   const r=rad*s; if(r<0.05) { ctx.restore(); return; }
   
-  if (chk('cie-infiniteZoom')) {
-    const maxDist = Math.max(canvas.width, canvas.height) / 2;
+  const isInfinite = chk('cie-infiniteZoom');
+  if (isInfinite) {
+    const panDist = Math.sqrt(panX * panX + panY * panY);
+    const cornerDist = Math.sqrt(canvas.width * canvas.width + canvas.height * canvas.height) / 2;
+    const maxDist = (cornerDist + panDist) * 1.5;
     const screenX = cx * currZFact;
     const screenY = cy * currZFact;
     const screenR = r * currZFact;
@@ -2362,14 +2376,30 @@ function drawRec(x,y,rad,d,md,o,levelShift=0){
   let ox=0,oy=0;
   if(o.distort){ox=o.distortAmp*Math.sin(pTime*o.distortFreq+cy*0.03+d);oy=o.distortAmp*Math.cos(pTime*o.distortFreq+cx*0.03+d);}
   
-  if (d >= Math.max(0, levelShift - 2)) {
-    const col=getColor(Math.max(0, d - levelShift),md,themeAlpha,o.op,o.mult);
-    ctx.strokeStyle=col; ctx.lineWidth=o.thick;
-    ctx.shadowBlur=(o.glow&&Math.max(0, d - levelShift)<4)?o.gRad:0; ctx.shadowColor=col;
-    ctx.beginPath();ctx.arc(cx+ox,cy+oy,r,0,Math.PI*2);ctx.stroke();
+  if (isInfinite) {
+    const layer = d - levelShift - currProgress;
+    let alpha = 1;
+    if (layer > md - 1) {
+      alpha = Math.max(0, md - layer);
+    }
+    const finalOpacity = o.op * alpha;
+    if (finalOpacity > 0) {
+      const col=getColor(layer,md,themeAlpha,finalOpacity,o.mult);
+      ctx.strokeStyle=col; ctx.lineWidth=o.thick;
+      ctx.shadowBlur=(o.glow&&layer<4)?o.gRad*alpha:0; ctx.shadowColor=col;
+      ctx.beginPath();ctx.arc(cx+ox,cy+oy,r,0,Math.PI*2);ctx.stroke();
+    }
+  } else {
+    if (d >= Math.max(0, levelShift - 2)) {
+      const col=getColor(Math.max(0, d - levelShift),md,themeAlpha,o.op,o.mult);
+      ctx.strokeStyle=col; ctx.lineWidth=o.thick;
+      ctx.shadowBlur=(o.glow&&Math.max(0, d - levelShift)<4)?o.gRad:0; ctx.shadowColor=col;
+      ctx.beginPath();ctx.arc(cx+ox,cy+oy,r,0,Math.PI*2);ctx.stroke();
+    }
   }
   
-  if(d<md+levelShift){
+  const limit = md + levelShift;
+  if(d<limit){
     const nr=rad/2;
     if(o.h){drawRec(x-nr,y,nr,d+1,md,o,levelShift);drawRec(x+nr,y,nr,d+1,md,o,levelShift);}
     if(o.v){drawRec(x,y-nr,nr,d+1,md,o,levelShift);drawRec(x,y+nr,nr,d+1,md,o,levelShift);}
@@ -2389,8 +2419,11 @@ function drawOneWayNested(x, y, rad, d, md, o, axis, invert, levelShift=0) {
   if(o.wobble) s*=1+o.wobbleAmp*Math.sin(pTime*o.wobbleFreq+d*0.7)*Math.cos(pTime*o.wobbleFreq*0.6+d*1.3);
   const r=rad*s; if(r<0.05) { ctx.restore(); return; }
   
-  if (chk('cie-infiniteZoom')) {
-    const maxDist = Math.max(canvas.width, canvas.height) / 2;
+  const isInfinite = chk('cie-infiniteZoom');
+  if (isInfinite) {
+    const panDist = Math.sqrt(panX * panX + panY * panY);
+    const cornerDist = Math.sqrt(canvas.width * canvas.width + canvas.height * canvas.height) / 2;
+    const maxDist = (cornerDist + panDist) * 1.5;
     const screenX = cx * currZFact;
     const screenY = cy * currZFact;
     const screenR = r * currZFact;
@@ -2404,14 +2437,30 @@ function drawOneWayNested(x, y, rad, d, md, o, axis, invert, levelShift=0) {
   let ox=0,oy=0;
   if(o.distort){ox=o.distortAmp*Math.sin(pTime*o.distortFreq+cy*0.03+d);oy=o.distortAmp*Math.cos(pTime*o.distortFreq+cx*0.03+d);}
   
-  if (d >= Math.max(0, levelShift - 2)) {
-    const col=getColor(Math.max(0, d - levelShift),md,themeAlpha,o.op,o.mult);
-    ctx.strokeStyle=col; ctx.lineWidth=o.thick;
-    ctx.shadowBlur=(o.glow&&Math.max(0, d - levelShift)<4)?o.gRad:0; ctx.shadowColor=col;
-    ctx.beginPath();ctx.arc(cx+ox,cy+oy,r,0,Math.PI*2);ctx.stroke();
+  if (isInfinite) {
+    const layer = d - levelShift - currProgress;
+    let alpha = 1;
+    if (layer > md - 1) {
+      alpha = Math.max(0, md - layer);
+    }
+    const finalOpacity = o.op * alpha;
+    if (finalOpacity > 0) {
+      const col=getColor(layer,md,themeAlpha,finalOpacity,o.mult);
+      ctx.strokeStyle=col; ctx.lineWidth=o.thick;
+      ctx.shadowBlur=(o.glow&&layer<4)?o.gRad*alpha:0; ctx.shadowColor=col;
+      ctx.beginPath();ctx.arc(cx+ox,cy+oy,r,0,Math.PI*2);ctx.stroke();
+    }
+  } else {
+    if (d >= Math.max(0, levelShift - 2)) {
+      const col=getColor(Math.max(0, d - levelShift),md,themeAlpha,o.op,o.mult);
+      ctx.strokeStyle=col; ctx.lineWidth=o.thick;
+      ctx.shadowBlur=(o.glow&&Math.max(0, d - levelShift)<4)?o.gRad:0; ctx.shadowColor=col;
+      ctx.beginPath();ctx.arc(cx+ox,cy+oy,r,0,Math.PI*2);ctx.stroke();
+    }
   }
   
-  if(d<md+levelShift){
+  const limit = md + levelShift;
+  if(d<limit){
     const nr=rad/2;
     const shift = invert ? -nr : nr;
     if (axis === 'h') {
@@ -2424,11 +2473,16 @@ function drawOneWayNested(x, y, rad, d, md, o, axis, invert, levelShift=0) {
 }
 
 function draw3D4Plus(o, levelShift=0) {
-  const baseR = Math.min(canvas.width, canvas.height) / 2 * 0.85;
+  let baseR = Math.min(canvas.width, canvas.height) / 2 * 0.85;
+  if (chk('cie-infiniteZoom')) {
+    baseR *= Math.pow(2, levelShift);
+  }
   const md = Math.min(o.md, 6);
   
   function drawNode3D(x, y, z, rad, d) {
-    if (d > md + levelShift) return;
+    const isInfinite = chk('cie-infiniteZoom');
+    const limit = md + levelShift;
+    if (d > limit) return;
     
     const cosY = Math.cos(manualRotY);
     const sinY = Math.sin(manualRotY);
@@ -2446,8 +2500,10 @@ function draw3D4Plus(o, levelShift=0) {
     const r = pr * s;
     if (r < 0.05) return;
     
-    if (chk('cie-infiniteZoom')) {
-      const maxDist = Math.max(canvas.width, canvas.height) / 2;
+    if (isInfinite) {
+      const panDist = Math.sqrt(panX * panX + panY * panY);
+      const cornerDist = Math.sqrt(canvas.width * canvas.width + canvas.height * canvas.height) / 2;
+      const maxDist = (cornerDist + panDist) * 1.5;
       const dFromCenter = Math.sqrt(px * px + py * py) * currZFact;
       const screenR = r * currZFact;
       if (dFromCenter - screenR > maxDist) {
@@ -2455,19 +2511,39 @@ function draw3D4Plus(o, levelShift=0) {
       }
     }
     
-    if (d >= Math.max(0, levelShift - 2)) {
-      const col = getColor(Math.max(0, d - levelShift), md, themeAlpha, o.op, o.mult);
-      ctx.strokeStyle = col;
-      ctx.lineWidth = o.thick * perspective;
-      ctx.shadowBlur = (o.glow && Math.max(0, d - levelShift) < 4) ? o.gRad : 0;
-      ctx.shadowColor = col;
-      
-      ctx.beginPath();
-      ctx.arc(px, py, r, 0, Math.PI * 2);
-      ctx.stroke();
+    if (isInfinite) {
+      const layer = d - levelShift - currProgress;
+      let alpha = 1;
+      if (layer > md - 1) {
+        alpha = Math.max(0, md - layer);
+      }
+      const finalOpacity = o.op * alpha;
+      if (finalOpacity > 0) {
+        const col = getColor(layer, md, themeAlpha, finalOpacity, o.mult);
+        ctx.strokeStyle = col;
+        ctx.lineWidth = o.thick * perspective;
+        ctx.shadowBlur = (o.glow && layer < 4) ? o.gRad * alpha : 0;
+        ctx.shadowColor = col;
+        
+        ctx.beginPath();
+        ctx.arc(px, py, r, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    } else {
+      if (d >= Math.max(0, levelShift - 2)) {
+        const col = getColor(Math.max(0, d - levelShift), md, themeAlpha, o.op, o.mult);
+        ctx.strokeStyle = col;
+        ctx.lineWidth = o.thick * perspective;
+        ctx.shadowBlur = (o.glow && Math.max(0, d - levelShift) < 4) ? o.gRad : 0;
+        ctx.shadowColor = col;
+        
+        ctx.beginPath();
+        ctx.arc(px, py, r, 0, Math.PI * 2);
+        ctx.stroke();
+      }
     }
     
-    if (d < md + levelShift) {
+    if (d < limit) {
       const nr = rad / 2;
       const offset = rad * 0.75;
       
@@ -2500,11 +2576,16 @@ function draw3D4Plus(o, levelShift=0) {
 }
 
 function draw3D2H(o, levelShift=0) {
-  const baseR = Math.min(canvas.width, canvas.height) / 2 * 0.85;
+  let baseR = Math.min(canvas.width, canvas.height) / 2 * 0.85;
+  if (chk('cie-infiniteZoom')) {
+    baseR *= Math.pow(2, levelShift);
+  }
   const md = Math.min(o.md, 9);
   
   function drawNode3D(x, y, z, rad, d) {
-    if (d > md + levelShift) return;
+    const isInfinite = chk('cie-infiniteZoom');
+    const limit = md + levelShift;
+    if (d > limit) return;
     
     const cosY = Math.cos(manualRotY);
     const sinY = Math.sin(manualRotY);
@@ -2522,8 +2603,10 @@ function draw3D2H(o, levelShift=0) {
     const r = pr * s;
     if (r < 0.05) return;
     
-    if (chk('cie-infiniteZoom')) {
-      const maxDist = Math.max(canvas.width, canvas.height) / 2;
+    if (isInfinite) {
+      const panDist = Math.sqrt(panX * panX + panY * panY);
+      const cornerDist = Math.sqrt(canvas.width * canvas.width + canvas.height * canvas.height) / 2;
+      const maxDist = (cornerDist + panDist) * 1.5;
       const dFromCenter = Math.sqrt(px * px + py * py) * currZFact;
       const screenR = r * currZFact;
       if (dFromCenter - screenR > maxDist) {
@@ -2531,19 +2614,39 @@ function draw3D2H(o, levelShift=0) {
       }
     }
     
-    if (d >= Math.max(0, levelShift - 2)) {
-      const col = getColor(Math.max(0, d - levelShift), md, themeAlpha, o.op, o.mult);
-      ctx.strokeStyle = col;
-      ctx.lineWidth = o.thick * perspective;
-      ctx.shadowBlur = (o.glow && Math.max(0, d - levelShift) < 4) ? o.gRad : 0;
-      ctx.shadowColor = col;
-      
-      ctx.beginPath();
-      ctx.arc(px, py, r, 0, Math.PI * 2);
-      ctx.stroke();
+    if (isInfinite) {
+      const layer = d - levelShift - currProgress;
+      let alpha = 1;
+      if (layer > md - 1) {
+        alpha = Math.max(0, md - layer);
+      }
+      const finalOpacity = o.op * alpha;
+      if (finalOpacity > 0) {
+        const col = getColor(layer, md, themeAlpha, finalOpacity, o.mult);
+        ctx.strokeStyle = col;
+        ctx.lineWidth = o.thick * perspective;
+        ctx.shadowBlur = (o.glow && layer < 4) ? o.gRad * alpha : 0;
+        ctx.shadowColor = col;
+        
+        ctx.beginPath();
+        ctx.arc(px, py, r, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    } else {
+      if (d >= Math.max(0, levelShift - 2)) {
+        const col = getColor(Math.max(0, d - levelShift), md, themeAlpha, o.op, o.mult);
+        ctx.strokeStyle = col;
+        ctx.lineWidth = o.thick * perspective;
+        ctx.shadowBlur = (o.glow && Math.max(0, d - levelShift) < 4) ? o.gRad : 0;
+        ctx.shadowColor = col;
+        
+        ctx.beginPath();
+        ctx.arc(px, py, r, 0, Math.PI * 2);
+        ctx.stroke();
+      }
     }
     
-    if (d < md + levelShift) {
+    if (d < limit) {
       const nr = rad / 2;
       const offset = rad * 0.75;
       
@@ -2772,41 +2875,61 @@ function update(){
 
     const isInfinite = chk('cie-infiniteZoom');
     let md = isInfinite ? ( (mode==='4'||mode==='3d4plus') ? 6 : (mode==='3d2h' ? 7 : 8) ) : o.md;
-    const finalO = {...o, md: md};
 
     let levelShift = 0;
     let zFact = Math.pow(2, state.zoom / 2);
+    let progress = 0;
     if(isInfinite) {
       levelShift = Math.floor(state.zoom / 2);
       if(levelShift < 0) levelShift = 0;
       const zoomFract = state.zoom - levelShift * 2;
       zFact = Math.pow(2, zoomFract / 2);
+      progress = zoomFract / 2;
     }
+    let finalThick;
+    if (isInfinite) {
+      if (chk('cie-scaleWidth')) {
+        finalThick = val('cie-thick') / zFact;
+      } else {
+        finalThick = val('cie-thick') * Math.pow(2, levelShift);
+      }
+    } else {
+      if (chk('cie-scaleWidth')) {
+        finalThick = val('cie-thick') / Math.pow(2, state.zoom / 2);
+      } else {
+        finalThick = val('cie-thick');
+      }
+    }
+    const finalO = {...o, md: md, thick: finalThick};
+
     currZFact = zFact;
+    currLevelShift = levelShift;
+    currProgress = progress;
 
     ctx.translate(canvas.width/2+state.panX, canvas.height/2+state.panY);
     ctx.scale(zFact, zFact);
     ctx.rotate(state.rTime+state.manualRot);
 
     const baseR=Math.min(canvas.width,canvas.height)/2*0.85;
+    const initialR = isInfinite ? baseR * Math.pow(2, levelShift) : baseR;
     if(mode==='spiral') drawSpiral(finalO);
     else if(mode==='fractal') drawFractal(finalO);
     else if(mode==='lissajous') drawLissajous(finalO);
     else if(mode==='3d4plus') draw3D4Plus(finalO, levelShift);
     else if(mode==='3d2h') draw3D2H(finalO, levelShift);
-    else if(mode==='1h')  drawOneWay(baseR,finalO.md,finalO,'h',false,levelShift);
-    else if(mode==='1v')  drawOneWay(baseR,finalO.md,finalO,'v',false,levelShift);
-    else if(mode==='1hi') drawOneWay(baseR,finalO.md,finalO,'h',true,levelShift);
-    else if(mode==='1vi') drawOneWay(baseR,finalO.md,finalO,'v',true,levelShift);
-    else if(mode==='2h_inv'){ drawOneWay(baseR,finalO.md,finalO,'h',false,levelShift); drawOneWay(baseR,finalO.md,finalO,'h',true,levelShift); }
-    else if(mode==='2v_inv'){ drawOneWay(baseR,finalO.md,finalO,'v',false,levelShift); drawOneWay(baseR,finalO.md,finalO,'v',true,levelShift); }
+    else if(mode==='1h')  drawOneWay(initialR,finalO.md,finalO,'h',false,levelShift);
+    else if(mode==='1v')  drawOneWay(initialR,finalO.md,finalO,'v',false,levelShift);
+    else if(mode==='1hi') drawOneWay(initialR,finalO.md,finalO,'h',true,levelShift);
+    else if(mode==='1vi') drawOneWay(initialR,finalO.md,finalO,'v',true,levelShift);
+    else if(mode==='2h_inv'){ drawOneWay(initialR,finalO.md,finalO,'h',false,levelShift); drawOneWay(initialR,finalO.md,finalO,'h',true,levelShift); }
+    else if(mode==='2v_inv'){ drawOneWay(initialR,finalO.md,finalO,'v',false,levelShift); drawOneWay(initialR,finalO.md,finalO,'v',true,levelShift); }
     else if(mode==='kaleid'||mode==='kaleid12'){
       const seg=mode==='kaleid12'?12:8;
-      for(let i=0;i<seg;i++){ctx.save();ctx.rotate((Math.PI*2/seg)*i);if(i%2===1)ctx.scale(1,-1);drawRec(0,0,baseR,0,finalO.md,{...finalO,h:true,v:false},levelShift);ctx.restore();}
+      for(let i=0;i<seg;i++){ctx.save();ctx.rotate((Math.PI*2/seg)*i);if(i%2===1)ctx.scale(1,-1);drawRec(0,0,initialR,0,finalO.md,{...finalO,h:true,v:false},levelShift);ctx.restore();}
     } else if(mode==='4plus'){
-      drawRec(0,0,baseR,0,finalO.md,{...finalO,h:true,v:false},levelShift);
-      drawRec(0,0,baseR,0,finalO.md,{...finalO,h:false,v:true},levelShift);
-    } else drawRec(0,0,baseR,0,finalO.md,finalO,levelShift);
+      drawRec(0,0,initialR,0,finalO.md,{...finalO,h:true,v:false},levelShift);
+      drawRec(0,0,initialR,0,finalO.md,{...finalO,h:false,v:true},levelShift);
+    } else drawRec(0,0,initialR,0,finalO.md,finalO,levelShift);
 
     if(chk('cie-vignette')) applyVignette(canvas.width,canvas.height,val('cie-vignetteAmt'));
     if(chk('cie-scanlines')) applyScanlines(canvas.width,canvas.height,parseInt(el('cie-scanlinesSp').value),val('cie-scanlinesOp'));
