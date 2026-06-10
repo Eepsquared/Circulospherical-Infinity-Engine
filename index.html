@@ -6,485 +6,706 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>Circulospherical Infinity Engine 1.167</title>
+<title>Circulospherical Infinity Engine 1.19</title>
 <style>
-:root{--spectral-grad:linear-gradient(90deg,#f00,#f60,#fa0,#ff0,#af0,#0f0,#0fa,#0ff,#0af,#06f,#00f,#60f,#f0f)}
-*{box-sizing:border-box}
-body{margin:0;padding:0;background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column;height:100vh;overflow:hidden}
-canvas{display:block}
-option{min-block-size:unset;min-inline-size:unset}
+:root {--spectral-grad:linear-gradient(90deg,#f00,#f60,#fa0,#ff0,#af0,#0f0,#0fa,#0ff,#0af,#06f,#00f,#60f,#f0f)}
+* {box-sizing:border-box}
+body {margin:0;padding:0;background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+canvas {display:block}
+option {min-block-size:unset;min-inline-size:unset}
 
-#cie-main-area{display:flex;flex-direction:row;flex:1;overflow:hidden;min-height:0}
+#cie-main-area {display:flex;flex-direction:row;flex:1;overflow:hidden;min-height:0}
 
-#cie-canvas-container{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:grab;position:relative;min-width:0}
-#cie-canvas-container:active{cursor:grabbing}
+#cie-canvas-container {flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:grab;position:relative;min-width:0}
+#cie-canvas-container:active {cursor:grabbing}
 
-#cie-fps{position:absolute;bottom:0;font-size:12px;pointer-events:none;z-index:50;display:none;width:100%;text-align:center}
+#cie-fps {position:absolute;bottom:0;font-size:12px;pointer-events:none;z-index:50;display:none;width:100%;text-align:center;text-shadow:1px 1px 0px black;}
 
 #cie-tooltip{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);font-size:9px;color:#333;pointer-events:none;z-index:50;white-space:nowrap;opacity:1}
 
 /* FLOATING PANEL */
-.cie-controls{position:absolute;top:0;right:0;background:rgba(10,10,10,.82);display:flex;flex-direction:column;border:1px solid #333;z-index:100;max-height:100vh;caret-color:#fff;min-width:160px;width:268px;resize:none;overflow:hidden}
-.cie-controls:focus-within,.cie-controls.active-focus{background:rgba(10,10,10,1)}
+.cie-controls {position:absolute;top:0;right:0;background:rgba(10,10,10,.82);display:flex;flex-direction:column;border:1px solid #333;z-index:100;max-height:100vh;caret-color:#fff;min-width:160px;width:340px;resize:none;overflow:hidden}
+.cie-controls:focus-within,.cie-controls.active-focus {background:rgba(10,10,10,1)}
 /* DOCKED */
-.cie-controls.docked{position:relative!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;height:100%!important;width:var(--dock-width, 274px)!important;max-height:none!important;border-left:1px solid #333;border-top:none;border-right:0;border-bottom:0;flex-shrink:0;resize:none}
-.cie-controls.docked .cie-content{display:flex!important;flex-direction:column;padding:0 4px;overflow-y:auto;flex:1;min-height:0}
-.cie-controls.docked .cie-tab-panel{display:flex!important;flex-direction:column;width:100%}
-.cie-controls.docked .cie-tabs{display:none!important}
+.cie-controls.docked,
+.cie-controls.dock-left,
+.cie-controls.dock-right,
+.cie-controls.dock-top,
+.cie-controls.dock-bottom {
+  position:relative; top:auto; right:auto; bottom:auto; left:auto; max-height:none; flex-shrink:0; resize:none;
+}
 
-/* Dark Theme Scrollbars (AI Studio style) */
-.cie-controls.docked::-webkit-scrollbar,
-.cie-controls.docked .cie-content::-webkit-scrollbar,
-.config-list::-webkit-scrollbar,
-#cie-help-overlay::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+.cie-controls.docked .cie-tabs,
+.cie-controls.dock-left .cie-tabs,
+.cie-controls.dock-right .cie-tabs,
+.cie-controls.dock-top .cie-tabs,
+.cie-controls.dock-bottom .cie-tabs {
+  display:none;
 }
-.cie-controls.docked::-webkit-scrollbar-track,
-.cie-controls.docked .cie-content::-webkit-scrollbar-track,
-.config-list::-webkit-scrollbar-track,
-#cie-help-overlay::-webkit-scrollbar-track {
-  background: #0d0d0d;
+
+/* Vertical dock sides (left/right) */
+.cie-controls.docked,
+.cie-controls.dock-left,
+.cie-controls.dock-right {
+  height:100%; width:var(--dock-width, 283px);
 }
-.cie-controls.docked::-webkit-scrollbar-thumb,
-.cie-controls.docked .cie-content::-webkit-scrollbar-thumb,
-.config-list::-webkit-scrollbar-thumb,
-#cie-help-overlay::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 3px;
-}
-.cie-controls.docked::-webkit-scrollbar-thumb:hover,
-.cie-controls.docked .cie-content::-webkit-scrollbar-thumb:hover,
-.config-list::-webkit-scrollbar-thumb:hover,
-#cie-help-overlay::-webkit-scrollbar-thumb:hover {
-  background: #555;
+.cie-controls.dock-left {
+  border-right:1px solid #333; border-left:none; border-top:none; border-bottom:none;
 }
 .cie-controls.docked,
+.cie-controls.dock-right {
+  border-left:1px solid #333; border-right:none; border-top:none; border-bottom:none;
+}
+
 .cie-controls.docked .cie-content,
+.cie-controls.dock-left .cie-content,
+.cie-controls.dock-right .cie-content {
+  display:flex; flex-direction:column; padding:0 0 0 2px; overflow-y:auto; flex:1; min-height:0;
+}
+
+.cie-controls.docked .cie-tab-panel,
+.cie-controls.dock-left .cie-tab-panel,
+.cie-controls.dock-right .cie-tab-panel {
+  display:flex; flex-direction:column; width:100%;
+}
+
+/* Horizontal dock sides (top/bottom) */
+.cie-controls.dock-top,
+.cie-controls.dock-bottom {
+  width:100%; height:var(--dock-height, 260px);
+}
+.cie-controls.dock-top {
+  border-bottom:1px solid #333; border-top:none ;
+}
+.cie-controls.dock-bottom {
+  border-top:1px solid #333; border-bottom:none ;
+}
+
+.cie-controls.dock-top .cie-content,
+.cie-controls.dock-bottom .cie-content {
+  display:flex; flex-direction:row; overflow-x:auto; overflow-y:hidden; flex:1; min-height:0; width:100%;
+}
+
+.cie-controls.dock-top .cie-tab-panel,
+.cie-controls.dock-bottom .cie-tab-panel {
+  display:flex; flex-direction:column; height:100%; overflow-y:auto; border-right:1px solid #222; flex-basis:min-content;
+}
+.cie-controls.dock-top .cie-tab-panel:last-child,
+.cie-controls.dock-bottom .cie-tab-panel:last-child {
+  border-right:none;
+  margin-right:0;
+}
+
+/* Dark Theme Scrollbars (AI Studio style) */
+.cie-controls::-webkit-scrollbar,
+.cie-controls.docked::-webkit-scrollbar,
+.cie-controls.docked .cie-content::-webkit-scrollbar,
+.cie-controls.dock-left::-webkit-scrollbar,
+.cie-controls.dock-left .cie-content::-webkit-scrollbar,
+.cie-controls.dock-right::-webkit-scrollbar,
+.cie-controls.dock-right .cie-content::-webkit-scrollbar,
+.cie-controls.dock-top::-webkit-scrollbar,
+.cie-controls.dock-top .cie-content::-webkit-scrollbar,
+.cie-controls.dock-bottom::-webkit-scrollbar,
+.cie-controls.dock-bottom .cie-content::-webkit-scrollbar,
+.cie-controls.dock-top .cie-tab-panel::-webkit-scrollbar,
+.cie-controls.dock-bottom .cie-tab-panel::-webkit-scrollbar,
+.config-list::-webkit-scrollbar,
+#cie-help-scroll-container::-webkit-scrollbar {
+  width:6px; height:6px;
+}
+.cie-controls::-webkit-scrollbar-track,
+.cie-controls.docked::-webkit-scrollbar-track,
+.cie-controls.docked .cie-content::-webkit-scrollbar-track,
+.cie-controls.dock-left::-webkit-scrollbar-track,
+.cie-controls.dock-left .cie-content::-webkit-scrollbar-track,
+.cie-controls.dock-right::-webkit-scrollbar-track,
+.cie-controls.dock-right .cie-content::-webkit-scrollbar-track,
+.cie-controls.dock-top::-webkit-scrollbar-track,
+.cie-controls.dock-top .cie-content::-webkit-scrollbar-track,
+.cie-controls.dock-bottom::-webkit-scrollbar-track,
+.cie-controls.dock-bottom .cie-content::-webkit-scrollbar-track,
+.cie-controls.dock-top .cie-tab-panel::-webkit-scrollbar-track,
+.cie-controls.dock-bottom .cie-tab-panel::-webkit-scrollbar-track,
+.config-list::-webkit-scrollbar-track,
+#cie-help-scroll-container::-webkit-scrollbar-track {
+  background:#0d0d0d;
+}
+.cie-controls::-webkit-scrollbar-thumb,
+.cie-controls.docked::-webkit-scrollbar-thumb,
+.cie-controls.docked .cie-content::-webkit-scrollbar-thumb,
+.cie-controls.dock-left::-webkit-scrollbar-thumb,
+.cie-controls.dock-left .cie-content::-webkit-scrollbar-thumb,
+.cie-controls.dock-right::-webkit-scrollbar-thumb,
+.cie-controls.dock-right .cie-content::-webkit-scrollbar-thumb,
+.cie-controls.dock-top::-webkit-scrollbar-thumb,
+.cie-controls.dock-top .cie-content::-webkit-scrollbar-thumb,
+.cie-controls.dock-bottom::-webkit-scrollbar-thumb,
+.cie-controls.dock-bottom .cie-content::-webkit-scrollbar-thumb,
+.cie-controls.dock-top .cie-tab-panel::-webkit-scrollbar-thumb,
+.cie-controls.dock-bottom .cie-tab-panel::-webkit-scrollbar-thumb,
+.config-list::-webkit-scrollbar-thumb,
+#cie-help-scroll-container::-webkit-scrollbar-thumb {
+  background:#333; border-radius:3px;
+}
+.cie-controls::-webkit-scrollbar-thumb:hover,
+.cie-controls.docked::-webkit-scrollbar-thumb:hover,
+.cie-controls.docked .cie-content::-webkit-scrollbar-thumb:hover,
+.cie-controls.dock-left::-webkit-scrollbar-thumb:hover,
+.cie-controls.dock-left .cie-content::-webkit-scrollbar-thumb:hover,
+.cie-controls.dock-right::-webkit-scrollbar-thumb:hover,
+.cie-controls.dock-right .cie-content::-webkit-scrollbar-thumb:hover,
+.cie-controls.dock-top::-webkit-scrollbar-thumb:hover,
+.cie-controls.dock-top .cie-content::-webkit-scrollbar-thumb:hover,
+.cie-controls.dock-bottom::-webkit-scrollbar-thumb:hover,
+.cie-controls.dock-bottom .cie-content::-webkit-scrollbar-thumb:hover,
+.cie-controls.dock-top .cie-tab-panel::-webkit-scrollbar-thumb:hover,
+.cie-controls.dock-bottom .cie-tab-panel::-webkit-scrollbar-thumb:hover,
+.config-list::-webkit-scrollbar-thumb:hover,
+#cie-help-scroll-container::-webkit-scrollbar-thumb:hover {background:#555}
+.cie-controls,
+.cie-controls.docked,
+.cie-controls.docked .cie-content,
+.cie-controls.dock-left,
+.cie-controls.dock-left .cie-content,
+.cie-controls.dock-right,
+.cie-controls.dock-right .cie-content,
+.cie-controls.dock-top,
+.cie-controls.dock-top .cie-content,
+.cie-controls.dock-bottom,
+.cie-controls.dock-bottom .cie-content,
+.cie-controls.dock-top .cie-tab-panel,
+.cie-controls.dock-bottom .cie-tab-panel,
 .config-list,
-#cie-help-overlay {
-  scrollbar-width: thin;
-  scrollbar-color: #333 #0d0d0d;
+#cie-help-scroll-container {
+  scrollbar-width:thin; scrollbar-color:#333 #0d0d0d;
 }
+/* Scrollbar visibility toggle support */
+.cie-hide-scrollbars::-webkit-scrollbar,
+.cie-hide-scrollbars *::-webkit-scrollbar
+  {display:none; width:0; height:0}
+.cie-hide-scrollbars,
+.cie-hide-scrollbars *
+  {scrollbar-width:none; -ms-overflow-style:none}
+/* Style theme options scrollbar like #cie-content */
+#cie-theme-options::-webkit-scrollbar {width:6px; height:6px}
+#cie-theme-options::-webkit-scrollbar-track
+  {background:#0d0d0d}
+#cie-theme-options::-webkit-scrollbar-thumb
+  {background:#333; border-radius:3px}
+#cie-theme-options::-webkit-scrollbar-thumb:hover
+  {background:#555}
+#cie-theme-options
+  {scrollbar-width:thin; scrollbar-color:#333 #0d0d0d}
+@media (min-height:200px) {#cie-theme-options {max-height:none}}
 /* RESIZE HANDLE (docked) */
-#cie-resize-handle{position:absolute;left:0;top:0;bottom:0;width:4px;cursor:col-resize;background:transparent;z-index:200}
-#cie-resize-handle:hover{background:rgba(255,255,255,.15)}
-.cie-controls:not(.docked) #cie-resize-handle{display:none}
+#cie-resize-handle {position:absolute;left:0;top:0;bottom:0;width:4px;cursor:col-resize;background:transparent;z-index:200}
+#cie-resize-handle:hover {background:rgba(128,128,128,.5)}
+.cie-controls:not(.docked) #cie-resize-handle {display:none}
 /* BOTTOM-LEFT RESIZE HANDLE (floating) */
-#cie-bl-resize-handle{position:absolute;left:0;bottom:0;width:12px;height:12px;cursor:nesw-resize;z-index:202;background:transparent}
-.cie-controls.docked #cie-bl-resize-handle{display:none}
+#cie-bl-resize-handle {position:absolute;left:0;bottom:0;width:12px;height:12px;cursor:nesw-resize;z-index:202;background:transparent}
+.cie-controls.docked #cie-bl-resize-handle {display:none}
+/* MINIMIZED STATE OVERRIDES */
+.cie-controls.minimized {
+  height:24px; min-height:24px; max-height:24px; overflow:hidden; resize:none;
+}
+.cie-controls.minimized .cie-content,
+.cie-controls.minimized .cie-tabs,
+.cie-controls.minimized #cie-action-bar,
+.cie-controls.minimized #cie-miniViz,
+.cie-controls.minimized .cie-resize-edge,
+.cie-controls.minimized #cie-resize-handle,
+.cie-controls.minimized #cie-bl-resize-handle {
+  display:none}
 /* HEADER */
-.cie-header{padding:0;background:#111;border-bottom:1px solid #333;cursor:move;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:101;flex-shrink:0;user-select:none;-webkit-user-select:none;flex-wrap:wrap;gap:2px}
-.cie-controls.docked .cie-header{cursor:default}
-.cie-header-left{display:flex;align-items:center;gap:0;padding-left:0;flex-shrink:1;min-width:0;overflow:hidden}
-.cie-header-left span.hdr-text{font-size:10px;font-weight:800;color:#777;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cie-header-btns{display:flex;gap:5px;align-items:center;padding-right:4px;flex-shrink:0}
-.cie-btn-icon{background:none;border:0;color:#888;cursor:pointer;padding:0;font-size:13px;line-height:1;display:flex;align-items:center}
-.cie-btn-icon:hover{color:#fff}
+.cie-header {padding:0;background:#111;border-bottom:1px solid #333;cursor:move;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:101;flex-shrink:0;user-select:none;-webkit-user-select:none;flex-wrap:nowrap;gap:0}
+.cie-controls.docked .cie-header {cursor:default}
+.cie-header-left {display:flex;align-items:center;gap:0;padding-left:0;flex-shrink:1;min-width:0;overflow:hidden}
+.cie-header-left span.hdr-text {font-size:10px;font-weight:800;color:#777;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cie-header-btns {display:flex;gap:5px;align-items:center;padding-right:4px;flex-shrink:0}
+.cie-btn-icon {background:none;border:0;color:#888;cursor:pointer;padding:0;font-size:13px;line-height:1;display:flex;align-items:center}
+.cie-btn-icon:hover {color:#fff}
 /* MINI VIZ */
-#cie-miniViz{width:100%;height:20px;display:none;border-bottom:1px solid #1a1a1a;flex-shrink:0}
+#cie-miniViz {width:100%;height:20px;display:none;border-bottom:1px solid #1a1a1a;flex-shrink:0}
 /* TABS */
-.cie-tabs{display:flex;border-bottom:1px solid #222;background:#0a0a0a;flex-shrink:0}
-.cie-tab{flex:1;font-size:10px;color:#888;padding:2px 0;text-align:center;cursor:pointer;border:0;background:none;text-transform:uppercase;}
-.cie-tab:hover{color:#aaa}
-.cie-tab.active{color:#fff;background-color:#555}
-.cie-tab-panel{display:none}
-.cie-tab-panel.active{display:flex;flex-direction:column}
+.cie-tabs {display:flex;border-bottom:1px solid #222;background:#0a0a0a;flex-shrink:0}
+.cie-tab {flex:1;font-size:10px;color:#888;padding:2px 0;text-align:center;cursor:pointer;border:0;background:none;text-transform:uppercase;}
+.cie-tab:hover {color:#aaa}
+.cie-tab.active {color:#fff;background-color:#555}
+.cie-tab-panel {display:none}
+.cie-tab-panel.active {display:flex;flex-direction:column}
 /* CONTENT */
-.cie-content{padding:0 4px;display:flex;flex-direction:column;gap:0;overflow-y:auto;flex:1;min-height:0}
-.cie-group{display:flex;flex-direction:column;gap:0;margin-bottom:0}
-.cie-row{display:flex;align-items:center;justify-content:space-between;gap:2px;padding:0}
-.cie-label{font-size:12px;color:#bbb}
-.cie-label.indented{margin-left:15px}
-.cie-box{border:1px solid #222;padding:0;margin:0;background:rgba(255,255,255,.02)}
-.cie-box-title{font-size:10px;color:#c3c3c3;font-weight:900;margin:0;padding-left:2px;text-align:center}
-.cie-box-title::after{content="";flex:1;border-bottom: 1px solid #222;margin-left:.5em;}
-.cie-box-title::before{content="";flex:1;border-bottom: 1px solid #222;margin-right:.5em;}
-.cie-sep{border-top:1px solid #1a1a1a}
+.cie-content {padding:0 2px;display:flex;flex-direction:column;gap:0;overflow-y:auto;flex:1;min-height:0;scrollbar-width:thin;}
+.cie-group {display:flex;flex-direction:column;gap:0;margin-bottom:0}
+.cie-row {display:flex;align-items:center;justify-content:space-between;gap:2px;padding:0}
+.cie-label {font-size:12px;color:#bbb}
+.cie-label.indent {margin-left:15px}
+.cie-box {border:1px solid #222;padding:0;margin:0;background:rgba(255,255,255,.02)}
+.cie-box-title {font-size:10px;color:#c3c3c3;font-weight:900;margin:0;padding-left:2px;text-align:center}
+.cie-box-title::after {content="";flex:1;border-bottom:1px solid #222;margin-left:.5em;}
+.cie-box-title::before {content="";flex:1;border-bottom:1px solid #222;margin-right:.5em;}
+.cie-sep {border-top:1px solid #1a1a1a}
 /* INPUTS */
-.cie-controls input[type=number]{background:inherit;color:#bbb;border:1px solid #222;font-size:11px;width:50px;padding:0 2px;margin:0}
+.cie-controls input[type=number] {background:inherit;color:#bbb;border:1px solid #222;font-size:11px;width:50px;padding:0 2px;margin:0}
 .cie-controls input[type=number]::-webkit-inner-spin-button,
-.cie-controls input[type=number]::-webkit-outer-spin-button {
-  /*-webkit-appearance: none;
-  display: block;
-  height: 100%;*/
-  width: 6px;
-  cursor: pointer;
-  filter: contrast(0.5) brightness(0.7);
-  margin-right:-6px;
+.cie-controls input[type=number]::-webkit-outer-spin-button {width:6px; cursor:pointer; filter:contrast(0.5) brightness(0.7); margin-right:-6px}
+.cie-controls input[type=range] {-webkit-appearance:none;width:100%;height:4px;background:#333;outline:none;margin:3px 0}
+.cie-controls input[type=range]::-webkit-slider-thumb {-webkit-appearance:none;width:8px;height:8px;background:rgba(255,255,255,.625);border-radius:50%;cursor:pointer}
+.cie-controls input[type=range]::-moz-range-thumb {width:8px;height:8px;background:rgba(255,255,255,.625);border-radius:50%;cursor:pointer;border:0}
+.cie-controls input[type=color] {appearance:none;-webkit-appearance:none;border:1px solid #333;width:12px;height:12px;padding:0;cursor:pointer;background:none}
+.cie-controls input[type=color]::-webkit-color-swatch-wrapper {padding:0}
+.cie-controls input[type=color]::-webkit-color-swatch {border:0}
+.cie-controls input[type=text] {background:inherit;color:#ccc;border:1px solid #333;font-size:11px;padding:0;width:100%}
+
+.cie-controls select,
+.cie-controls-select::picker(select) {appearance:base-select;}
+.cie-controls select {background:#333;border:1px solid #333;border-radius:0;color:#ccc;font-size:11px;min-block-size:unset;min-inline-size:12px;padding:0}
+
+.cie-checkbox-group {display:flex;align-items:center;gap:3px;cursor:pointer;font-size:12px;color:#bbb}
+.cie-checkbox-group input[type=checkbox] {appearance:none;width:12px;height:12px;background:#333;border:1px solid #444;cursor:pointer;display:inline-grid;place-content:center;margin:0;flex-shrink:0}
+.cie-checkbox-group input[type=checkbox]:checked {background:#111;border-color:#666}
+.cie-checkbox-group input[type=checkbox]:checked::before {content:"";width:8px;height:8px;background:#aaa}
+
+.cie-radio-group {display:flex;align-items:center;gap:3px;cursor:pointer;font-size:12px;color:#888}
+.cie-radio-group input[type=radio] {appearance:none;width:12px;height:12px;background:#333;border:1px solid #444;border-radius:50%;cursor:pointer;display:inline-grid;place-content:center;margin:0;flex-shrink:0}
+.cie-radio-group input[type=radio]:checked {background:#111;border-color:#666}
+.cie-radio-group input[type=radio]:checked::before {content:"";width:4px;height:4px;background:#aaa;border-radius:50%}
+
+.theme-spectral {
+  background-image:var(--spectral-grad); background-clip:text;
+  -webkit-background-clip:text; color:transparent; -webkit-text-fill-color:transparent;
 }
-.cie-controls input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:#333;outline:none;margin:3px 0}
-.cie-controls input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:8px;height:8px;background:rgba(255,255,255,.625);border-radius:50%;cursor:pointer}
-.cie-controls input[type=range]::-moz-range-thumb{width:8px;height:8px;background:rgba(255,255,255,.625);border-radius:50%;cursor:pointer;border:0}
-.cie-controls input[type=color]{appearance:none;-webkit-appearance:none;border:1px solid #333;width:12px;height:12px;padding:0;cursor:pointer;background:none}
-.cie-controls input[type=color]::-webkit-color-swatch-wrapper{padding:0}
-.cie-controls input[type=color]::-webkit-color-swatch{border:0}
-.cie-controls input[type=text]{background:#000;color:#fff;border:1px solid #333;font-size:11px;width:100%}
-.cie-checkbox-group{display:flex;align-items:center;gap:3px;cursor:pointer;font-size:12px;color:#bbb}
-.cie-checkbox-group input[type=checkbox]{appearance:none;width:12px;height:12px;background:#333;border:1px solid #444;cursor:pointer;display:inline-grid;place-content:center;margin:0;flex-shrink:0}
-.cie-checkbox-group input[type=checkbox]:checked{background:#111;border-color:#666}
-.cie-checkbox-group input[type=checkbox]:checked::before{content:"";width:8px;height:8px;background:#aaa}
-.cie-radio-group{display:flex;align-items:center;gap:3px;cursor:pointer;font-size:12px;color:#888}
-.cie-radio-group input[type=radio]{appearance:none;width:10px;height:10px;background:#333;border:1px solid #444;border-radius:50%;cursor:pointer;display:inline-grid;place-content:center;margin:0;flex-shrink:0}
-.cie-radio-group input[type=radio]:checked{background:#111;border-color:#666}
-.cie-radio-group input[type=radio]:checked::before{content:"";width:4px;height:4px;background:#aaa;border-radius:50%}
-.cie-controls select{background:#000;color:#fff;border:1px solid #333;font-size:11px;border-radius:0;padding:0}
-.theme-spectral{background-image:var(--spectral-grad);background-clip:text;-webkit-background-clip:text;color:transparent}
-.cie-emoji-btn{background:none;border:0;color:#fff;padding:0;cursor:pointer;font-size:14px;opacity:.75;outline:none;display:flex;align-items:center}
-.cie-emoji-btn:hover{opacity:1}
-.cie-emoji-btn.active{opacity:1;filter:drop-shadow(0 0 2px #fff)}
-.cie-ping-pong{font-size:12px;opacity:.5}
-.cie-ping-pong.active{opacity:1;color:#fff}
+
+@keyframes blink {0%,100%{opacity:1}50%{opacity:0}}
+
+.cie-emoji-btn {background:none;border:0;color:#fff;padding:0;cursor:pointer;font-size:14px;opacity:.75;outline:none;display:flex;align-items:center}
+.cie-emoji-btn:hover {opacity:1}
+.cie-emoji-btn.active {opacity:1;filter:drop-shadow(0 0 2px #fff)}
+
 /* ACTION BAR */
-.cie-action-btns{display:flex;gap:4px;align-items:center;border-top:1px solid #222;background:#0a0a0a;flex-shrink:0;z-index:10}
-#cie-pauseBtn{width:100%;border:1px solid #555;justify-content:center;font-size:12px;opacity:.7}
-#cie-pauseBtn:hover{opacity:1}
-#cie-resetBtn{opacity:.5}
-#cie-resetBtn:hover{opacity:1}
-.cie-spacer{flex-grow:1}
-#cie-recBtn.recording{opacity:1;position:relative}
-#cie-recTimer{font-size:8px;color:#f33;font-weight:bold;margin-left:2px;display:none}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-/* DESIGNS */
-.config-list{max-height:80px;overflow-y:auto;border:0;background:#222}
-.config-item{display:flex;justify-content:space-between;align-items:center;padding:0 2px;font-size:12px;border-bottom:1px solid #111;gap:2px}
-.config-item:hover{background:#111}
-.config-name{flex-grow:1;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
-.config-name-edit{flex-grow:1;background:#111;color:#fff;border:1px solid #444;font-size:9px;padding:0 2px;min-width:0}
-.config-edit-btn{background:none;border:none;color:#888;cursor:pointer;padding:0;line-height:1;flex-shrink:0}
-.config-edit-btn:hover{color:#fff}
-.cie-disabled{opacity:.3;pointer-events:none}
-/* PRESET CHIPS */
-.cie-preset-bar{display:flex;flex-wrap:wrap;border-bottom:1px solid #1a1a1a}
-.cie-preset-chip{font-size:8px;color:#666;border:1px solid #1f1f1f;padding:1px 4px;cursor:pointer;background:#0a0a0a;white-space:nowrap}
-.cie-preset-chip:hover{color:#fff;border-color:#444;background:#1a1a1a}
-/* PRESET EDIT PANEL */
-#cie-preset-edit-panel{background:#0a0a0a;border:1px solid #2a2a2a;padding:4px;margin:2px 0;font-size:9px;display:none}
-#cie-preset-edit-panel.open{display:block}
-/* SLIDER LIMITS POPOVER */
-.cie-limits-popover{display:none;background:#0d0d0d;border:1px solid #444;padding:0;margin:0;font-size:9px;gap:4px;align-items:center;white-space:nowrap}
-.cie-limits-popover.open{display:flex}
-.cie-limits-popover input[type=number]{width:48px;font-size:9px;background:#000;color:#fff;border:1px solid #333;padding:0 2px}
-/* RESET-TO-DEFAULT BTN */
-.cie-reset-btn{background:none;border:0;color:#888;cursor:pointer;font-size:12px;padding:0;line-height:1;flex-shrink:0}
-.cie-reset-btn:hover{color:#fff}
-/* HELP MODAL */
-#cie-help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;overflow-y:auto;padding:0}
-#cie-help-overlay.visible{display:flex;align-items:flex-start;justify-content:center}
-#cie-help-box{background:#0d0d0d;border:1px solid #333;max-width:580px;width:100%;padding:0;font-size:11px;color:#bbb;position:relative;margin:auto}
-#cie-help-box h2{color:#fff;font-size:13px;margin:0;border-bottom:1px solid #222;padding:0}
-#cie-help-box h3{color:#aaa;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin:10px 0 4px}
-#cie-help-box .help-row{display:flex;gap:8px;margin-bottom:3px}
-#cie-help-box .help-key{font-weight:bold;min-width:130px;flex-shrink:0;font-size:10px}
-#cie-help-box .help-val{color:#888}
-#cie-help-box .kbd{display:inline-block;font-size:9px;color:#ccc;border:1px solid #444;padding:0 4px;border-radius:3px;background:#1a1a1a;margin:0 2px;font-family:monospace}
-#cie-help-close{position:absolute;top:0;right:0;background:none;border:0;color:#666;cursor:pointer;font-size:18px;line-height:1}
-#cie-help-close:hover{color:#fff}
-.cie-options-row{display:flex;align-items:center;justify-content:space-between}
-#cie-showBtn{position:absolute;top:0;right:0;background:#111;border:1px solid #333;color:#fff;padding:4px 8px;cursor:pointer;display:none;z-index:99;font-size:9px}
-.icon-dock-rect{width:10px;height:5px;border:1px solid currentColor;border-top:2px solid currentColor;display:inline-block;position:relative;top:1px}
-/* Invert tooltip */
-[data-tooltip]{position:relative;cursor:help}
-[data-tooltip]::after{content:attr(data-tooltip);position:absolute;right:0;top:100%;background:#111;border:1px solid #444;color:#aaa;font-size:9px;padding:0;margin:0;white-space:nowrap;z-index:200;display:none;pointer-events:none}
-[data-tooltip]:hover::after{display:block}
+.cie-action-btns {display:flex;gap:4px;align-items:center;border-top:1px solid #222;background:#0a0a0a;flex-shrink:0;z-index:10}
+#cie-pauseBtn {width:100%;border:1px solid #555;justify-content:center;font-size:12px;opacity:.7}
+#cie-pauseBtn:hover {opacity:1}
+#cie-resetBtn {opacity:.5}
+#cie-resetBtn:hover {opacity:1}
+.cie-spacer {flex-grow:1}
+#cie-recBtn.recording {opacity:1;position:relative}
+#cie-recTimer {font-size:8px;color:#f33;font-weight:bold;margin-left:2px;display:none}
 
-/* Docked Section Header */
-.cie-docked-section-header {
-  display: none;
-}
-.cie-controls.docked .cie-docked-section-header {
-  display: block;
-  font-size: 10px;
-  color: #ccc;
-  background: #333;
-  text-transform: uppercase;
-  font-weight: bold;
-  text-align: center;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
+/* CONTROL SUITE */
+  /* Ping-pong animation button */
+.cie-ping-pong {font-size:12px;opacity:.5}
+.cie-ping-pong.active {opacity:1;color:#fff}
 
-/* Slider limit overlay styles */
+  /* Slider limits popover */
+.cie-limits-btn {background:transparent;border:0;cursor:pointer;padding:0}
+.cie-limits-popover {display:none; background:#0d0d0d; border:1px solid #444; padding:0; margin:0; font-size:11px;gap:4px; align-items:center; position:absolute; white-space:nowrap; width:100%}
+.cie-limits-popover.open {display:flex;justify-content:space-between}
+.cie-limits-popover input[type=number] {width:48px; border:1px solid #333; padding:0 2px}
+
 .cie-slider-limit-overlay {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -6px;
-  height: 4px;
-  pointer-events: none;
-  font-family: var(--font-mono), monospace;
-  font-size: 7px;
-  font-weight: bold;
-  z-index: 10;
+  position:absolute; left:0; right:0; bottom:2px; height:4px;
+  pointer-events:none; font-family:var(--font-mono), monospace; font-size:7px; font-weight:bold; z-index:10;
 }
 .cie-limit-track {
-  position: absolute;
-  top: -9px;
-  height: 4px;
-  background: rgba(129, 129, 129, 0.5);
-  cursor: grab;
+  position:absolute; top:unset; bottom:3px; height:4px; background:rgba(129,129,129,0.5); cursor:grab;
 }
-.cie-limit-track:active {
-  cursor: grabbing;
-}
+.cie-limit-track:active {cursor:grabbing}
+.cie-limit-track:hover {transform:scaleY(1.5)}
 .cie-limit-marker {
-  position: absolute;
-  top: -12px;
-  transform: translateX(-50%);
-  line-height: 1;
-  font-size: 7px;
-  cursor: ew-resize;
-  width: max-content;
+  position:absolute; bottom:3px; top:unset; transform:translateX(-50%); line-height:.5; font-size:10px;
+  cursor:ew-resize; width:max-content;
 }
-.cie-limit-track, .cie-limit-marker {
-  pointer-events: auto;
+.cie-limit-marker:hover,.cie-limit-marker:active {font-size:14px;line-height:.5}
+.cie-limit-marker.left {margin-left:-3px}
+.cie-limit-marker.right {margin-left:3px}
+.cie-limit-track, .cie-limit-marker {pointer-events:auto}
+.cie-limit-marker-tooltip {
+  position:absolute; bottom:10px; left:50%; transform:translateX(-50%); background:#111; color:#fff; /*border:1px solid #ff3366; border-radius:3px;*/ font-size:10px; padding:0 4px; line-height:1; white-space:nowrap; pointer-events:none; font-family:monospace; z-index:10000;
 }
 
-.cie-section-title{display:none;background:#151515;color:#ccc;font-size:10px;font-weight:900;text-transform:uppercase;padding:3px 6px;letter-spacing:.5px;border-bottom:1px solid #222;margin-bottom:4px;user-select:none}
-.cie-controls.docked .cie-section-title{display:block}
+  /* Random slider button */
+.cie-random-slider-btn:hover {transform:scale(1.25);}
+
+  /* Active continuous random button and slide limit tooltip styling */
+.active-continuous {
+  background:#ff3366; color:#fff; animation:pulse-continuous 0.3s infinite alternate; border-radius:50%
+}
+@keyframes pulse-continuous {
+  from { opacity:0.7; }
+  to { opacity:1; transform:scale(1.1); }
+}
+
+  /* Reset-to-default button */
+.cie-reset-btn {background:transparent;border:0;color:yellow;cursor:pointer;font-size:12px;padding:0;line-height:1;}
+.cie-reset-btn:hover,.cie-speed-scale-container:hover,.cie-ping-pong:hover
+{color:#fff;text-shadow:0 0 5px rgba(255,255,255,1);transform:scale(1.25)}
+
+/* DESIGNS */
+.config-list {max-height:5.375em;overflow-y:auto;border:0;background:#222}
+.config-item {display:flex;justify-content:space-between;align-items:center;padding:0 2px;font-size:12px;border-bottom:1px solid #111;gap:2px}
+.config-item:hover {background:#111}
+.config-name {flex-grow:1;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
+.config-name-edit {flex-grow:1;background:#111;color:#fff;border:1px solid #444;font-size:9px;padding:0 2px;min-width:0}
+.config-edit-btn {background:none;border:none;color:#ffbc00;cursor:pointer;padding:0;line-height:1;flex-shrink:0}
+.config-edit-btn:hover {color:#fff}
+.cie-disabled {display:none;opacity:.3;pointer-events:none}
+
+/* PRESET CHIPS */
+.cie-preset-bar {display:flex;flex-wrap:wrap;border-bottom:1px solid #1a1a1a;justify-content:center;column-gap:2px}
+.cie-preset-chip {font-size:10px;color:#666;border:1px solid #1f1f1f;padding:0;cursor:pointer;background:transparent;white-space:nowrap}
+.cie-preset-chip:hover {color:#fff;border-color:#444;background:#1a1a1a}
+
+/* PRESET EDIT PANEL */
+#cie-preset-edit-panel {background:#0a0a0a;border:1px solid #2a2a2a;font-size:11px;display:none}
+#cie-preset-edit-panel.open {display:block}
+
+.cie-options-row {display:flex;align-items:center;justify-content:space-between}
+
+#cie-showBtn {position:absolute;top:0;right:0;background:#111;border:1px solid #333;color:#fff;padding:4px 8px;cursor:pointer;display:none;z-index:99;font-size:9px}
+
+.icon-dock-rect {width:10px;height:5px;border:1px solid currentColor;border-top:2px solid currentColor;display:inline-block;position:relative;top:1px}
+
+/* Invert tooltip */
+[data-tooltip] {position:relative;cursor:help}
+[data-tooltip]::after {content:attr(data-tooltip);position:absolute;right:0;top:100%;background:#111;border:1px solid #444;color:#aaa;font-size:9px;padding:0;margin:0;white-space:nowrap;z-index:200;display:none;pointer-events:none}
+[data-tooltip]:hover::after {display:block}
+
+/* Docked Section Header */
+.cie-docked-section-header {display:none}
+.cie-controls.docked .cie-docked-section-header,
+.cie-controls.dock-left .cie-docked-section-header,
+.cie-controls.dock-right .cie-docked-section-header,
+.cie-controls.dock-top .cie-docked-section-header,
+.cie-controls.dock-bottom .cie-docked-section-header {
+  display:block; font-size:10px; color:#ccc; background:#333; text-transform:uppercase; font-weight:bold; text-align:center; position:sticky; top:0; z-index:10;
+}
+
+.cie-section-title {display:none;background:#151515;color:#ccc;font-size:10px;font-weight:900;text-transform:uppercase;padding:3px 6px;letter-spacing:.5px;border-bottom:1px solid #222;margin-bottom:4px;user-select:none}
+.cie-controls.docked .cie-section-title,
+.cie-controls.dock-left .cie-section-title,
+.cie-controls.dock-right .cie-section-title,
+.cie-controls.dock-top .cie-section-title,
+.cie-controls.dock-bottom .cie-section-title {
+  display:block;}
 
 /* Custom resize edges */
-.cie-resize-edge {
-  position: absolute;
-  z-index: 200;
-  background: transparent;
+.cie-resize-edge { position:absolute; z-index:200; background:transparent;}
+.cie-controls.docked .cie-resize-edge,
+.cie-controls.dock-left .cie-resize-edge,
+.cie-controls.dock-right .cie-resize-edge,
+.cie-controls.dock-top .cie-resize-edge,
+.cie-controls.dock-bottom .cie-resize-edge
+  {display:none}
+
+/* Hover style for dynamic select/dock options */
+.cie-custom-select-option {
+  cursor:pointer; background:#0d0d0d; color:#ccc; border-bottom:1px solid #1a1a1a;
 }
-.cie-controls.docked .cie-resize-edge {
-  display: none !important;
+.cie-custom-select-option[data-val="black"] {
+  background:#555; color:#000
 }
-.cie-resize-edge.n  { top: -4px; left: 4px; right: 4px; height: 8px; cursor: n-resize; }
-.cie-resize-edge.s  { bottom: -4px; left: 4px; right: 4px; height: 8px; cursor: s-resize; }
-.cie-resize-edge.e  { right: -4px; top: 4px; bottom: 4px; width: 8px; cursor: e-resize; }
-.cie-resize-edge.w  { left: -4px; top: 4px; bottom: 4px; width: 8px; cursor: w-resize; }
-.cie-resize-edge.nw { top: -4px; left: -4px; width: 8px; height: 8px; cursor: nw-resize; }
-.cie-resize-edge.ne { top: -4px; right: -4px; width: 8px; height: 8px; cursor: ne-resize; }
-.cie-resize-edge.sw { bottom: -4px; left: -4px; width: 8px; height: 8px; cursor: sw-resize; }
-.cie-resize-edge.se { bottom: -4px; right: -4px; width: 8px; height: 8px; cursor: se-resize; }
+.cie-custom-select-option:hover {
+  background:#252525; color:#fff
+}
+.cie-dock-opt:hover {
+  background:#252525; color:#fff
+}
+/* Speed select overlap protection */
+.cie-speed-select {
+  display:none; z-index:-1
+}
+.cie-speed-scale-container:hover .cie-speed-select,
+.cie-speed-select:focus,
+.cie-speed-select:active {
+  display:block; z-index:10003
+}
+.cie-resize-edge.n {top:-4px; left:4px; right:4px; height:8px; cursor:n-resize;}
+.cie-resize-edge.s {bottom:-4px; left:4px; right:4px; height:8px; cursor:s-resize;}
+.cie-resize-edge.e {right:-4px; top:4px; bottom:4px; width:8px; cursor:e-resize;}
+.cie-resize-edge.w {left:-4px; top:4px; bottom:4px; width:8px; cursor:w-resize;}
+.cie-resize-edge.nw {top:-4px; left:-4px; width:8px; height:8px; cursor:nw-resize;}
+.cie-resize-edge.ne {top:-4px; right:-4px; width:8px; height:8px; cursor:ne-resize;}
+.cie-resize-edge.sw {bottom:-4px; left:-4px; width:8px; height:8px; cursor:sw-resize;}
+.cie-resize-edge.se {bottom:-4px; right:-4px; width:8px; height:8px; cursor:se-resize;}
 
 /* UI hover/tap micro-effects */
 @keyframes cie-chroma-anim {
-  0% { text-shadow: -1px -0.5px 0 rgba(255,0,0,0.85), 1px 0.5px 0 rgba(0,255,255,0.85); }
-  33% { text-shadow: 1px -1px 0 rgba(255,0,0,0.85), -1px 1px 0 rgba(0,255,255,0.85); }
-  66% { text-shadow: -1.5px 0.5px 0 rgba(255,0,0,0.85), 1.5px -0.5px 0 rgba(0,255,255,0.85); }
-  100% { text-shadow: -1px -0.5px 0 rgba(255,0,0,0.85), 1px 0.5px 0 rgba(0,255,255,0.85); }
+  0% { text-shadow:-1px -0.5px 0 rgba(255,0,0,0.85), 1px 0.5px 0 rgba(0,255,255,0.85); }
+  33% { text-shadow:1px -1px 0 rgba(255,0,0,0.85), -1px 1px 0 rgba(0,255,255,0.85); }
+  66% { text-shadow:-1.5px 0.5px 0 rgba(255,0,0,0.85), 1.5px -0.5px 0 rgba(0,255,255,0.85); }
+  100% { text-shadow:-1px -0.5px 0 rgba(255,0,0,0.85), 1px 0.5px 0 rgba(0,255,255,0.85); }
 }
 .cie-chroma-effect {
-  display: inline-block;
-  transition: all 0.2s ease;
-  user-select: none;
-  text-shadow: -2px -1px 0 rgba(255,0,0,0.5), 2px 1px 0 rgba(0,255,255,0.5);
+  display:inline-block;
+  transition:all 0.2s ease;
+  user-select:none;
+  text-shadow:-2px -1px 0 rgba(255,0,0,0.5), 2px 1px 0 rgba(0,255,255,0.5);
 }
 .cie-chroma-effect:hover, .cie-chroma-effect:active {
-  color: #fff;
-  animation: cie-chroma-anim 0.25s infinite steps(2);
-  cursor: pointer;
+  color:#fff;
+  animation:cie-chroma-anim 0.25s infinite steps(2);
+  cursor:pointer;
 }
 
 .cie-motionblur-effect {
-  display: inline-block;
-  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
-  transform-origin: left center;
-  filter: blur(0.5px);
-  text-shadow: -0.5px 0 0.5px rgba(255,255,255,0.25);
+  display:inline-block;
+  transition:all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transform-origin:left center;
+  filter:blur(0.5px);
+  text-shadow:-0.5px 0 0.5px rgba(255,255,255,0.25);
 }
 .cie-motionblur-effect:hover, .cie-motionblur-effect:active {
-  color: #eee;
-  filter: blur(0.6px);
-  text-shadow: 
+  color:#eee;
+  filter:blur(0.6px);
+  text-shadow:
     -1px 0 1px rgba(255,255,255,0.6),
     -3px 0 3px rgba(255,255,255,0.3),
     -6px 0 5px rgba(255,255,255,0.1);
-  transform: translateX(3px);
-  cursor: pointer;
+  transform:translateX(3px);
+  cursor:pointer;
 }
 
 @keyframes cie-vignette-anim {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% { background-position:0% 50%; }
+  50% { background-position:100% 50%; }
+  100% { background-position:0% 50%; }
 }
 .cie-vignette-effect {
-  display: inline-block;
-  transition: all 0.3s ease;
-  background: linear-gradient(90deg, rgba(180,180,180,0.8) 0%, rgba(255,255,255,1) 20%, rgba(255,255,255,1) 80%, rgba(180,180,180,0.8) 100%);
-  background-size: 100% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  display:inline-block;
+  transition:all 0.3s ease;
+  background:linear-gradient(90deg, rgba(180,180,180,0.8) 0%, rgba(255,255,255,1) 20%, rgba(255,255,255,1) 80%, rgba(180,180,180,0.8) 100%);
+  background-size:100% auto;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
 .cie-vignette-effect:hover, .cie-vignette-effect:active {
-  background: linear-gradient(90deg, rgba(230,230,230,0.2) 0%, rgba(255,255,255,1) 25%, rgba(255,255,255,1) 75%, rgba(230,230,230,0.2) 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: cie-vignette-anim 1.5s infinite ease-in-out;
-  cursor: pointer;
+  background:linear-gradient(90deg, rgba(230,230,230,0.2) 0%, rgba(255,255,255,1) 25%, rgba(255,255,255,1) 75%, rgba(230,230,230,0.2) 100%);
+  background-size:200% auto;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:cie-vignette-anim 1.5s infinite ease-in-out;
+  cursor:pointer;
 }
 
 @keyframes cie-echo-anim {
   0% {
-    text-shadow: 
+    text-shadow:
       2px 0 1px rgba(255,255,255,0.35),
       4px 0 2px rgba(255,255,255,0.15);
   }
   50% {
-    text-shadow: 
+    text-shadow:
       3.5px 0 2px rgba(255,255,255,0.4),
       7px 0 3px rgba(255,255,255,0.2),
       10.5px 0 4px rgba(255,255,255,0.05);
   }
   100% {
-    text-shadow: 
+    text-shadow:
       2px 0 1px rgba(255,255,255,0.35),
       4px 0 2px rgba(255,255,255,0.15);
   }
 }
 .cie-echo-effect {
-  display: inline-block;
-  transition: all 0.3s ease;
-  text-shadow: 2px 0 0.5px rgba(255,255,255,0.25), 1.5px 0 1px rgba(255,255,255,0.1);
+  display:inline-block;
+  transition:all 0.3s ease;
+  text-shadow:2px 0 0.5px rgba(255,255,255,0.25), 1.5px 0 1px rgba(255,255,255,0.1);
 }
 .cie-echo-effect:hover, .cie-echo-effect:active {
-  color: #fff;
-  animation: cie-echo-anim 0.8s infinite ease-in-out;
-  cursor: pointer;
+  color:#fff;
+  animation:cie-echo-anim 0.8s infinite ease-in-out;
+  cursor:pointer;
 }
 
 @keyframes cie-scanlines-anim {
-  0% { background-position: 0 0; }
-  100% { background-position: 0 12px; }
+  0% { background-position:0 0; }
+  100% { background-position:0 12px; }
 }
 .cie-scanlines-effect {
-  display: inline-block;
-  transition: all 0.25s ease;
-  user-select: none;
-  background: linear-gradient(rgba(220,220,220,1) 50%, rgba(120,120,120,0.55) 50%);
-  background-size: 100% 2px;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  display:inline-block;
+  transition:all 0.25s ease;
+  user-select:none;
+  background:linear-gradient(rgba(220,220,220,1) 50%, rgba(120,120,120,0.55) 50%);
+  background-size:100% 2px;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
 .cie-scanlines-effect:hover, .cie-scanlines-effect:active {
-  color: #fff;
-  background: linear-gradient(rgba(255,255,255,1) 50%, rgba(255,220,220,0.3) 50%);
-  background-size: 100% 6px;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: cie-scanlines-anim 0.4s infinite linear;
-  cursor: pointer;
+  color:#fff;
+  background:linear-gradient(rgba(255,255,255,1) 50%, rgba(255,220,220,0.3) 50%);
+  background-size:100% 6px;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:cie-scanlines-anim 0.4s infinite linear;
+  cursor:pointer;
 }
 
 @keyframes cie-distort-anim {
-  0% { transform: skewX(-4deg) scaleY(1); filter: drop-shadow(0.5px 0 0.5px rgba(255,255,255,0.5)); }
-  25% { transform: skewX(4deg) scaleY(0.97); filter: drop-shadow(-0.5px 0.5px 0.5px rgba(255,255,255,0.4)); }
-  50% { transform: skewX(-4deg) scaleY(1.03); filter: drop-shadow(0.5px -0.5px 0.5px rgba(255,255,255,0.5)); }
-  75% { transform: skewX(2deg) scaleY(0.97); filter: drop-shadow(-0.5px -0.5px 0.5px rgba(255,255,255,0.4)); }
-  100% { transform: skewX(-4deg) scaleY(1); filter: drop-shadow(0.5px 0 0.5px rgba(255,255,255,0.5)); }
+  0% { transform:skewX(-4deg) scaleY(1); filter:drop-shadow(0.5px 0 0.5px rgba(255,255,255,0.5)); }
+  25% { transform:skewX(4deg) scaleY(0.97); filter:drop-shadow(-0.5px 0.5px 0.5px rgba(255,255,255,0.4)); }
+  50% { transform:skewX(-4deg) scaleY(1.03); filter:drop-shadow(0.5px -0.5px 0.5px rgba(255,255,255,0.5)); }
+  75% { transform:skewX(2deg) scaleY(0.97); filter:drop-shadow(-0.5px -0.5px 0.5px rgba(255,255,255,0.4)); }
+  100% { transform:skewX(-4deg) scaleY(1); filter:drop-shadow(0.5px 0 0.5px rgba(255,255,255,0.5)); }
 }
 .cie-distort-effect {
-  display: inline-block;
-  transition: all 0.3s ease;
-  transform: skewX(-1.5deg);
-  filter: drop-shadow(0px 0px 0.15px rgba(255,255,255,0.2));
+  display:inline-block;
+  transition:all 0.3s ease;
+  transform:skewX(-1.5deg);
+  filter:drop-shadow(0px 0px 0.15px rgba(255,255,255,0.2));
 }
 .cie-distort-effect:hover, .cie-distort-effect:active {
-  animation: cie-distort-anim 1s infinite ease-in-out;
-  cursor: pointer;
+  animation:cie-distort-anim 1s infinite ease-in-out;
+  cursor:pointer;
 }
 
 @keyframes cie-spacedout-anim {
-  0% { letter-spacing: 0.5px; }
-  50% { letter-spacing: 3.5px; }
-  100% { letter-spacing: 0.5px; }
+  0% { letter-spacing:0.5px; }
+  50% { letter-spacing:3.5px; }
+  100% { letter-spacing:0.5px; }
 }
 .cie-spacedout-effect {
-  display: inline-block;
-  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-  letter-spacing: 0.5px;
+  display:inline-block;
+  transition:all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  letter-spacing:0.5px;
 }
 .cie-spacedout-effect:hover, .cie-spacedout-effect:active {
-  color: #fff;
-  animation: cie-spacedout-anim 1.5s infinite ease-in-out;
-  cursor: pointer;
+  color:#fff;
+  animation:cie-spacedout-anim 1.5s infinite ease-in-out;
 }
 
-.cie-steps-wrapper {
-  display: inline-flex;
-  cursor: pointer;
+@keyframes cie-shift-anim {
+  0% { transform:translateX(0) }
+  100% { transform:translateX(1.5em) }
 }
+.cie-shift-effect {
+  display:inline-block;
+}
+.cie-shift-effect:hover, .cie-shift-effect:active {
+  color:#fff;
+  animation:1s steps(3,start) 0s infinite alternate none cie-shift-anim;
+}
+
+.cie-steps-wrapper {display:inline-flex;cursor:pointer;}
 .cie-steps-letter {
-  display: inline-block;
-  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.25s ease;
+  display:inline-block;
+  transition:transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.25s ease;
 }
 .cie-steps-parent:hover .cie-steps-letter:nth-child(1),
-.cie-steps-parent:active .cie-steps-letter:nth-child(1) { transform: translateY(0px); color: #888; }
+.cie-steps-parent:active .cie-steps-letter:nth-child(1) { transform:translateY(0px); color:#888; }
 .cie-steps-parent:hover .cie-steps-letter:nth-child(2),
-.cie-steps-parent:active .cie-steps-letter:nth-child(2) { transform: translateY(-1.5px); color: #aaa; transition-delay: 0.02s; }
+.cie-steps-parent:active .cie-steps-letter:nth-child(2) { transform:translateY(-1.5px); color:#aaa; transition-delay:0.02s; }
 .cie-steps-parent:hover .cie-steps-letter:nth-child(3),
-.cie-steps-parent:active .cie-steps-letter:nth-child(3) { transform: translateY(-3px); color: #ccc; transition-delay: 0.04s; }
+.cie-steps-parent:active .cie-steps-letter:nth-child(3) { transform:translateY(-3px); color:#ccc; transition-delay:0.04s; }
 .cie-steps-parent:hover .cie-steps-letter:nth-child(4),
-.cie-steps-parent:active .cie-steps-letter:nth-child(4) { transform: translateY(-4.5px); color: #eee; transition-delay: 0.06s; }
+.cie-steps-parent:active .cie-steps-letter:nth-child(4) { transform:translateY(-4.5px); color:#eee; transition-delay:0.06s; }
 .cie-steps-parent:hover .cie-steps-letter:nth-child(5),
-.cie-steps-parent:active .cie-steps-letter:nth-child(5) { transform: translateY(-6px); color: #fff; transition-delay: 0.08s; }
+.cie-steps-parent:active .cie-steps-letter:nth-child(5) { transform:translateY(-6px); color:#fff; transition-delay:0.08s; }
+
+/* HELP MODAL */
+#cie-help-link {color:#ccc;text-decoration:underline}
+#cie-help-overlay {display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;overflow:hidden;padding:0;pointer-events:none}
+#cie-help-overlay.visible {display:block}
+#cie-help-box {
+  background:#0d0d0d;
+  border:1px solid #333;
+  max-width:70%;
+  max-height:100%;
+  padding:0;
+  font-size:12px;
+  color:#bbb;
+  display:flex;
+  flex-direction:column;
+  pointer-events:auto;
+}
+#cie-help-box h2 {color:#ccc;font-size:13px;margin:0;padding:0}
+#cie-help-box h3 {background:#444;color:#aaa;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin:8px 0 4px;text-align:center}
+#cie-help-box h4 {margin:0;text-align:center}
+#cie-help-box .help-row {display:flex;gap:8px;margin-bottom:1px}
+#cie-help-box .help-key {font-weight:bold;min-width:155px;flex-shrink:0;font-size:12px}
+#cie-help-box .help-val {color:#888}
+#cie-help-box .kbd {display:inline-block;font-size:9px;color:#ccc;border:1px solid #444;padding:0 4px;border-radius:3px;background:#1a1a1a;margin:0 2px;font-family:monospace}
+#cie-help-close {position:fixed;top:0;right:0;background:inherit;border:0;color:#ccc;cursor:pointer;font-size:18px;line-height:1}
+#cie-help-close:hover {color:#fff}
 </style>
 </head>
-<body>
 
+<body>
 <!-- Help Modal -->
 <div id="cie-help-overlay">
  <div id="cie-help-box">
-  <button id="cie-help-close" style="top:0;right:0">✕</button>
-  <h2 id="cie-help-title" style="margin:0;padding:0">♾⚙ Circulospherical Infinity Engine 1.167 — Help</h2>
-  <div style="font-size:10px;color:#888;margin:6px 0;padding:0 0 4px;border-bottom:1px solid #222">
-    ©2026 <a href="http://tnlc.com/eep/circles/" target="_blank" style="color:yellow;text-decoration:underline">Eep²</a> (design/ideas, CSS tweaking) and AIs: Google Gemini (most programming and ideas) and Anthropic Claude (some programming)
+  <div id="cie-help-header" style="position:relative; width:100%; border-bottom:1px solid #333;">
+   <button id="cie-help-close" style="position:absolute; background:none; border:0; font-size:14px; cursor:pointer;" title="Close help">✕</button>
+   <h2 id="cie-help-title" style="margin:0;padding:0;font-size:13px;font-weight:bold;padding-right:20px;">♾⚙ Circulospherical Infinity Engine — Help</h2>
+   <div style="font-size:10px;color:#888;text-align:center">
+     ©2026 <a href="http://tnlc.com/eep/circles/" target="_blank" id="cie-help-link">Eep²</a> (design/ideas, HTML/CSS tweaking)<br>& AIs: <a href=http://gemini.google.com/ target="_blank" id="cie-help-link">Google Gemini</a> (most programming and ideas) and <a href=http://claude.ai/ target="_blank" id="cie-help-link">Anthropic Claude</a> (some early programming)
+   </div>
   </div>
-  <h3>Patterns</h3>
-  <div class="help-row"><span class="help-key">1-Way Horizontal/Vertical</span><span class="help-val">Circles grow from small to large in one direction from centre.</span></div>
-  <div class="help-row"><span class="help-key">2-Way Horizontal/Vertical</span><span class="help-val">Recursive circles branching symmetrically in one axis.</span></div>
-  <div class="help-row"><span class="help-key">2-Way Inv H/V</span><span class="help-val">Like 2-Way but circles grow larger toward the edges.</span></div>
-  <div class="help-row"><span class="help-key">4-Way + / Cross</span><span class="help-val">Both axes simultaneously.</span></div>
-  <div class="help-row"><span class="help-key">3D 2-Way Horizontal</span><span class="help-val">True 3D perspective 2-Way horizontal branching rotating in space.</span></div>
-  <div class="help-row"><span class="help-key">3D 4-Way +</span><span class="help-val">True 3D perspective recursive circles rotating in space.</span></div>
-  <div class="help-row"><span class="help-key">Kaleidoscope ×8/×12</span><span class="help-val">Mirrored wedge radial symmetry.</span></div>
-  <div class="help-row"><span class="help-key">Spiral</span><span class="help-val">Circles along a rotating expanding spiral arm.</span></div>
-  <div class="help-row"><span class="help-key">Fractal Tree</span><span class="help-val">Branching organic tree that sways and breathes.</span></div>
-  <div class="help-row"><span class="help-key">Lissajous</span><span class="help-val">Stacked harmonic orbit rings per depth level.</span></div>
-  <h3>Colour</h3>
-  <div class="help-row"><span class="help-key">Static</span><span class="help-val">Single theme colour, no cycling.</span></div>
-  <div class="help-row"><span class="help-key">Cycle</span><span class="help-val">Auto-advances through all themes in order.</span></div>
-  <div class="help-row"><span class="help-key">Random</span><span class="help-val">Picks a random theme each interval.</span></div>
-  <div class="help-row"><span class="help-key">Multi-strobe</span><span class="help-val">Each depth ring gets a different colour offset.</span></div>
-  <h3>Animation</h3>
-  <div class="help-row"><span class="help-key">Global speed</span><span class="help-val">Scales all animation speeds in unison.</span></div>
-  <div class="help-row"><span class="help-key">Frequency checkbox</span><span class="help-val">Enables pulse animation. The slider sets oscillation speed.</span></div>
-  <div class="help-row"><span class="help-key">Sync breath</span><span class="help-val">Syncs the pulse timing to the rotation timeline instead of the pulse timeline, aligning breathing swells with rotation.</span></div>
-  <div class="help-row"><span class="help-key">Pulse Distance</span><span class="help-val">How far circles breathe in and out.</span></div>
-  <div class="help-row"><span class="help-key">Pulse shift</span><span class="help-val">Phase offset per depth level, creating a ripple wave effect.</span></div>
-  <div class="help-row"><span class="help-key">Converge</span><span class="help-val">Collapses all circles toward a single concentric point. 0=normal, 1=fully collapsed.</span></div>
-  <div class="help-row"><span class="help-key">Orbiting depth rotation</span><span class="help-val">twist/rotate nested depths independently.</span></div>
-  <div class="help-row"><span class="help-key">Wobble Amplitude</span><span class="help-val">Secondary radius modulation layered on top of pulse.</span></div>
-  <div class="help-row"><span class="help-key">Wobble Frequency</span><span class="help-val">Speed of the wobble oscillation.</span></div>
+  <div id="cie-help-scroll-container" style="flex:1; overflow-y:auto; padding:0 2px;">
+
+  <h3><abbr title="User interface">UI</abbr> elements</h3>
+  <div class="help-row"><span class="help-key">↔ Ping-pong</span><span class="help-val">Slider oscillates between its min and max automatically</span></div>
+  <div class="help-row"><span class="help-key">🎚️ Limits button</span><span class="help-val">Set custom min/max extents for ping-pong animation</span></div>
+  <div class="help-row"><span class="help-key">↺ Reset button</span><span class="help-val">Resets a single slider to its default value</span></div>
+
+  <h3>♾ Patterns</h3>
+  <div class="help-row"><span class="help-key">1-Way Horizontal/Vertical</span><span class="help-val">Circles grow from small to large in one direction from center</span></div>
+  <div class="help-row"><span class="help-key">2-Way Horizontal/Vertical</span><span class="help-val">Classic "circular infinity": recursive circles branch symmetrically along one axis</span></div>
+  <div class="help-row"><span class="help-key">2-Way Inverted H/V</span><span class="help-val">Like 2-Way H/V but circles grow larger toward the edges</span></div>
+  <div class="help-row"><span class="help-key">4-Way +</span><span class="help-val">X+Y axes simultaneously</span></div>
+  <div class="help-row"><span class="help-key">4-Way  Cross</span><span class="help-val">X+Y axes simultaneously but packed ("squaring the circle")</span></div>
+  <div class="help-row"><span class="help-key">3D 2-Way Horizontal</span><span class="help-val">True 3D perspective 2-Way horizontal branch rotating in space</span></div>
+  <div class="help-row"><span class="help-key">3D 4-Way +</span><span class="help-val">True 3D perspective recursive circles rotating in space</span></div>
+  <div class="help-row"><span class="help-key">Kaleidoscope x8/x12</span><span class="help-val">8-/12-Way *; mirrored wedge radial symmetry</span></div>
+  <div class="help-row"><span class="help-key">Fractal Tree</span><span class="help-val">Branching organic tree that sways and breathes</span></div>
+  <div class="help-row"><span class="help-key">Lissajous</span><span class="help-val">Stacked harmonic orbit rings per depth level</span></div>
+  <div class="help-row"><span class="help-key">Spiral</span><span class="help-val">Circles along a rotating expanding spiral arm</span></div>
+  <div class="help-row"><span class="help-key">Pattern Cycle/Random</span><span class="help-val">Auto-cycles through render patterns (similar to color cycling)</span></div>
+
+  <h3>➖Line➖</h3>
+  <h4>🎨Color</h4>
+    <div class="help-row"><span class="help-key">Static</span><span class="help-val">Single theme color, no cycling</span></div>
+    <div class="help-row"><span class="help-key">🔁Cycle</span><span class="help-val">Auto-advances through all themes in order of select options</span></div>
+    <div class="help-row"><span class="help-key">🔀Random</span><span class="help-val">Picks a random theme each interval</span></div>
+    <div class="help-row"><span class="help-key">🌈Multi-strobe</span><span class="help-val">Each depth ring gets a different color offset</span></div>
   <div class="help-row"><span class="help-key">Trail length</span><span class="help-val">Lower value = longer trails (less bg clear per frame).</span></div>
-  <div class="help-row"><span class="help-key">↔ Ping-pong</span><span class="help-val">Slider oscillates between its min and max automatically.</span></div>
-  <div class="help-row"><span class="help-key">🎚️ Limits button</span><span class="help-val">Set custom min/max extents for ping-pong animation.</span></div>
-  <div class="help-row"><span class="help-key">↺ Reset button</span><span class="help-val">Resets a single slider to its default value.</span></div>
-  <div class="help-row"><span class="help-key">Pattern Cycle/Random</span><span class="help-val">Auto-cycles through render patterns (similar to colour cycling).</span></div>
-  <h3>FX</h3>
-  <div class="help-row"><span class="help-key">Blend</span><span class="help-val">Canvas composite operation. Lighter=additive glow; Difference=inversion.</span></div>
-  <div class="help-row"><span class="help-key">Ripple</span><span class="help-val">Displaces each circle centre by an animated sine-wave offset.</span></div>
-  <div class="help-row"><span class="help-key">Chroma Split</span><span class="help-val">RGB lens aberration via screen-blend offset copies.</span></div>
-  <div class="help-row"><span class="help-key">Scanlines</span><span class="help-val">CRT-style horizontal lines overlay.</span></div>
-  <div class="help-row"><span class="help-key">Vignette</span><span class="help-val">Radial edge darkening.</span></div>
-  <div class="help-row"><span class="help-key">Feedback Echo</span><span class="help-val">Previous frame blended back in — high values create tunnel feedback.</span></div>
-  <h3>Keyboard & Controls</h3>
-  <div class="help-row"><span class="help-key"><kbd class="kbd">Space</kbd></span><span class="help-val">Pause / Resume</span></div>
-  <div class="help-row"><span class="help-key"><kbd class="kbd">R</kbd></span><span class="help-val">Random design</span></div>
-  <div class="help-row"><span class="help-key"><kbd class="kbd">F</kbd></span><span class="help-val">Fullscreen</span></div>
-  <div class="help-row"><span class="help-key"><kbd class="kbd">H</kbd></span><span class="help-val">Hide / show menu</span></div>
-  <div class="help-row"><span class="help-key"><kbd class="kbd">M</kbd></span><span class="help-val">Minimize menu</span></div>
-  <div class="help-row"><span class="help-key"><kbd class="kbd">W</kbd> <kbd class="kbd">A</kbd> <kbd class="kbd">S</kbd> <kbd class="kbd">D</kbd></span><span class="help-val">Pan canvas up / left / down / right</span></div>
-  <div class="help-row"><span class="help-key"><kbd class="kbd">Q</kbd> / <kbd class="kbd">E</kbd></span><span class="help-val">Rotate canvas left / right</span></div>
-  <div class="help-row"><span class="help-key"><kbd class="kbd">↑ ↓</kbd></span><span class="help-val">Zoom in / out</span></div>
-  <div class="help-row"><span class="help-key">Mouse Drag</span><span class="help-val">Pan · Shift+drag: rotate · Scroll/Pinch: zoom</span></div>
+
+  <h3>🎬Animation</h3>
+  <div class="help-row"><span class="help-key">🌐⏱️Global speed</span><span class="help-val">Scales all animation speeds in unison</span></div>
+  <div class="help-row"><span class="help-key">🕒Timeline</span><span class="help-val">Manually scrub through the animation phase to inspect specific geometric moments (dynamically animate the slider in loop-step with `pTime` during play, but instantly override `pTime` and proportional `rTime` when slider handle dragged or manual number field changes, updating the canvas immediately when paused)</span></div>
+  <h4>🖥️Viewport</h4>
+  <div class="help-row"><span class="help-key">🔄Rotation</span><span class="help-val"> Orbit/turn along X-axis</span></div>
+  <div class="help-row"><span class="help-key">🌌Depth orbit rotation</span><span class="help-val">Orbit/rotate/twist nested depths independently</span></div>
+  <div class="help-row"><span class="help-key">🔗〰Sync pulse</span><span class="help-val">Syncs the pulse timing to the rotation timeline instead of the pulse timeline, aligning breathing swells with rotation</span></div>
+  <div class="help-row"><span class="help-key">🔍Zoom</span><span class="help-val">Move in/out (through) the pattern</span></div>
+  <div class="help-row"><span class="help-key">∞ Infinite zoom</span><span class="help-val">No zoom extent/limit for a truly fractal experience</span></div>
+  <h4>〰Pulse</h4>
+  <div class="help-row"><span class="help-key">˒﹚) Pulse frequency</span><span class="help-val">Enables pulse animation; slider sets oscillation speed</span></div>
+  <div class="help-row"><span class="help-key">📏Pulse distance</span><span class="help-val">How far circles "breathe" in and out</span></div>
+  <div class="help-row"><span class="help-key">⇄ Pulse shift</span><span class="help-val">Phase offset per depth level, creating a ripple wave effect</span></div>
+  <div class="help-row"><span class="help-key">⚛︎ Converge</span><span class="help-val">Collapses all circles toward a single concentric point. 0=normal, 1=fully collapsed</span></div>
+  <div class="help-row"><span class="help-key">♒︎ Wobble amplitude</span><span class="help-val">Secondary radius modulation layered on top of pulse.</span></div>
+  <div class="help-row"><span class="help-key">˒﹚) Wobble frequency</span><span class="help-val">Speed of the wobble oscillation.</span></div>
+  <div class="help-row"><span class="help-key">〰️ Distortion ripple</span><span class="help-val">Displaces each circle center by an animated sine-wave offset</span></div>
+
+  <h3>✨FX</h3>
+  <div class="help-row"><span class="help-key"><a href="https://en.wikipedia.org/wiki/Blend_modes" target="_blank" id="cie-help-link">Blend</a></span><span class="help-val">Canvas composite operation: Burn, Difference=inversion, Dodge, Exclusion, Hard/Soft Light, Lighter (Add)=additive glow, Multiply, Overlay, Screen, XOR</span></div>
+  <div class="help-row"><span class="help-key"><a href="https://en.wikipedia.org/wiki/Chromatic_aberration" target="_blank" id="cie-help-link">Chroma split</a></span><span class="help-val">RGB lens aberration via screen-blend offset copies</span></div>
+  <div class="help-row"><span class="help-key">Feedback echo</span><span class="help-val">Previous frame blended back in — high values create tunnel feedback</span></div>
+  <div class="help-row"><span class="help-key"><a href="https://en.wikipedia.org/wiki/Motion_blur_(media)" target="_blank" id="cie-help-link">Motion blur</a></span><span class="help-val">Like line trails but blurry (and laggier); 👣steps: passes (increases lag)</span></div>
+    <div class="help-row"><span class="help-key"><a href="https://en.wikipedia.org/wiki/Scan_line" target="_blank" id="cie-help-link">Scanlines</a></span><span class="help-val"><a href="https://en.wikipedia.org/wiki/Cathode_ray_tube" target="_blank" id="cie-help-link">CRT</a>-style horizontal lines overlay; rotates with viewport rotation (for now)</span></div>
+  <div class="help-row"><span class="help-key"><a href="https://en.wikipedia.org/wiki/Vignette_(graphic_design)" target="_blank" id="cie-help-link">Vignette</a></span><span class="help-val">Radial edge darkening</span></div>
+
+  <h3>⌨️🖱️👆Controls</h3>
+  <div class="help-row"><span class="help-key"><kbd class="kbd">Space</kbd></span><span class="help-val">⏸Pause / ▶Resume</span></div>
+  <div class="help-row"><span class="help-key"><kbd class="kbd">R</kbd></span><span class="help-val">🔀Random design</span></div>
+  <div class="help-row"><span class="help-key"><kbd class="kbd">F</kbd></span><span class="help-val">⛶ Fullscreen</span></div>
+  <div class="help-row"><span class="help-key"><kbd class="kbd">H</kbd></span><span class="help-val">🗙Hide / 🗖 Show menu</span></div>
+  <div class="help-row"><span class="help-key"><kbd class="kbd">M</kbd></span><span class="help-val">_ Minimize menu</span></div>
+  <div class="help-row"><span class="help-key"><kbd class="kbd">W</kbd> <kbd class="kbd">A</kbd> <kbd class="kbd">S</kbd> <kbd class="kbd">D</kbd></span><span class="help-val">Pan canvas &uarr; up / &larr; left / &darr; down / &rarr; right</span></div>
+  <div class="help-row"><span class="help-key"><kbd class="kbd">Q</kbd> / <kbd class="kbd">E</kbd></span><span class="help-val">🔄Rotate canvas ⤹ left / ⤸ right</span></div>
+  <div class="help-row"><span class="help-key"><kbd class="kbd">↑ ↓</kbd></span><span class="help-val">🔍Zoom in / out</span></div>
+  <div class="help-row"><span class="help-key">🖱️↔↕ Mouse/👆Tap Drag</span><span class="help-val">Pan · <kbd class="kbd">⇧ Shift</kbd> + ↔↕ Drag/✌️2 Fingers + 🗘Turn/Twist: 🔄Rotate · 🖱️Scroll/🤏Pinch: 🔍Zoom</span></div>
+  </div>
  </div>
 </div>
 
@@ -511,13 +732,22 @@ option{min-block-size:unset;min-inline-size:unset}
    <div class="cie-header-left">
     <span style="font-size:14px">♾</span>
     <span style="font-size:11px">⚙</span>
-    <span class="hdr-text">Circulospherical Infinity Engine 1.167</span>
+    <span class="hdr-text">Circulospherical Infinity Engine 1.19</span>
    </div>
    <div class="cie-header-btns">
     <button id="cie-helpBtn" class="cie-btn-icon" title="Help" style="font-size:11px;color:yellow">?</button>
     <button id="cie-fsBtn"   class="cie-btn-icon" title="Fullscreen" style="font-size:11px">⛶</button>
     <button id="cie-minBtn"  class="cie-btn-icon" title="Minimize [M]">_</button>
-    <button id="cie-dockBtn" class="cie-btn-icon" title="Float panel"><span style="font-size:10px;color:#888">⇤</span></button>
+    <div id="cie-dock-container" style="position:relative; display:inline-block; vertical-align:middle;">
+       <button id="cie-dockMenuBtn" class="cie-btn-icon" title="Choose docking side" style="font-size:11px">⚓</button>
+       <div id="cie-dockOptions" style="display:none;position:absolute;top:100%;right:0;background:#0d0d0d; border:1px solid #333;font-size:11px;white-space:nowrap;z-index:10002;">
+         <div class="cie-dock-opt" data-side="right" style="cursor:pointer;" title="Dock Right">Dock Right</div>
+         <div class="cie-dock-opt" data-side="left" style="cursor:pointer;" title="Dock Left">Dock Left</div>
+         <div class="cie-dock-opt" data-side="top" style="cursor:pointer;" title="Dock Top">Dock Top</div>
+         <div class="cie-dock-opt" data-side="bottom" style="cursor:pointer;" title="Dock Bottom">Dock Bottom</div>
+         <div class="cie-dock-opt" data-side="float" style="cursor:pointer;" title="Float menu">Float Menu</div>
+       </div>
+     </div>
     <button id="cie-hideBtn" class="cie-btn-icon" title="Hide Menu">🗙</button>
    </div>
   </div>
@@ -533,11 +763,10 @@ option{min-block-size:unset;min-inline-size:unset}
   </div>
 
   <div id="cie-content" class="cie-content">
-
    <!-- ═══ MAIN ═══ -->
    <div class="cie-tab-panel active" data-panel="main">
     <div class="cie-docked-section-header">Main</div>
-<!-- Pattern row with cycle/random -->
+<!-- Patterns -->
     <div class="cie-group">
      <div class="cie-row">
       <label class="cie-label">♾ Pattern</label>
@@ -554,23 +783,23 @@ option{min-block-size:unset;min-inline-size:unset}
        <option value="3d4plus">3D 4-Way +</option>
        <option value="4plus">4-Way +</option>
        <option value="4">4-Way Cross</option>
-       <option value="kaleid">Kaleidoscope ×8</option>
-       <option value="kaleid12">Kaleidoscope ×12</option>
+       <option value="kaleid">Kaleidoscope x8</option>
+       <option value="kaleid12">Kaleidoscope x12</option>
        <option value="fractal">Fractal Tree</option>
        <option value="lissajous">Lissajous</option>
        <option value="spiral">Spiral</option>
       </select>
      </div>
-     <!-- Mode cycle/random -->
+     <!-- Pattern cycle/random -->
      <div style="padding:1px 0;display:flex;flex-direction:column;gap:1px">
-      <div style="display:flex;gap:4px;align-items:center;padding:1px 0">
-       <label class="cie-radio-group"><input type="radio" name="modeMode" id="cie-modeOff" value="off" checked><span class="cie-label" style="font-size:10px">Static</span></label>
-       <label class="cie-radio-group"><input type="radio" name="modeMode" id="cie-modeCycle" value="cycle"><span class="cie-label" style="font-size:10px">🔁Cycle</span></label>
-       <label class="cie-radio-group"><input type="radio" name="modeMode" id="cie-modeRandom" value="random"><span class="cie-label" style="font-size:10px">🔀Random</span></label>
+      <div style="display:flex;gap:4px;justify-content:center;padding:1px 0">
+       <label class="cie-radio-group"><input type="radio" name="modeMode" id="cie-modeOff" value="off" checked><span class="cie-label">Static</span></label>
+       <label class="cie-radio-group"><input type="radio" name="modeMode" id="cie-modeCycle" value="cycle"><span class="cie-label">🔁Cycle</span></label>
+       <label class="cie-radio-group"><input type="radio" name="modeMode" id="cie-modeRandom" value="random"><span class="cie-label">🔀Random</span></label>
       </div>
       <div class="cie-group" style="padding:0 0 0 2px" id="cie-modeSpeedRow">
        <div class="cie-row">
-        <label class="cie-label indented" style="font-size:10px">Speed</label>
+        <label class="cie-label indent">Speed</label>
         <div style="display:flex;align-items:center;gap:2px">
          <button class="cie-reset-btn" data-reset="modeSpeed" title="Reset">↺</button>
          <input type="number" id="cie-modeSpeedNum" step="any" value="1">
@@ -578,8 +807,8 @@ option{min-block-size:unset;min-inline-size:unset}
          <button class="cie-reset-btn cie-limits-btn" data-key="modeSpeed" title="Ping-pong limits">🎚️</button>
         </div>
        </div>
-       <div class="cie-limits-popover" id="cie-limits-modeSpeed">Min:<input type="number" id="cie-lmin-modeSpeed"> Max:<input type="number" id="cie-lmax-modeSpeed"><button class="cie-reset-btn" id="cie-limits-modeSpeed-close">✕</button></div>
-       <input type="range" id="cie-modeSpeed" min="-10" max="10" value="1" step="any">
+       <div class="cie-limits-popover" id="cie-limits-modeSpeed">Min<input type="number" id="cie-lmin-modeSpeed"> Max<input type="number" id="cie-lmax-modeSpeed"><button class="cie-reset-btn" id="cie-limits-modeSpeed-close">✕</button></div>
+       <input type="range" id="cie-modeSpeed" min="0" max="10" value="1" step=".1">
       </div>
      </div>
     </div>
@@ -594,31 +823,37 @@ option{min-block-size:unset;min-inline-size:unset}
       </div>
      </div>
      <div class="cie-limits-popover" id="cie-limits-depth">
-      Min:<input type="number" id="cie-lmin-depth"> Max:<input type="number" id="cie-lmax-depth">
-      <button class="cie-reset-btn" id="cie-limits-depth-close">✕</button>
+      <span>Min<input type="number" id="cie-lmin-depth"> Max<input type="number" id="cie-lmax-depth"></span>
+      <span><button class="cie-reset-btn" id="cie-limits-depth-close">✕</button></span>
      </div>
      <input type="range" id="cie-depth" min="0" max="12" value="8" step="1">
     </div>
-    <div class="cie-box">
+    <div class="cie-box"><!-- Line -->
      <div class="cie-box-title">➖Line➖</div>
-     <div class="cie-row">
+     <div class="cie-row"><!-- Line color -->
       <label class="cie-label">🎨Color</label>
       <div style="display:flex;gap:2px;align-items:center">
+       <div id="cie-theme-container" style="position:relative; display:inline-block; vertical-align:middle; z-index: 10001;">
+          <button id="cie-theme-trigger" style="background:#333; border:1px solid #333; color:#ccc; font-size:11px; padding:1px; cursor:pointer; text-align:left; display:flex; justify-content:space-between; align-items:center;">
+            <span id="cie-theme-val" style="font-size:11px;">White</span> <span style="font-size:7px; color: #888;">▼</span>
+          </button>
+          <div id="cie-theme-options" style="display:none; position:absolute; top:100%; left:0; width:85px; background:#0d0d0d; border:1px solid #333; font-size:11px; max-height:180px; overflow-x:auto;">
+            <!-- options dynamically injected here -->
+          </div>
+        </div>
        <input type="color" id="cie-customColor" value="#ffffff" title="Custom color">
-       <select id="cie-theme" style="width:72px"></select>
       </div>
      </div>
-      <!-- Color cycle radios -->
-      <div style="padding:1px 2px 0;display:flex;flex-direction:column;gap:1px">
-       <div style="display:flex;gap:4px;align-items:center;padding:1px 0">
-        <label class="cie-radio-group"><input type="radio" name="cycleMode" id="cie-cycleOff" value="off" checked><span class="cie-label" style="font-size:10px">Static</span></label>
-        <label class="cie-radio-group"><input type="radio" name="cycleMode" id="cie-cycleCycle" value="cycle"><span class="cie-label" style="font-size:10px">🔁Cycle</span></label>
-        <label class="cie-radio-group"><input type="radio" name="cycleMode" id="cie-cycleRandom" value="random"><span class="cie-label" style="font-size:10px">🔀Random</span></label>
+      <div style="padding:0 2px;display:flex;flex-direction:column;gap:1px">
+       <div style="display:flex;gap:4px;justify-content:center">
+        <label class="cie-radio-group"><input type="radio" name="cycleMode" id="cie-cycleOff" value="off" checked><span class="cie-label">Static</span></label>
+        <label class="cie-radio-group"><input type="radio" name="cycleMode" id="cie-cycleCycle" value="cycle"><span class="cie-label">🔁Cycle</span></label>
+        <label class="cie-radio-group"><input type="radio" name="cycleMode" id="cie-cycleRandom" value="random"><span class="cie-label">🔀Random</span></label>
        </div>
       </div>
       <div class="cie-group" style="padding:0 0 0 2px" id="cie-cycleSpeedRow">
        <div class="cie-row">
-        <label class="cie-label indented" style="font-size:10px">Speed</label>
+        <label class="cie-label indent">Speed</label>
         <div style="display:flex;align-items:center;gap:2px">
          <button class="cie-reset-btn" data-reset="cSpeed" title="Reset">↺</button>
          <input type="number" id="cie-cSpeedNum" step="any" value="1">
@@ -626,14 +861,14 @@ option{min-block-size:unset;min-inline-size:unset}
          <button class="cie-reset-btn cie-limits-btn" data-key="cSpeed" title="Ping-pong limits">🎚️</button>
         </div>
        </div>
-       <div class="cie-limits-popover" id="cie-limits-cSpeed">Min:<input type="number" id="cie-lmin-cSpeed"> Max:<input type="number" id="cie-lmax-cSpeed"><button class="cie-reset-btn" id="cie-limits-cSpeed-close">✕</button></div>
-       <input type="range" id="cie-cSpeed" min="0.01" max="10" value="1" step="any">
+       <div class="cie-limits-popover" id="cie-limits-cSpeed">Min<input type="number" id="cie-lmin-cSpeed"> Max<input type="number" id="cie-lmax-cSpeed"><button class="cie-reset-btn" id="cie-limits-cSpeed-close">✕</button></div>
+       <input type="range" id="cie-cSpeed" min="0.01" max="10" value="1" step=".01">
       </div>
      <!-- Multi-strobe -->
      <div class="cie-group" style="padding:0 2px" id="cie-multiStrobeSection">
       <div class="cie-row">
        <div class="cie-checkbox-group">
-        <input type="checkbox" id="cie-multiStrobe">
+        <input type="checkbox" id="cie-multiStrobe" title="Enable multi-strobe color offsets per ring depth">
         <span style="font-size:10px">🌈</span>
         <label for="cie-multiStrobe">Multi-strobe</label>
        </div>
@@ -644,16 +879,16 @@ option{min-block-size:unset;min-inline-size:unset}
         <button class="cie-reset-btn cie-limits-btn" data-key="msSpeed" title="Ping-pong limits">🎚️</button>
        </div>
       </div>
-      <div class="cie-limits-popover" id="cie-limits-msSpeed">Min:<input type="number" id="cie-lmin-msSpeed"> Max:<input type="number" id="cie-lmax-msSpeed"><button class="cie-reset-btn" id="cie-limits-msSpeed-close">✕</button></div>
+      <div class="cie-limits-popover" id="cie-limits-msSpeed">Min<input type="number" id="cie-lmin-msSpeed"> Max<input type="number" id="cie-lmax-msSpeed"><button class="cie-reset-btn" id="cie-limits-msSpeed-close">✕</button></div>
       <input type="range" id="cie-msSpeed" min="-10" max="10" value="1" step="any">
       <div class="cie-row">
-       <label class="cie-checkbox-group" style="cursor:pointer;user-select:none"><input type="checkbox" id="cie-smoothFade" checked><span class="cie-label" style="font-size:10px">🌫️Smooth fade</span></label>
+       <label class="cie-checkbox-group" style="cursor:pointer;user-select:none"><input type="checkbox" id="cie-smoothFade" checked title="Smoothly interpolate color transition blending"><span class="cie-label">🌫️Smooth fade</span></label>
       </div>
      </div>
      <!-- Invert color (Line) -->
      <div class="cie-group" style="padding:0 2px">
       <div class="cie-row">
-       <label class="cie-label">🌓 Invert color</label>
+       <label class="cie-label indent"><span style="filter:invert(1);">🌓</span> Invert</label>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="lineInvert" title="Reset">↺</button>
         <input type="number" id="cie-lineInvertNum" step="any" value="0">
@@ -661,7 +896,7 @@ option{min-block-size:unset;min-inline-size:unset}
         <button class="cie-reset-btn cie-limits-btn" data-key="lineInvert" title="Ping-pong limits">🎚️</button>
        </div>
       </div>
-      <div class="cie-limits-popover" id="cie-limits-lineInvert">Min:<input type="number" id="cie-lmin-lineInvert"> Max:<input type="number" id="cie-lmax-lineInvert"><button class="cie-reset-btn" id="cie-limits-lineInvert-close">✕</button></div>
+      <div class="cie-limits-popover" id="cie-limits-lineInvert">Min<input type="number" id="cie-lmin-lineInvert"> Max<input type="number" id="cie-lmax-lineInvert"><button class="cie-reset-btn" id="cie-limits-lineInvert-close">✕</button></div>
       <input type="range" id="cie-lineInvert" min="0" max="1" value="0" step="any">
      </div>
      <!-- Width -->
@@ -676,7 +911,7 @@ option{min-block-size:unset;min-inline-size:unset}
          <button class="cie-reset-btn cie-limits-btn" data-key="thick" title="Ping-pong limits">🎚️</button>
        </div>
       </div>
-      <div class="cie-limits-popover" id="cie-limits-thick">Min:<input type="number" id="cie-lmin-thick"> Max:<input type="number" id="cie-lmax-thick"><button class="cie-reset-btn" id="cie-limits-thick-close">✕</button></div>
+      <div class="cie-limits-popover" id="cie-limits-thick"><span>Min<input type="number" id="cie-lmin-thick"> Max<input type="number" id="cie-lmax-thick"></span><span><button class="cie-reset-btn" id="cie-limits-thick-close">✕</button></span></div>
       <input type="range" id="cie-thick" min="0.1" max="10" value="1" step="any">
      </div>
      <!-- Opacity -->
@@ -690,15 +925,15 @@ option{min-block-size:unset;min-inline-size:unset}
         <button class="cie-reset-btn cie-limits-btn" data-key="op" title="Ping-pong limits">🎚️</button>
        </div>
       </div>
-      <div class="cie-limits-popover" id="cie-limits-op">Min:<input type="number" id="cie-lmin-op"> Max:<input type="number" id="cie-lmax-op"><button class="cie-reset-btn" id="cie-limits-op-close">✕</button></div>
+       <div class="cie-limits-popover" id="cie-limits-op"><span>Min<input type="number" id="cie-lmin-op"> Max<input type="number" id="cie-lmax-op"></span><span><button class="cie-reset-btn" id="cie-limits-op-close">✕</button></span></div>
       <input type="range" id="cie-op" min="0" max="1" step="any" value="1">
      </div>
      <!-- Glow -->
      <div class="cie-group" style="padding:0 2px 2px">
       <div class="cie-row">
        <div class="cie-checkbox-group">
-        <input type="checkbox" id="cie-glow">
-        <label for="cie-glow"><span style="text-shadow:0 0 5px rgba(255,255,255,.8);color:#fff">Glow</span> radius</label>
+        <input type="checkbox" id="cie-glow" title="Enable neon glow outline rendering (advanced)">
+        <label for="cie-glow" style="cursor:pointer"><span style="text-shadow:0 0 5px rgba(255,255,255,.8);color:#fff">Glow</span> radius</label>
        </div>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="gRad" title="Reset">↺</button>
@@ -707,15 +942,15 @@ option{min-block-size:unset;min-inline-size:unset}
          <button class="cie-reset-btn cie-limits-btn" data-key="gRad" title="Ping-pong limits">🎚️</button>
        </div>
       </div>
-      <div class="cie-limits-popover" id="cie-limits-gRad">Min:<input type="number" id="cie-lmin-gRad"> Max:<input type="number" id="cie-lmax-gRad"><button class="cie-reset-btn" id="cie-limits-gRad-close">✕</button></div>
+       <div class="cie-limits-popover" id="cie-limits-gRad"><span>Min<input type="number" id="cie-lmin-gRad"> Max<input type="number" id="cie-lmax-gRad"></span><span><button class="cie-reset-btn" id="cie-limits-gRad-close">✕</button></span></div>
       <input type="range" id="cie-gRad" min="0" max="40" value="8" step="any">
      </div>
      <!-- Trail length -->
      <div class="cie-group" style="padding:0 2px 2px">
       <div class="cie-row">
        <div class="cie-checkbox-group">
-        <input type="checkbox" id="cie-trail">
-                <label for="cie-trail">☄️Trail length</label>
+        <input type="checkbox" id="cie-trail" title="Accumulate preceding strokes for fluid trail blending">
+        <label for="cie-trail" style="cursor:pointer">☄️Trail length</label>
        </div>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="tDens" title="Reset">↺</button>
@@ -724,7 +959,7 @@ option{min-block-size:unset;min-inline-size:unset}
          <button class="cie-reset-btn cie-limits-btn" data-key="tDens" title="Ping-pong limits">🎚️</button>
        </div>
       </div>
-      <div class="cie-limits-popover" id="cie-limits-tDens">Min:<input type="number" id="cie-lmin-tDens"> Max:<input type="number" id="cie-lmax-tDens"><button class="cie-reset-btn" id="cie-limits-tDens-close">✕</button></div>
+       <div class="cie-limits-popover" id="cie-limits-tDens"><span>Min<input type="number" id="cie-lmin-tDens"> Max<input type="number" id="cie-lmax-tDens"></span><span><button class="cie-reset-btn" id="cie-limits-tDens-close">✕</button></span></div>
       <input type="range" id="cie-tDens" min="0.005" max="0.5" value="0.10" step="any">
      </div>
     </div>
@@ -738,7 +973,7 @@ option{min-block-size:unset;min-inline-size:unset}
        </div>
       </div>
       <div class="cie-row">
-       <label class="cie-label indented">Fade</label>
+       <label class="cie-label indent">Fade</label>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="bgFade" title="Reset">↺</button>
         <input type="number" id="cie-bgFadeNum" step="any" value="0">
@@ -746,13 +981,13 @@ option{min-block-size:unset;min-inline-size:unset}
          <button class="cie-reset-btn cie-limits-btn" data-key="bgFade" title="Ping-pong limits">🎚️</button>
        </div>
       </div>
-      <div class="cie-limits-popover" id="cie-limits-bgFade">Min:<input type="number" id="cie-lmin-bgFade"> Max:<input type="number" id="cie-lmax-bgFade"><button class="cie-reset-btn" id="cie-limits-bgFade-close">✕</button></div>
+       <div class="cie-limits-popover" id="cie-limits-bgFade"><span>Min<input type="number" id="cie-lmin-bgFade"> Max<input type="number" id="cie-lmax-bgFade"></span><span><button class="cie-reset-btn" id="cie-limits-bgFade-close">✕</button></span></div>
       <input type="range" id="cie-bgFade" min="0" max="1" value="0" step="any">
      </div>
 
      <div class="cie-group" style="padding:0 2px 2px">
       <div class="cie-row">
-       <label class="cie-label"><span style="filter:invert(1);">🌓</span> Invert</label>
+       <label class="cie-label indent"><span style="filter:invert(1);">🌓</span> Invert</label>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="invert" title="Reset">↺</button>
         <input type="number" id="cie-invertNum" step="any" value="0">
@@ -760,19 +995,18 @@ option{min-block-size:unset;min-inline-size:unset}
         <button class="cie-reset-btn cie-limits-btn" data-key="invert" title="Ping-pong limits">🎚️</button>
        </div>
       </div>
-      <div class="cie-limits-popover" id="cie-limits-invert">Min:<input type="number" id="cie-lmin-invert"> Max:<input type="number" id="cie-lmax-invert"><button class="cie-reset-btn" id="cie-limits-invert-close">✕</button></div>
+       <div class="cie-limits-popover" id="cie-limits-invert"><span>Min<input type="number" id="cie-lmin-invert"> Max<input type="number" id="cie-lmax-invert"></span><span><button class="cie-reset-btn" id="cie-limits-invert-close">✕</button></span></div>
       <input type="range" id="cie-invert" min="0" max="1" value="0" step="any">
      </div>
     </div>
    </div>
-
    <!-- ═══ ANIM ═══ -->
    <div class="cie-tab-panel" data-panel="anim">
-     <div class="cie-docked-section-header">Anim</div>
-     <!-- Global Speed Slider -->
-     <div class="cie-group" style="border-bottom:1px solid #222;">
+     <div class="cie-docked-section-header">🎬Anim</div>
+     <!-- Global speed -->
+     <div class="cie-group" style="border-bottom:1px solid #222;padding:0 2px">
       <div class="cie-row">
-       <label class="cie-label">🌐 Global speed</label>
+       <label class="cie-label">🌐⏱️Global speed</label>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="globalSpeed" title="Reset">↺</button>
         <input type="number" id="cie-globalSpeedNum" step="any" value="1">
@@ -780,13 +1014,13 @@ option{min-block-size:unset;min-inline-size:unset}
         <button class="cie-reset-btn cie-limits-btn" data-key="globalSpeed" title="Ping-pong limits">🎚️</button>
        </div>
       </div>
-      <div class="cie-limits-popover" id="cie-limits-globalSpeed">Min:<input type="number" id="cie-lmin-globalSpeed"> Max:<input type="number" id="cie-lmax-globalSpeed"><button class="cie-reset-btn" id="cie-limits-globalSpeed-close">✕</button></div>
+       <div class="cie-limits-popover" id="cie-limits-globalSpeed"><span>Min<input type="number" id="cie-lmin-globalSpeed"> Max<input type="number" id="cie-lmax-globalSpeed"></span><span><button class="cie-reset-btn" id="cie-limits-globalSpeed-close">✕</button></span></div>
       <input type="range" id="cie-globalSpeed" min="0" max="5" value="1" step="0.1">
       </div>
-      <!-- Timeline Slider -->
-      <div class="cie-group" style="border-bottom:1px solid #222;">
+      <!-- Timeline -->
+      <div class="cie-group" style="border-bottom:1px solid #222;padding:0 2px">
        <div class="cie-row">
-        <label class="cie-label">⏱️ Timeline</label>
+        <label class="cie-label" title="Animation timeline">🕒Timeline</label>
         <div style="display:flex;align-items:center;gap:2px">
          <button class="cie-reset-btn" data-reset="timeline" title="Reset">↺</button>
          <input type="number" id="cie-timelineNum" step="any" value="0">
@@ -794,14 +1028,66 @@ option{min-block-size:unset;min-inline-size:unset}
          <button class="cie-reset-btn cie-limits-btn" data-key="timeline" title="Ping-pong limits">🎚️</button>
         </div>
        </div>
-       <div class="cie-limits-popover" id="cie-limits-timeline">Min:<input type="number" id="cie-lmin-timeline"> Max:<input type="number" id="cie-lmax-timeline"><button class="cie-reset-btn" id="cie-limits-timeline-close">✕</button></div>
+        <div class="cie-limits-popover" id="cie-limits-timeline"><span>Min<input type="number" id="cie-lmin-timeline"> Max<input type="number" id="cie-lmax-timeline"></span><span><button class="cie-reset-btn" id="cie-limits-timeline-close">✕</button></span></div>
        <input type="range" id="cie-timeline" min="0" max="100" value="0" step="any">
      </div>
-    <div class="cie-box">
+    <div class="cie-box"><!-- Viewport -->
+     <div class="cie-box-title">🖥️Viewport</div>
+     <div class="cie-group" style="padding:0 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group" title="Enable global viewport orbit rotation"><input type="checkbox" id="cie-rotateToggle">
+       <label class="cie-label" for="cie-rotateToggle" style="cursor:inherit">🔄Rotation</label>
+       </div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="rSpeed" title="Reset">↺</button>
+        <input type="number" id="cie-rSpeedNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="rSpeed" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="rSpeed" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+       <div class="cie-limits-popover" id="cie-limits-rSpeed"><span>Min<input type="number" id="cie-lmin-rSpeed"> Max<input type="number" id="cie-lmax-rSpeed"></span><span><button class="cie-reset-btn" id="cie-limits-rSpeed-close">✕</button></span></div>
+      <input type="range" id="cie-rSpeed" min="-10" max="10" value="1" step="any">
+      <div class="cie-row"><div class="cie-checkbox-group" title="Sync pulse breathing timing to viewport rotation timeline"><input type="checkbox" id="cie-sync"><label for="cie-sync" style="cursor:inherit">🔗〰 Sync pulse</label></div></div>
+      </div>
+      <!-- Depth Nesting Rotation -->
+      <div class="cie-group" style="padding:0 2px">
+       <div class="cie-row">
+        <div class="cie-checkbox-group" title="Rotate nested depths independently"><input type="checkbox" id="cie-rotDepths"><label class="cie-label" for="cie-rotDepths" style="cursor:inherit">🌌Depth orbit</label></div>
+        <div style="display:flex;align-items:center;gap:2px">
+         <button class="cie-reset-btn" data-reset="rotDepthFactor" title="Reset">↺</button>
+         <input type="number" id="cie-rotDepthFactorNum" step="any" value="0.5">
+         <button class="cie-emoji-btn cie-ping-pong" data-key="rotDepthFactor" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="rotDepthFactor" title="Ping-pong limits">🎚️</button>
+        </div>
+       </div>
+        <div class="cie-limits-popover" id="cie-limits-rotDepthFactor"><span>Min<input type="number" id="cie-lmin-rotDepthFactor"> Max<input type="number" id="cie-lmax-rotDepthFactor"></span><span><button class="cie-reset-btn" id="cie-limits-rotDepthFactor-close">✕</button></span></div>
+       <input type="range" id="cie-rotDepthFactor" min="-5" max="5" value="0.5" step="any">
+     </div>
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <div style="display:flex;align-items:center;gap:4px">
+        <label class="cie-label" for="cie-infiniteZoom" style="cursor:pointer" title="Infinite zoom on/off">🔍 Zoom</label>
+        <div class="cie-checkbox-group" title="Enable infinite perspective zoom without bounds">
+          <input type="checkbox" id="cie-infiniteZoom">
+          <label class="cie-label" for="cie-infiniteZoom" style="cursor:pointer">∞</label>
+        </div>
+       </div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="zoom" title="Reset">↺</button>
+        <input type="number" id="cie-zoomNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="zoom" title="Ping-pong animation">↔</button>
+         <button class="cie-reset-btn cie-limits-btn" data-key="zoom" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <input type="range" id="cie-zoom" min="-30" max="30" value="0" step="any">
+      <div class="cie-limits-popover" id="cie-limits-zoom"><span>Min<input type="number" id="cie-lmin-zoom"> Max<input type="number" id="cie-lmax-zoom"></span><span><button class="cie-reset-btn" id="cie-limits-zoom-close">✕</button></span></div>
+     </div>
+    </div>
+    <div class="cie-box"><!-- Pulse -->
      <div class="cie-box-title">〰 Pulse</div>
      <div class="cie-group" style="padding:0 2px">
       <div class="cie-row">
-       <div class="cie-checkbox-group"><input type="checkbox" id="cie-animate"><label for="cie-animate">˒﹚) Frequency</label></div>
+       <div class="cie-checkbox-group" title="Enable pulse breathing animation"><input type="checkbox" id="cie-animate"><label for="cie-animate" style="cursor:pointer">˒﹚) Frequency</label></div>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="pSpeed" title="Reset">↺</button>
         <input type="number" id="cie-pSpeedNum" step="any">
@@ -809,7 +1095,7 @@ option{min-block-size:unset;min-inline-size:unset}
         <button class="cie-reset-btn cie-limits-btn" data-key="pSpeed" title="Ping-pong limits">🎚️</button>
        </div>
       </div>
-      <div class="cie-limits-popover" id="cie-limits-pSpeed">Min:<input type="number" id="cie-lmin-pSpeed"> Max:<input type="number" id="cie-lmax-pSpeed"><button class="cie-reset-btn" id="cie-limits-pSpeed-close">✕</button></div>
+       <div class="cie-limits-popover" id="cie-limits-pSpeed"><span>Min<input type="number" id="cie-lmin-pSpeed"> Max<input type="number" id="cie-lmax-pSpeed"></span><span><button class="cie-reset-btn" id="cie-limits-pSpeed-close">✕</button></span></div>
       <input type="range" id="cie-pSpeed" min="-10" max="10" value="1" step="any">
      </div>
      <div class="cie-group" style="padding:0 2px">
@@ -822,13 +1108,13 @@ option{min-block-size:unset;min-inline-size:unset}
         <button class="cie-reset-btn cie-limits-btn" data-key="pDepth" title="Ping-pong limits">🎚️</button>
        </div>
       </div>
-      <div class="cie-limits-popover" id="cie-limits-pDepth">Min:<input type="number" id="cie-lmin-pDepth"> Max:<input type="number" id="cie-lmax-pDepth"><button class="cie-reset-btn" id="cie-limits-pDepth-close">✕</button></div>
+      <div class="cie-limits-popover" id="cie-limits-pDepth"><span>Min<input type="number" id="cie-lmin-pDepth"> Max<input type="number" id="cie-lmax-pDepth"></span><span><button class="cie-reset-btn" id="cie-limits-pDepth-close">✕</button></span></div>
       <input type="range" id="cie-pDepth" min="-1" max="1.0" value="0.05" step="any">
      </div>
      <!-- Pulse shift-->
      <div class="cie-group" style="padding:0 2px 2px">
       <div class="cie-row">
-       <label class="cie-label">⇄ Shift</label>
+       <label class="cie-label">⇄ <span class="cie-label cie-shift-effect">Shift</span></label>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="phase" title="Reset">↺</button>
         <input type="number" id="cie-phaseNum" step="any">
@@ -836,7 +1122,7 @@ option{min-block-size:unset;min-inline-size:unset}
         <button class="cie-reset-btn cie-limits-btn" data-key="phase" title="Ping-pong limits">🎚️</button>
        </div>
       </div>
-      <div class="cie-limits-popover" id="cie-limits-phase">Min:<input type="number" id="cie-lmin-phase"> Max:<input type="number" id="cie-lmax-phase"><button class="cie-reset-btn" id="cie-limits-phase-close">✕</button></div>
+      <div class="cie-limits-popover" id="cie-limits-phase"><span>Min<input type="number" id="cie-lmin-phase"> Max<input type="number" id="cie-lmax-phase"></span><span><button class="cie-reset-btn" id="cie-limits-phase-close">✕</button></span></div>
       <input type="range" id="cie-phase" min="0" max="2" value="0" step="any">
      </div>
      <!-- Convergence -->
@@ -850,67 +1136,15 @@ option{min-block-size:unset;min-inline-size:unset}
         <button class="cie-reset-btn cie-limits-btn" data-key="converge" title="Ping-pong limits">🎚️</button>
        </div>
       </div>
-      <div class="cie-limits-popover" id="cie-limits-converge">Min:<input type="number" id="cie-lmin-converge"> Max:<input type="number" id="cie-lmax-converge"><button class="cie-reset-btn" id="cie-limits-converge-close">✕</button></div>
+       <div class="cie-limits-popover" id="cie-limits-converge"><span>Min<input type="number" id="cie-lmin-converge"> Max<input type="number" id="cie-lmax-converge"></span><span><button class="cie-reset-btn" id="cie-limits-converge-close">✕</button></span></div>
       <input type="range" id="cie-converge" min="0" max="1" value="0" step="any">
      </div>
     </div>
     <div class="cie-box">
-     <div class="cie-box-title">Viewport</div>
+     <div class="cie-box-title">♒︎ Wobble</div>
      <div class="cie-group" style="padding:0 2px">
       <div class="cie-row">
-       <div class="cie-checkbox-group"><input type="checkbox" id="cie-rotateToggle">
-       <label class="cie-label" for="cie-rotateToggle">🔄Rotation</label>
-       </div>
-       <div style="display:flex;align-items:center;gap:2px">
-        <button class="cie-reset-btn" data-reset="rSpeed" title="Reset">↺</button>
-        <input type="number" id="cie-rSpeedNum" step="any">
-        <button class="cie-emoji-btn cie-ping-pong" data-key="rSpeed" title="Ping-pong animation">↔</button>
-        <button class="cie-reset-btn cie-limits-btn" data-key="rSpeed" title="Ping-pong limits">🎚️</button>
-       </div>
-      </div>
-      <div class="cie-limits-popover" id="cie-limits-rSpeed">Min:<input type="number" id="cie-lmin-rSpeed"> Max:<input type="number" id="cie-lmax-rSpeed"><button class="cie-reset-btn" id="cie-limits-rSpeed-close">✕</button></div>
-      <input type="range" id="cie-rSpeed" min="-10" max="10" value="1" step="any">
-      </div>
-      <!-- Depth Nesting Rotation -->
-      <div class="cie-group" style="padding:0 2px">
-       <div class="cie-row">
-        <div class="cie-checkbox-group" title="Rotate nested depths independently"><input type="checkbox" id="cie-rotDepths"><label class="cie-label" for="cie-rotDepths">🌌Depth orbit</label></div>
-        <div style="display:flex;align-items:center;gap:2px">
-         <button class="cie-reset-btn" data-reset="rotDepthFactor" title="Reset">↺</button>
-         <input type="number" id="cie-rotDepthFactorNum" step="any" value="0.5">
-         <button class="cie-emoji-btn cie-ping-pong" data-key="rotDepthFactor" title="Ping-pong animation">↔</button>
-         <button class="cie-reset-btn cie-limits-btn" data-key="rotDepthFactor" title="Ping-pong limits">🎚️</button>
-        </div>
-       </div>
-       <div class="cie-limits-popover" id="cie-limits-rotDepthFactor">Min:<input type="number" id="cie-lmin-rotDepthFactor"> Max:<input type="number" id="cie-lmax-rotDepthFactor"><button class="cie-reset-btn" id="cie-limits-rotDepthFactor-close">✕</button></div>
-       <input type="range" id="cie-rotDepthFactor" min="-5" max="5" value="0.5" step="any">
-     </div>
-     <div class="cie-group" style="padding:0 2px 2px">
-      <div class="cie-row">
-       <div style="display:flex;align-items:center;gap:4px">
-        <label class="cie-label" for="cie-infiniteZoom" style="cursor:pointer" title="Toggle Infinite Zoom">🔍 Zoom</label>
-        <div class="cie-checkbox-group" title="Infinite zoom">
-          <input type="checkbox" id="cie-infiniteZoom">
-          <label class="cie-label" for="cie-infiniteZoom" style="cursor:pointer">∞</label>
-        </div>
-       </div>
-       <div style="display:flex;align-items:center;gap:2px">
-        <button class="cie-reset-btn" data-reset="zoom" title="Reset">↺</button>
-        <input type="number" id="cie-zoomNum" step="any">
-        <button class="cie-emoji-btn cie-ping-pong" data-key="zoom" title="Ping-pong animation">↔</button>
-         <button class="cie-reset-btn cie-limits-btn" data-key="zoom" title="Ping-pong limits">🎚️</button>
-       </div>
-      </div>
-      <input type="range" id="cie-zoom" min="-30" max="30" value="0" step="any">
-      <div class="cie-limits-popover" id="cie-limits-zoom">Min:<input type="number" id="cie-lmin-zoom"> Max:<input type="number" id="cie-lmax-zoom"><button class="cie-reset-btn" id="cie-limits-zoom-close">✕</button></div>
-     </div>
-    </div>
-    <div class="cie-row"><div class="cie-checkbox-group"><input type="checkbox" id="cie-sync"><label for="cie-sync">🌬️Sync breath</label></div></div>
-    <div class="cie-box">
-     <div class="cie-box-title">Wobble</div>
-     <div class="cie-group" style="padding:0 2px">
-      <div class="cie-row">
-       <div class="cie-checkbox-group"><input type="checkbox" id="cie-wobble"><label for="cie-wobble">Amplitude</label></div>
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-wobble" title="Enable secondary radius modulation wobble animation"><label for="cie-wobble" style="cursor:pointer">Amplitude</label></div>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="wobbleAmp" title="Reset">↺</button>
         <input type="number" id="cie-wobbleAmpNum" step="any">
@@ -919,11 +1153,11 @@ option{min-block-size:unset;min-inline-size:unset}
        </div>
       </div>
       <input type="range" id="cie-wobbleAmp" min="-5" max="1.7753487851328" value="0.1" step="any">
-      <div class="cie-limits-popover" id="cie-limits-wobbleAmp">Min:<input type="number" id="cie-lmin-wobbleAmp"> Max:<input type="number" id="cie-lmax-wobbleAmp"><button class="cie-reset-btn" id="cie-limits-wobbleAmp-close">✕</button></div>
+      <div class="cie-limits-popover" id="cie-limits-wobbleAmp"><span>Min<input type="number" id="cie-lmin-wobbleAmp"> Max<input type="number" id="cie-lmax-wobbleAmp"></span><span><button class="cie-reset-btn" id="cie-limits-wobbleAmp-close">✕</button></span></div>
      </div>
      <div class="cie-group" style="padding:0 2px 2px">
       <div class="cie-row">
-       <label class="cie-label">Frequency</label>
+       <label class="cie-label">˒﹚) Frequency</label>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="wobbleFreq" title="Reset">↺</button>
         <input type="number" id="cie-wobbleFreqNum" step="any">
@@ -932,13 +1166,13 @@ option{min-block-size:unset;min-inline-size:unset}
        </div>
       </div>
       <input type="range" id="cie-wobbleFreq" min="-5" max="5" value="1" step="any">
-      <div class="cie-limits-popover" id="cie-limits-wobbleFreq">Min:<input type="number" id="cie-lmin-wobbleFreq"> Max:<input type="number" id="cie-lmax-wobbleFreq"><button class="cie-reset-btn" id="cie-limits-wobbleFreq-close">✕</button></div>
+      <div class="cie-limits-popover" id="cie-limits-wobbleFreq"><span>Min<input type="number" id="cie-lmin-wobbleFreq"> Max<input type="number" id="cie-lmax-wobbleFreq"></span><span><button class="cie-reset-btn" id="cie-limits-wobbleFreq-close">✕</button></span></div>
      </div>
     </div>
     <div class="cie-box">
      <div class="cie-group" style="padding:0 2px">
       <div class="cie-row">
-       <div class="cie-checkbox-group"><input type="checkbox" id="cie-distort"><label for="cie-distort" title="Distortion ripple on/off" class="cie-distort-effect">Distortion ripple</label></div>
+       <div class="cie-checkbox-group"><input type="checkbox" id="cie-distort"><label for="cie-distort" title="Distortion ripple on/off" class="cie-distort-effect">〰️Distortion ripple</label></div>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="distortAmp" title="Reset">↺</button>
         <input type="number" id="cie-distortAmpNum" step="any">
@@ -947,11 +1181,11 @@ option{min-block-size:unset;min-inline-size:unset}
        </div>
       </div>
       <input type="range" id="cie-distortAmp" min="0" max="50" value="10" step="any">
-      <div class="cie-limits-popover" id="cie-limits-distortAmp">Min:<input type="number" id="cie-lmin-distortAmp"> Max:<input type="number" id="cie-lmax-distortAmp"><button class="cie-reset-btn" id="cie-limits-distortAmp-close">✕</button></div>
+       <div class="cie-limits-popover" id="cie-limits-distortAmp"><span>Min<input type="number" id="cie-lmin-distortAmp"> Max<input type="number" id="cie-lmax-distortAmp"></span><span><button class="cie-reset-btn" id="cie-limits-distortAmp-close">✕</button></span></div>
      </div>
      <div class="cie-group" style="padding:0 2px 2px" id="cie-distortFreqGroup">
       <div class="cie-row">
-       <label class="cie-label indented">Frequency</label>
+       <label class="cie-label indent">Frequency</label>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="distortFreq" title="Reset">↺</button>
         <input type="number" id="cie-distortFreqNum" step="any">
@@ -960,17 +1194,16 @@ option{min-block-size:unset;min-inline-size:unset}
        </div>
       </div>
       <input type="range" id="cie-distortFreq" min="0.5" max="10" value="3" step="any">
-      <div class="cie-limits-popover" id="cie-limits-distortFreq">Min:<input type="number" id="cie-lmin-distortFreq"> Max:<input type="number" id="cie-lmax-distortFreq"><button class="cie-reset-btn" id="cie-limits-distortFreq-close">✕</button></div>
+      <div class="cie-limits-popover" id="cie-limits-distortFreq"><span>Min<input type="number" id="cie-lmin-distortFreq"> Max<input type="number" id="cie-lmax-distortFreq"></span><span><button class="cie-reset-btn" id="cie-limits-distortFreq-close">✕</button></span></div>
      </div>
     </div>
    </div>
-
    <!-- ═══ FX ═══ -->
    <div class="cie-tab-panel" data-panel="fx">
     <div class="cie-docked-section-header">FX</div>
     <div class="cie-row">
      <label class="cie-label">Blend</label>
-     <select id="cie-blend" style="width:100px">
+     <select id="cie-blend">
       <option value="source-over">Normal</option>
       <option value="lighter">Lighter (Add)</option>
       <option value="multiply">Multiply</option>
@@ -997,7 +1230,7 @@ option{min-block-size:unset;min-inline-size:unset}
        </div>
       </div>
       <input type="range" id="cie-chromaAmt" min="0" max="20" value="4" step="any">
-      <div class="cie-limits-popover" id="cie-limits-chromaAmt">Min:<input type="number" id="cie-lmin-chromaAmt"> Max:<input type="number" id="cie-lmax-chromaAmt"><button class="cie-reset-btn" id="cie-limits-chromaAmt-close">✕</button></div>
+       <div class="cie-limits-popover" id="cie-limits-chromaAmt"><span>Min<input type="number" id="cie-lmin-chromaAmt"> Max<input type="number" id="cie-lmax-chromaAmt"></span><span><button class="cie-reset-btn" id="cie-limits-chromaAmt-close">✕</button></span></div>
      </div>
     </div>
     <div class="cie-box"><!--Feedback echo-->
@@ -1007,12 +1240,14 @@ option{min-block-size:unset;min-inline-size:unset}
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="echoAmt" title="Reset">↺</button>
         <input type="number" id="cie-echoAmtNum" step="any">
-        <button class="cie-emoji-btn cie-ping-pong" data-key="echoAmt">↔</button>
+        <button class="cie-emoji-btn cie-ping-pong" data-key="echoAmt" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="echoAmt" title="Ping-pong limits">🎚️</button>
        </div>
       </div>
       <input type="range" id="cie-echoAmt" min="0" max="5" value="0.7" step="any">
-      </div>
+       <div class="cie-limits-popover" id="cie-limits-echoAmt"><span>Min<input type="number" id="cie-lmin-echoAmt"> Max<input type="number" id="cie-lmax-echoAmt"></span><span><button class="cie-reset-btn" id="cie-limits-echoAmt-close">✕</button></span></div>
      </div>
+    </div>
      <div class="cie-box"><!--Motion blur-->
       <div class="cie-group" style="padding:0 2px 2px">
        <div class="cie-row">
@@ -1025,11 +1260,11 @@ option{min-block-size:unset;min-inline-size:unset}
         </div>
        </div>
        <input type="range" id="cie-motionBlurAmt" min="0" max="1" value="0.5" step="any">
-       <div class="cie-limits-popover" id="cie-limits-motionBlurAmt">Min:<input type="number" id="cie-lmin-motionBlurAmt"> Max:<input type="number" id="cie-lmax-motionBlurAmt"><button class="cie-reset-btn" id="cie-limits-motionBlurAmt-close">✕</button></div>
+        <div class="cie-limits-popover" id="cie-limits-motionBlurAmt"><span>Min<input type="number" id="cie-lmin-motionBlurAmt"> Max<input type="number" id="cie-lmax-motionBlurAmt"></span><span><button class="cie-reset-btn" id="cie-limits-motionBlurAmt-close">✕</button></span></div>
       </div>
       <div class="cie-group" style="padding:0 2px 2px">
        <div class="cie-row">
-        <label class="cie-label indented cie-steps-parent">👣<span class="cie-steps-wrapper"><span class="cie-steps-letter">S</span><span class="cie-steps-letter">t</span><span class="cie-steps-letter">e</span><span class="cie-steps-letter">p</span><span class="cie-steps-letter">s</span></span></label>
+        <label class="cie-label indent cie-steps-parent">👣<span class="cie-steps-wrapper"><span class="cie-steps-letter">S</span><span class="cie-steps-letter">t</span><span class="cie-steps-letter">e</span><span class="cie-steps-letter">p</span><span class="cie-steps-letter">s</span></span></label>
         <div style="display:flex;align-items:center;gap:2px">
          <button class="cie-reset-btn" data-reset="motionBlurSteps" title="Reset">↺</button>
          <input type="number" id="cie-motionBlurStepsNum" step="any">
@@ -1038,7 +1273,7 @@ option{min-block-size:unset;min-inline-size:unset}
         </div>
        </div>
        <input type="range" id="cie-motionBlurSteps" min="1" max="15" value="5" step="1">
-       <div class="cie-limits-popover" id="cie-limits-motionBlurSteps">Min:<input type="number" id="cie-lmin-motionBlurSteps"> Max:<input type="number" id="cie-lmax-motionBlurSteps"><button class="cie-reset-btn" id="cie-limits-motionBlurSteps-close">✕</button></div>
+        <div class="cie-limits-popover" id="cie-limits-motionBlurSteps"><span>Min<input type="number" id="cie-lmin-motionBlurSteps"> Max<input type="number" id="cie-lmax-motionBlurSteps"></span><span><button class="cie-reset-btn" id="cie-limits-motionBlurSteps-close">✕</button></span></div>
       </div>
      </div>
     <div class="cie-box"><!--Scanlines-->
@@ -1053,11 +1288,11 @@ option{min-block-size:unset;min-inline-size:unset}
        </div>
       </div>
       <input type="range" id="cie-scanlinesOp" min="0" max="1" value="0.3" step="any">
-      <div class="cie-limits-popover" id="cie-limits-scanlinesOp">Min:<input type="number" id="cie-lmin-scanlinesOp"> Max:<input type="number" id="cie-lmax-scanlinesOp"><button class="cie-reset-btn" id="cie-limits-scanlinesOp-close">✕</button></div>
+       <div class="cie-limits-popover" id="cie-limits-scanlinesOp"><span>Min<input type="number" id="cie-lmin-scanlinesOp"> Max<input type="number" id="cie-lmax-scanlinesOp"></span><span><button class="cie-reset-btn" id="cie-limits-scanlinesOp-close">✕</button></span></div>
      </div>
      <div class="cie-group" style="padding:0 2px 2px">
       <div class="cie-row">
-       <label class="cie-label indented cie-spacedout-effect">↕ Spacing</label>
+       <label class="cie-label indent cie-spacedout-effect">↕ Spacing</label>
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="scanlinesSp" title="Reset">↺</button>
         <input type="number" id="cie-scanlinesSpNum" step="any">
@@ -1066,7 +1301,7 @@ option{min-block-size:unset;min-inline-size:unset}
        </div>
       </div>
       <input type="range" id="cie-scanlinesSp" min="2" max="20" value="4" step="1">
-      <div class="cie-limits-popover" id="cie-limits-scanlinesSp">Min:<input type="number" id="cie-lmin-scanlinesSp"> Max:<input type="number" id="cie-lmax-scanlinesSp"><button class="cie-reset-btn" id="cie-limits-scanlinesSp-close">✕</button></div>
+       <div class="cie-limits-popover" id="cie-limits-scanlinesSp"><span>Min<input type="number" id="cie-lmin-scanlinesSp"> Max<input type="number" id="cie-lmax-scanlinesSp"></span><span><button class="cie-reset-btn" id="cie-limits-scanlinesSp-close">✕</button></span></div>
      </div>
     </div>
     <div class="cie-box"><!--Vignette-->
@@ -1076,58 +1311,177 @@ option{min-block-size:unset;min-inline-size:unset}
        <div style="display:flex;align-items:center;gap:2px">
         <button class="cie-reset-btn" data-reset="vignetteAmt" title="Reset">↺</button>
         <input type="number" id="cie-vignetteAmtNum" step="any">
-        <button class="cie-emoji-btn cie-ping-pong" data-key="vignetteAmt">↔</button>
+        <button class="cie-emoji-btn cie-ping-pong" data-key="vignetteAmt" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="vignetteAmt" title="Ping-pong limits">🎚️</button>
        </div>
       </div>
       <input type="range" id="cie-vignetteAmt" min="0" max="1" value="0.5" step="any">
+       <div class="cie-limits-popover" id="cie-limits-vignetteAmt"><span>Min<input type="number" id="cie-lmin-vignetteAmt"> Max<input type="number" id="cie-lmax-vignetteAmt"></span><span><button class="cie-reset-btn" id="cie-limits-vignetteAmt-close">✕</button></span></div>
+     </div>
+    </div>
+
+    <div style="font-size:12px;color:#ccc;text-align:center;border-top:1px solid #222">🎨CSS Canvas Filters</div>
+
+    <div class="cie-box"><!--Blur-->
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group" title="Blur filter on/off"><input type="checkbox" id="cie-filBlur"><label for="cie-filBlur">Blur</label></div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="filBlurAmt" title="Reset">↺</button>
+        <input type="number" id="cie-filBlurAmtNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="filBlurAmt" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="filBlurAmt" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <input type="range" id="cie-filBlurAmt" min="0" max="100" value="1" step="0.01">
+      <div class="cie-limits-popover" id="cie-limits-filBlurAmt"><span>Min<input type="number" id="cie-lmin-filBlurAmt"> Max<input type="number" id="cie-lmax-filBlurAmt"></span><span><button class="cie-reset-btn" id="cie-limits-filBlurAmt-close">✕</button></span></div>
+     </div>
+    </div>
+
+    <div class="cie-box"><!--Brightness-->
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group" title="Brightness filter on/off"><input type="checkbox" id="cie-filBrightness"><label for="cie-filBrightness">Brightness</label></div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="filBrightnessAmt" title="Reset">↺</button>
+        <input type="number" id="cie-filBrightnessAmtNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="filBrightnessAmt" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="filBrightnessAmt" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <input type="range" id="cie-filBrightnessAmt" min="0" max="10" value="2" step="0.01">
+      <div class="cie-limits-popover" id="cie-limits-filBrightnessAmt"><span>Min<input type="number" id="cie-lmin-filBrightnessAmt"> Max<input type="number" id="cie-lmax-filBrightnessAmt"></span><span><button class="cie-reset-btn" id="cie-limits-filBrightnessAmt-close">✕</button></span></div>
+     </div>
+    </div>
+
+    <div class="cie-box"><!--Contrast-->
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group" title="Contrast filter on/off"><input type="checkbox" id="cie-filContrast"><label for="cie-filContrast">Contrast</label></div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="filContrastAmt" title="Reset">↺</button>
+        <input type="number" id="cie-filContrastAmtNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="filContrastAmt" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="filContrastAmt" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <input type="range" id="cie-filContrastAmt" min="0" max="10" value="1" step="0.01">
+      <div class="cie-limits-popover" id="cie-limits-filContrastAmt"><span>Min<input type="number" id="cie-lmin-filContrastAmt"> Max<input type="number" id="cie-lmax-filContrastAmt"></span><span><button class="cie-reset-btn" id="cie-limits-filContrastAmt-close">✕</button></span></div>
+     </div>
+    </div>
+
+    <div class="cie-box"><!--Grayscale-->
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group" title="Grayscale filter on/off"><input type="checkbox" id="cie-filGrayscale"><label for="cie-filGrayscale">Grayscale</label></div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="filGrayscaleAmt" title="Reset">↺</button>
+        <input type="number" id="cie-filGrayscaleAmtNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="filGrayscaleAmt" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="filGrayscaleAmt" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <input type="range" id="cie-filGrayscaleAmt" min="0" max="1" value="1" step="0.01">
+      <div class="cie-limits-popover" id="cie-limits-filGrayscaleAmt"><span>Min<input type="number" id="cie-lmin-filGrayscaleAmt"> Max<input type="number" id="cie-lmax-filGrayscaleAmt"></span><span><button class="cie-reset-btn" id="cie-limits-filGrayscaleAmt-close">✕</button></span></div>
+     </div>
+    </div>
+
+    <div class="cie-box"><!--Hue-rotate-->
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group" title="Hue-rotate filter on/off"><input type="checkbox" id="cie-filHueRotate"><label for="cie-filHueRotate">Hue-rotate</label></div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="filHueRotateAmt" title="Reset">↺</button>
+        <input type="number" id="cie-filHueRotateAmtNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="filHueRotateAmt" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="filHueRotateAmt" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <input type="range" id="cie-filHueRotateAmt" min="0" max="360" value="180" step="1">
+      <div class="cie-limits-popover" id="cie-limits-filHueRotateAmt"><span>Min<input type="number" id="cie-lmin-filHueRotateAmt"> Max<input type="number" id="cie-lmax-filHueRotateAmt"></span><span><button class="cie-reset-btn" id="cie-limits-filHueRotateAmt-close">✕</button></span></div>
+     </div>
+    </div>
+
+    <div class="cie-box"><!--Saturate-->
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group" title="Saturate filter on/off"><input type="checkbox" id="cie-filSaturate"><label for="cie-filSaturate">Saturate</label></div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="filSaturateAmt" title="Reset">↺</button>
+        <input type="number" id="cie-filSaturateAmtNum" step="any">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="filSaturateAmt" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="filSaturateAmt" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <input type="range" id="cie-filSaturateAmt" min="0" max="10" value="5" step="0.01">
+      <div class="cie-limits-popover" id="cie-limits-filSaturateAmt"><span>Min<input type="number" id="cie-lmin-filSaturateAmt"> Max<input type="number" id="cie-lmax-filSaturateAmt"></span><span><button class="cie-reset-btn" id="cie-limits-filSaturateAmt-close">✕</button></span></div>
+     </div>
+    </div>
+
+    <div class="cie-box"><!--Sepia-->
+     <div class="cie-group" style="padding:0 2px 2px">
+      <div class="cie-row">
+       <div class="cie-checkbox-group" title="CSS Sepia filter on/off"><input type="checkbox" id="cie-filSepia"><label for="cie-filSepia">Sepia</label></div>
+       <div style="display:flex;align-items:center;gap:2px">
+        <button class="cie-reset-btn" data-reset="filSepiaAmt" title="Reset">↺</button>
+        <input type="number" id="cie-filSepiaAmtNum" min="0" max="1" step="0.01">
+        <button class="cie-emoji-btn cie-ping-pong" data-key="filSepiaAmt" title="Ping-pong animation">↔</button>
+        <button class="cie-reset-btn cie-limits-btn" data-key="filSepiaAmt" title="Ping-pong limits">🎚️</button>
+       </div>
+      </div>
+      <input type="range" id="cie-filSepiaAmt" min="0" max="1" value="1" step="0.01">
+      <div class="cie-limits-popover" id="cie-limits-filSepiaAmt"><span>Min<input type="number" id="cie-lmin-filSepiaAmt"> Max<input type="number" id="cie-lmax-filSepiaAmt"></span><span><button class="cie-reset-btn" id="cie-limits-filSepiaAmt-close">✕</button></span></div>
      </div>
     </div>
    </div>
-
    <!-- ═══ DESIGNS ═══ -->
    <div class="cie-tab-panel" data-panel="designs">
     <div class="cie-docked-section-header">Designs</div>
-    <div style="font-size:12px;color:#bbb">Presets</div>
-    <div class="cie-preset-bar" id="cie-presets"></div>
+    <span style="display:flex">
+      <div style="font-size:12px;color:#bbb">Presets</div>
+      <div class="cie-preset-bar" id="cie-presets"></div>
+    </span>
     <div id="cie-preset-edit-panel">
-     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
-      <span id="cie-preset-edit-title" style="font-size:9px;color:#aaa;font-weight:bold"></span>
+     <div style="display:flex;align-items:center;justify-content:space-between">
+      <span id="cie-preset-edit-title" style="color:#aaa"></span>
       <div style="display:flex;gap:3px">
-       <button id="cie-preset-save-params" class="cie-btn-icon" style="font-size:9px;color:#8a8" title="Save current params">✔ Save params</button>
+       <button id="cie-preset-save-params" class="cie-btn-icon" style="font-size:9px;color:#8a8" title="Save current parameters">✔ Save params</button>
        <button id="cie-preset-close-edit" class="cie-btn-icon" style="font-size:11px">✕</button>
       </div>
      </div>
      <div style="display:flex;align-items:center;gap:3px">
-      <label style="font-size:9px;color:#666">Name:</label>
-      <input type="text" id="cie-preset-edit-name" style="flex:1;background:#000;color:#fff;border:1px solid #333;font-size:9px;padding:1px 3px">
-      <button id="cie-preset-rename" class="cie-btn-icon" style="font-size:9px;color:#8a8">✔</button>
+      <label style="color:#666">Name</label>
+      <input type="text" id="cie-preset-edit-name" style="flex:1;background:#000;color:#fff;border:1px solid #333">
+      <button id="cie-preset-rename" class="cie-btn-icon" style="color:#8a8">✔</button>
      </div>
     </div>
     <div class="cie-sep"></div>
-    <div class="cie-row" style="padding:1px 0">
-     <label class="cie-label">Saved</label>
-     <select id="cie-sort" style="width:50px;font-size:8px"><option value="date">Date</option><option value="name">Name</option></select>
+    <div class="cie-row">
+     <label class="cie-label">💾Saved</label>
+     <select id="cie-sort"><option value="date">Date</option><option value="name">Name</option></select>
     </div>
     <div id="cie-configList" class="config-list"></div>
     <div class="cie-row">
      <input type="text" id="cie-configName" placeholder="Name or paste share code">
      <div style="display:flex;gap:1px">
       <button id="cie-saveBtn" class="cie-btn-icon" title="Save" style="font-size:12px">💾</button>
-      <button id="cie-inBtn"   class="cie-btn-icon" title="Import code" style="font-size:11px">📥</button>
+      <button id="cie-inBtn" class="cie-btn-icon" title="Import code" style="font-size:11px">📥</button>
        <button id="cie-shareBtn" class="cie-btn-icon" title="Copy/share code" style="margin-left:1px"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="display:block;width:11px;height:11px"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg></button>
      </div>
     </div>
    </div>
-
    <!-- ═══ OPTIONS ═══ -->
    <div class="cie-tab-panel" data-panel="options">
     <div class="cie-docked-section-header">Options</div>
-    <div style="font-size:9px;color:#ccc;padding:2px 2px 0;text-transform:uppercase;text-align:center">Display</div>
-    <div class="cie-options-row"><label class="cie-checkbox-group" style="cursor:pointer"><input type="checkbox" id="opt-miniViz"><span class="cie-label">Mini visualizer</span></label></div>
-    <div class="cie-options-row"><label class="cie-checkbox-group" style="cursor:pointer"  title="Frames per second"><input type="checkbox" id="opt-fps"><span class="cie-label">🎞️<abbr title="frames per second">FPS</abbr> counter</span></label></div>
+    <div style="font-size:12px;color:#ccc;padding:0 2px 0;text-align:center">Display</div>
+    <div class="cie-options-row">
+      <label class="cie-checkbox-group" style="cursor:pointer" title="Frames per second"><input type="checkbox" id="opt-fps"><span class="cie-label">🎞️FPS</span></label>
+      <label class="cie-checkbox-group" style="cursor:pointer" title="Display miniature real-time input status/wave visualizer graph"><input type="checkbox" id="opt-miniViz"><span class="cie-label">Mini viz</span></label>
+      <label class="cie-checkbox-group" style="cursor:pointer" title="Toggle scrollbars on/off"><input type="checkbox" id="opt-scroll" checked><span class="cie-label">Scrollbars</span></label>
+    </div>
     <div class="cie-sep"></div>
-    <div style="font-size:9px;color:#ccc;padding:1px 2px 0;text-transform:uppercase;text-align:center">🔊Audio Reactivity</div>
-    <div class="cie-options-row"><label class="cie-checkbox-group" style="cursor:pointer"><input type="checkbox" id="cie-audioEnable"><span class="cie-label">🎤Microphone input</span></label></div>
+    <div style="font-size:12px;color:#ccc;padding:0 2px 0;text-align:center">🔊Audio Reactivity</div>
+    <div class="cie-options-row"><label class="cie-checkbox-group" style="cursor:pointer"><input type="checkbox" id="cie-audioEnable" title="Drive circle breathing amplitudes with live microphone signal"><span class="cie-label">🎤Microphone input</span></label></div>
     <div class="cie-options-row" style="display:flex;justify-content:space-between;align-items:center">
       <span class="cie-label">✨Sensitivity</span>
       <input type="range" id="cie-audioSens" min="0.1" max="5" value="1.5" step="any" style="width:120px;height:4px;background:#333;outline:none;margin:0">
@@ -1137,28 +1491,26 @@ option{min-block-size:unset;min-inline-size:unset}
       <input type="range" id="cie-audioSmooth" min="0.1" max="0.99" value="0.8" step="any" style="width:120px;height:4px;background:#333;outline:none;margin:0">
     </div>
     <div class="cie-sep"></div>
-    <div style="font-size:9px;color:#ccc;text-transform:uppercase;text-align:center;display:flex;justify-content:center">Keyboard shortcuts<button id="cie-helpBtn-options" class="cie-btn-icon" title="Help" style="font-size:11px;color:yellow;margin-left:.5em">?</button></div>
+    <div style="font-size:12px;color:#ccc;text-align:center;display:flex;justify-content:center">⌨️🖱️👆Controls<button id="cie-helpBtn-options" class="cie-btn-icon" title="Help" style="font-size:11px;color:yellow;margin-left:.5em">?</button></div>
     <div style="font-size:11px;color:#aaa;display:flex;flex-wrap:wrap;justify-content:space-between">
-     <div><span style="color:#ccc;font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">Space</span> Pause</div>
-     <div><span style="color:#ccc;font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">R</span> 🔀Random &nbsp; <span style="color:#ccc;font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">F</span> Fullscreen</div>
-     <div><span style="color:#888;font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">H</span> Hide &nbsp; <span style="color:#888;font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">M</span> Minimize</div>
-     <div><span style="color:#888;font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">&uarr;&darr;</span> 🔍Zoom &nbsp; <div style="transform: rotate(246deg);display: inline-block">➤</div>👆
-     <svg xmlns="http://w3.org" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="miter" style="vertical-align:bottom"><path d="M8 4.5v7M4.5 8h7M2.5 4.5L8 1.5l5.5 3M2.5 11.5L8 14.5l5.5-3M4.5 2.5L1.5 8l3 5.5M11.5 2.5L14.5 8l-3 5.5"></path></svg>Drag: Pan &nbsp; <span style="font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">&uArr; Shift</span> + drag: Rotate</div>
+     <div style="display:inline-flex"><span style="color:#ccc;font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">Space</span> ⏸▶ Pause/Play <span style="color:#ccc;font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">R</span> 🔀Random &nbsp;</div>
+     <div style="display:inline-flex"><span style="color:#ccc;font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">F</span> ⛶ Fullscreen
+     <span style="color:#888;font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">H</span> Hide &nbsp; <span style="color:#888;font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">M</span> _ Minimize</div>
+     <div style="display:inline-flex"><span style="color:#888;font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">&uarr;&darr;</span> 🔍Zoom &nbsp; <div style="transform: rotate(246deg);display: inline-block">➤</div>👆
+     <svg xmlns="http://w3.org" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="miter" style="vertical-align:bottom"><path d="M8 4.5v7M4.5 8h7M2.5 4.5L8 1.5l5.5 3M2.5 11.5L8 14.5l5.5-3M4.5 2.5L1.5 8l3 5.5M11.5 2.5L14.5 8l-3 5.5"></path></svg>Drag: Pan &nbsp; <span style="font-family:monospace;background:#111;padding:0 3px;border:1px solid grey;border-radius:4px">&uArr; Shift</span> + Drag: 🔄Rotate</div>
     </div>
    </div>
-
   </div><!-- end content -->
-
-  <!-- Action Bar -->
+  <!-- ═══ ACTION BAR ═══ -->
   <div id="cie-action-bar" class="cie-action-btns">
    <button id="cie-pauseBtn" class="cie-emoji-btn" title="Pause [Space]">⏸</button>
    <button id="cie-recenterBtn" class="cie-btn-icon" style="font-size:13px" title="Re-center canvas">✛</button>
-   <button id="cie-resetBtn" class="cie-btn-icon" style="font-size:12px;color:yellow" title="Reset all">⚠</button>
+   <button id="cie-resetBtn" class="cie-btn-icon" style="font-size:12px;color:yellow" title="Global reset all">⚠↺</button>
    <button id="cie-randBtn" class="cie-emoji-btn" style="font-size:12px" title="Random [R]">🔀</button>
    <div class="cie-spacer"></div>
-   <button id="cie-expBtn" class="cie-emoji-btn" title="Save image">🖼️</button>
+   <button id="cie-expBtn" class="cie-emoji-btn" title="Save image (PNG)">🖼️</button>
    <div style="position:relative;display:flex;align-items:center">
-    <button id="cie-recBtn" class="cie-emoji-btn" title="Record video">🎦</button>
+    <button id="cie-recBtn" class="cie-emoji-btn" title="Record video (WebM)">🎦</button>
     <span id="cie-recTimer">0:00</span>
    </div>
   </div>
@@ -1192,6 +1544,8 @@ let dragOffX=0,dragOffY=0,lastMX=0,lastMY=0;
 const pps={},ppd={};
 // Per-slider custom limits for ping-pong
 const ppLimits={}; // {key:{min,max}}
+let activeLimitDragKey = null;
+let activeLimitDragType = null;
 const ppValues={}; // {key:currentHighPrecisionValue}
 const speedScales={}; // {key:string}
 let pTime=0,rTime=0,isPaused=false;
@@ -1200,8 +1554,9 @@ let prevTheme='white',currTheme='white',stTimer=0;
 let modeTimer=0,modeList=['2h','2v','4plus','kaleid','spiral','fractal','lissajous'];
 let mediaRecorder,recChunks=[],recStart;
 let fpsCnt=0,fpsLast=performance.now();
-let dockWidth=276,isDocked=true;
-let floatWidth='276px', floatHeight='', floatTop='0', floatRight='0', floatLeft='auto';
+let dockWidth=340,isDocked=true,currentDock='right';
+let dockHeight=260;
+let floatWidth='340px', floatHeight='', floatTop='0', floatRight='0', floatLeft='auto';
 const miniHistory=new Float32Array(120);let miniIdx=0;
 let editingPresetIdx=-1;
 let transformHistory=[];
@@ -1297,13 +1652,16 @@ const SLIDER_DEFAULTS={
   msSpeed:1,cSpeed:1,bgFade:0,zoom:0,wobbleAmp:0.1,wobbleFreq:1,distortAmp:10,distortFreq:3,
   chromaAmt:4,scanlinesOp:0.3,scanlinesSp:4,vignetteAmt:0.5,echoAmt:0.7,
   converge:0,modeSpeed:1,globalSpeed:1,rotDepthFactor:0.5,
-  timeline:0,motionBlurAmt:0.5,motionBlurSteps:5,invert:0,lineInvert:0
+  timeline:0,motionBlurAmt:0.5,motionBlurSteps:5,invert:0,lineInvert:0,
+  filBlurAmt:0,filBrightnessAmt:1,filContrastAmt:1,filGrayscaleAmt:0,filHueRotateAmt:0,filSaturateAmt:1,filSepiaAmt:0
 };
 
 function enforceSafety(){
-  if(el('cie-mode').value==='4'&&val('cie-depth')>7){el('cie-depth').value=7;el('cie-depthNum').value=7;}
-  if(el('cie-mode').value==='3d4plus'&&val('cie-depth')>6){el('cie-depth').value=6;el('cie-depthNum').value=6;}
-  if(el('cie-mode').value==='3d2h'&&val('cie-depth')>9){el('cie-depth').value=9;el('cie-depthNum').value=9;}
+  const m = el('cie-mode').value;
+  const d = val('cie-depth');
+  if(m==='4' && d>7){el('cie-depth').value=6;el('cie-depthNum').value=6; ppValues['depth']=6;}
+  if(m==='3d4plus' && d>6){el('cie-depth').value=6;el('cie-depthNum').value=6; ppValues['depth']=6;}
+  if(m==='3d2h' && d>9){el('cie-depth').value=9;el('cie-depthNum').value=9; ppValues['depth']=9;}
 }
 
 // ── SMART NUMBER DISPLAY ──
@@ -1331,12 +1689,22 @@ const uiMap={
   motionBlurSteps:'cie-motionBlurSteps',
   invert:'cie-invert',
   lineInvert:'cie-lineInvert',
+  filBlurAmt:'cie-filBlurAmt',
+  filBrightnessAmt:'cie-filBrightnessAmt',
+  filContrastAmt:'cie-filContrastAmt',
+  filGrayscaleAmt:'cie-filGrayscaleAmt',
+  filHueRotateAmt:'cie-filHueRotateAmt',
+  filSaturateAmt:'cie-filSaturateAmt',
+  filSepiaAmt:'cie-filSepiaAmt',
 };
 Object.keys(uiMap).forEach(key=>{
   const isInt=(key==='depth' || key==='motionBlurSteps');
   const slider=el(uiMap[key]); if(!slider) return;
   const num=el(uiMap[key]+'Num');
   if(num){
+    if (slider.hasAttribute('min')) num.min = slider.min;
+    if (slider.hasAttribute('max')) num.max = slider.max;
+    if (slider.hasAttribute('step')) num.step = slider.step;
     num.value=fmtNum(parseFloat(slider.value),isInt);
     slider.addEventListener('input',()=>{
       if(isInt) slider.value=Math.round(parseFloat(slider.value));
@@ -1363,16 +1731,20 @@ Object.keys(uiMap).forEach(key=>{
 Object.keys(uiMap).forEach(k => {
   const rst = document.querySelector('.cie-reset-btn[data-reset="' + k + '"]');
   const lim = document.querySelector('.cie-limits-btn[data-key="' + k + '"]');
+  const numDiv = document.querySelector('#' + uiMap[k] + 'Num');
+  const ppBtn = document.querySelector('.cie-ping-pong[data-key="' + k + '"]');
+  const parent = rst ? rst.parentNode : (lim ? lim.parentNode : null);
 
+  let scaleContainer = null;
   if (rst) {
-    const scaleContainer = document.createElement('div');
+    scaleContainer = document.createElement('div');
     scaleContainer.className = 'cie-speed-scale-container';
-    scaleContainer.title = 'Speed Scale: Linear';
-    scaleContainer.style.cssText = 'position:relative;display:inline-flex;align-items:center;justify-content:center;margin:0 2px;cursor:pointer;user-select:none;width:12px;height:12px;line-height:1;vertical-align:middle;';
+    scaleContainer.title = 'Speed scale: Linear';
+    scaleContainer.style.cssText = 'position:relative;display:inline-flex;align-items:center;justify-content:center;margin:0;cursor:pointer;user-select:none;width:12px;height:12px;line-height:1;vertical-align:middle;';
     
     scaleContainer.innerHTML = `
-      <span class="cie-speed-symbol" style="font-size:10px;color:#888;font-weight:bold;z-index:1;pointer-events:none;line-height:1">╭╯</span>
-      <select class="cie-speed-select" data-key="${k}" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:2;background:#000;color:#fff;border:none">
+      <span class="cie-speed-symbol" style="font-size:10px;color:#888;font-weight:bold;left:-3px;pointer-events:none;position:relative;width:12px">╭╯</span>
+      <select class="cie-speed-select" data-key="${k}" style="position:absolute;top:0;right:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:2;background:#000;color:#fff;border:none">
         <option value="linear">Linear</option>
         <option value="exponential">Exponential</option>
         <option value="factorial">Factorial</option>
@@ -1397,20 +1769,18 @@ Object.keys(uiMap).forEach(k => {
       }
       pushSliderState();
     });
-    
-    rst.parentNode.insertBefore(scaleContainer, rst.nextSibling);
   }
 
+  let randBtn = null;
   if (lim) {
-    const randBtn = document.createElement('button');
+    randBtn = document.createElement('button');
     randBtn.className = 'cie-emoji-btn cie-random-slider-btn';
     randBtn.dataset.key = k;
-    randBtn.title = '🎲 Random value within limits';
+    randBtn.title = '🎲 Random slider value within limits (press for .5 seconds for continuous .1-second randomization until pressed again)';
     randBtn.innerHTML = '🎲';
-    randBtn.style.cssText = 'font-size:10px;cursor:pointer';
+    randBtn.style.cssText = 'font-size:12px;cursor:pointer';
     
-    randBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
+    const triggerRandomValue = () => {
       const slider = el(uiMap[k]);
       if (!slider) return;
       const limits = ppLimits[k] || {};
@@ -1428,9 +1798,94 @@ Object.keys(uiMap).forEach(k => {
         enforceSafety();
         pushSliderState();
       }
-    });
+    };
+    
+    let holdTimer = null;
+    let intervalTimer = null;
+    let isContinuous = false;
+    let pressStarted = false;
+    let wasContinuousOnPress = false;
+    
+    const startPress = (e) => {
+      e.stopPropagation();
+      pressStarted = true;
+      wasContinuousOnPress = isContinuous;
+      
+      if (isContinuous) return;
+      
+      holdTimer = setTimeout(() => {
+        isContinuous = true;
+        randBtn.classList.add('active-continuous');
+        triggerRandomValue();
+        if (intervalTimer) clearInterval(intervalTimer);
+        intervalTimer = setInterval(() => {
+          triggerRandomValue();
+        }, 100);
+      }, 500);
+    };
+    
+    const endPress = (e) => {
+      e.stopPropagation();
+      if (!pressStarted) return;
+      pressStarted = false;
+      
+      if (holdTimer) {
+        clearTimeout(holdTimer);
+        holdTimer = null;
+      }
+      
+      if (wasContinuousOnPress) {
+        isContinuous = false;
+        randBtn.classList.remove('active-continuous');
+        if (intervalTimer) {
+          clearInterval(intervalTimer);
+          intervalTimer = null;
+        }
+      } else if (!isContinuous) {
+        triggerRandomValue();
+      }
+    };
+    
+    const cancelPress = (e) => {
+      if (holdTimer) {
+        clearTimeout(holdTimer);
+        holdTimer = null;
+      }
+      pressStarted = false;
+    };
+    
+    // Disable continuous mode if reset is clicked
+    randBtn._disableContinuous = () => {
+      isContinuous = false;
+      randBtn.classList.remove('active-continuous');
+      if (intervalTimer) {
+        clearInterval(intervalTimer);
+        intervalTimer = null;
+      }
+    };
 
-    lim.parentNode.insertBefore(randBtn, lim.nextSibling);
+    randBtn.addEventListener('pointerdown', startPress);
+    randBtn.addEventListener('pointerup', endPress);
+    randBtn.addEventListener('pointerleave', cancelPress);
+    randBtn.addEventListener('pointercancel', cancelPress);
+    
+    randBtn.addEventListener('click', (e) => e.stopPropagation());
+  }
+
+  // Append elements in the exact desired visual order inside the parent div:
+  // 1. input number field
+  // 2. ping-pong button (↔)
+  // 3. limits button (🎚️)
+  // 4. speed scale container (╭╯)
+  // 5. random button (🎲)
+  // 6. reset button (↺)
+  if (parent) {
+    if (numDiv) parent.appendChild(numDiv);
+    if (ppBtn) parent.appendChild(ppBtn);
+    if (lim) parent.appendChild(lim);
+    if (scaleContainer) parent.appendChild(scaleContainer);
+    if (randBtn) parent.appendChild(randBtn);
+    if (rst) parent.appendChild(rst);
   }
 });
 
@@ -1459,6 +1914,14 @@ document.querySelectorAll('.cie-reset-btn[data-reset]').forEach(btn=>{
     slider.value=SLIDER_DEFAULTS[k];
     ppValues[k]=SLIDER_DEFAULTS[k];
     const num=el(sliderId+'Num'); if(num) num.value=fmtNum(SLIDER_DEFAULTS[k],isInt);
+    
+    ppd[k] = 1;
+
+    // Halt ping-pong state and styling on reset
+    pps[k] = false;
+    const ppBtn = document.querySelector('.cie-ping-pong[data-key="' + k + '"]');
+    if (ppBtn) ppBtn.classList.remove('active');
+
     enforceSafety();
     pushSliderState();
   });
@@ -1483,8 +1946,10 @@ function updateSliderLimitOverlay(k) {
     container.appendChild(overlay);
   }
   
+  const pop = el('cie-limits-' + k);
+  const isOpen = pop && pop.classList.contains('open');
   const lim = ppLimits[k];
-  const hasLimits = lim && (lim.min !== undefined || lim.max !== undefined);
+  const hasLimits = (lim && (lim.min !== undefined || lim.max !== undefined)) || isOpen;
   
   if (!hasLimits) {
     overlay.style.display = 'none';
@@ -1496,16 +1961,28 @@ function updateSliderLimitOverlay(k) {
   const sMax = parseFloat(slider.max) || 10;
   const sRange = sMax - sMin;
   
-  const lMin = lim.min !== undefined ? lim.min : sMin;
-  const lMax = lim.max !== undefined ? lim.max : sMax;
+  const lMin = (lim && lim.min !== undefined) ? lim.min : sMin;
+  const lMax = (lim && lim.max !== undefined) ? lim.max : sMax;
   
   const pctMin = Math.max(0, Math.min(100, ((lMin - sMin) / (sRange || 1)) * 100));
   const pctMax = Math.max(0, Math.min(100, ((lMax - sMin) / (sRange || 1)) * 100));
   
+  let leftTooltip = '';
+  let rightTooltip = '';
+  const isInt = (k === 'depth' || k === 'motionBlurSteps');
+
+  if (!isOpen && activeLimitDragKey === k) {
+    if (activeLimitDragType === 'left') {
+      leftTooltip = `<span class="cie-limit-marker-tooltip">${fmtNum(lMin, isInt)}</span>`;
+    } else if (activeLimitDragType === 'right') {
+      rightTooltip = `<span class="cie-limit-marker-tooltip">${fmtNum(lMax, isInt)}</span>`;
+    }
+  }
+
   overlay.innerHTML = `
     <div class="cie-limit-track" style="left: ${pctMin}%; right: ${100 - pctMax}%"></div>
-    <div class="cie-limit-marker left" style="left: ${pctMin}%">&gt;|</div>
-    <div class="cie-limit-marker right" style="left: ${pctMax}%">|&lt;</div>
+    <div class="cie-limit-marker left" style="left: ${pctMin}%">|${leftTooltip}</div>
+    <div class="cie-limit-marker right" style="left: ${pctMax}%">|${rightTooltip}</div>
   `;
 }
 
@@ -1515,8 +1992,6 @@ function setupLimitDragOnce() {
   if (hasSetupLimitDrag) return;
   hasSetupLimitDrag = true;
 
-  let dragKey = null;
-  let dragType = null; // 'left', 'right', or 'track'
   let startX = 0;
   let startMin = 0;
   let startMax = 0;
@@ -1534,8 +2009,8 @@ function setupLimitDragOnce() {
     if (!slider) return;
 
     e.preventDefault();
-    dragKey = k;
-    dragType = marker ? (marker.classList.contains('left') ? 'left' : 'right') : 'track';
+    activeLimitDragKey = k;
+    activeLimitDragType = marker ? (marker.classList.contains('left') ? 'left' : 'right') : 'track';
     
     const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX);
     startX = clientX;
@@ -1551,8 +2026,8 @@ function setupLimitDragOnce() {
   };
 
   const onMove = (e) => {
-    if (!dragKey) return;
-    const slider = el(uiMap[dragKey]);
+    if (!activeLimitDragKey) return;
+    const slider = el(uiMap[activeLimitDragKey]);
     if (!slider) return;
 
     const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX);
@@ -1565,25 +2040,25 @@ function setupLimitDragOnce() {
     const sRange = sMax - sMin;
     const deltaVal = (dx / (sliderWidth || 1)) * sRange;
 
-    if (!ppLimits[dragKey]) ppLimits[dragKey] = {};
+    if (!ppLimits[activeLimitDragKey]) ppLimits[activeLimitDragKey] = {};
 
-    if (dragType === 'left') {
+    if (activeLimitDragType === 'left') {
       let val = startMin + deltaVal;
-      const currentMax = ppLimits[dragKey].max !== undefined ? ppLimits[dragKey].max : sMax;
+      const currentMax = ppLimits[activeLimitDragKey].max !== undefined ? ppLimits[activeLimitDragKey].max : sMax;
       val = Math.max(sMin, Math.min(currentMax - (sRange * 0.01), val));
-      ppLimits[dragKey].min = val;
+      ppLimits[activeLimitDragKey].min = val;
 
-      const lmin = el('cie-lmin-' + dragKey);
+      const lmin = el('cie-lmin-' + activeLimitDragKey);
       if (lmin) lmin.value = val.toFixed(3);
-    } else if (dragType === 'right') {
+    } else if (activeLimitDragType === 'right') {
       let val = startMax + deltaVal;
-      const currentMin = ppLimits[dragKey].min !== undefined ? ppLimits[dragKey].min : sMin;
+      const currentMin = ppLimits[activeLimitDragKey].min !== undefined ? ppLimits[activeLimitDragKey].min : sMin;
       val = Math.min(sMax, Math.max(currentMin + (sRange * 0.01), val));
-      ppLimits[dragKey].max = val;
+      ppLimits[activeLimitDragKey].max = val;
 
-      const lmax = el('cie-lmax-' + dragKey);
+      const lmax = el('cie-lmax-' + activeLimitDragKey);
       if (lmax) lmax.value = val.toFixed(3);
-    } else if (dragType === 'track') {
+    } else if (activeLimitDragType === 'track') {
       let dMin = startMin + deltaVal;
       let dMax = startMax + deltaVal;
       const span = startMax - startMin;
@@ -1594,21 +2069,25 @@ function setupLimitDragOnce() {
         dMax = sMax;
         dMin = sMax - span;
       }
-      ppLimits[dragKey].min = dMin;
-      ppLimits[dragKey].max = dMax;
+      ppLimits[activeLimitDragKey].min = dMin;
+      ppLimits[activeLimitDragKey].max = dMax;
 
-      const lmin = el('cie-lmin-' + dragKey);
-      const lmax = el('cie-lmax-' + dragKey);
+      const lmin = el('cie-lmin-' + activeLimitDragKey);
+      const lmax = el('cie-lmax-' + activeLimitDragKey);
       if (lmin) lmin.value = dMin.toFixed(3);
       if (lmax) lmax.value = dMax.toFixed(3);
     }
 
-    updateSliderLimitOverlay(dragKey);
+    updateSliderLimitOverlay(activeLimitDragKey);
   };
 
   const onEnd = () => {
-    dragKey = null;
-    dragType = null;
+    const k = activeLimitDragKey;
+    activeLimitDragKey = null;
+    activeLimitDragType = null;
+    if (k) {
+      updateSliderLimitOverlay(k);
+    }
     document.removeEventListener('mousemove', onMove);
     document.removeEventListener('mouseup', onEnd);
     document.removeEventListener('touchmove', onMove);
@@ -1663,7 +2142,13 @@ document.querySelectorAll('.cie-limits-btn').forEach(btn=>{
     if(lmin&&!lmin.value) lmin.value=ppLimits[k]?.min??slider.min;
     if(lmax&&!lmax.value) lmax.value=ppLimits[k]?.max??slider.max;
     // Close all others first
-    document.querySelectorAll('.cie-limits-popover.open').forEach(p=>{if(p!==pop)p.classList.remove('open');});
+    document.querySelectorAll('.cie-limits-popover.open').forEach(p=>{
+      if(p!==pop) {
+        p.classList.remove('open');
+        const oldK = p.id.replace('cie-limits-', '');
+        updateSliderLimitOverlay(oldK);
+      }
+    });
     pop.classList.toggle('open');
     updateSliderLimitOverlay(k);
   });
@@ -1676,12 +2161,24 @@ Object.keys(uiMap).forEach(k=>{
 });
 // Close buttons
 document.querySelectorAll('.cie-limits-popover button').forEach(b=>{
-  if(b.id&&b.id.endsWith('-close')) b.addEventListener('click',()=>b.closest('.cie-limits-popover').classList.remove('open'));
+  if(b.id&&b.id.endsWith('-close')) {
+    b.addEventListener('click',()=>{
+      const pop = b.closest('.cie-limits-popover');
+      pop.classList.remove('open');
+      const k = pop.id.replace('cie-limits-', '');
+      updateSliderLimitOverlay(k);
+    });
+  }
 });
 // Close popover on outside click
 document.addEventListener('click',e=>{
-  if(!e.target.closest('.cie-limits-popover')&&!e.target.classList.contains('cie-limits-btn'))
-    document.querySelectorAll('.cie-limits-popover.open').forEach(p=>p.classList.remove('open'));
+  if(!e.target.closest('.cie-limits-popover')&&!e.target.classList.contains('cie-limits-btn')) {
+    document.querySelectorAll('.cie-limits-popover.open').forEach(p=>{
+      p.classList.remove('open');
+      const k = p.id.replace('cie-limits-', '');
+      updateSliderLimitOverlay(k);
+    });
+  }
 });
 
 // ── THEMES ──
@@ -1689,16 +2186,88 @@ const themes={blue:'#3366ff',black:'#000000',cyan:'#00ffff',green:'#33ff33',oran
   purple:'#cc33ff',red:'#ff3333',spectral:'spectral',white:'#ffffff',yellow:'#ffff33',
   gold:'#ffd700',pink:'#ff69b4',teal:'#00ced1',custom:'custom'};
 const themeKeys=Object.keys(themes).filter(t=>t!=='custom').sort(); themeKeys.push('custom');
-const themeS=el('cie-theme');
-themeKeys.forEach(t=>{
-  const opt=document.createElement('option');
-  opt.value=t; opt.textContent=t[0].toUpperCase()+t.slice(1);
-  if(t==='spectral') opt.className='theme-spectral';
-  else if(t!=='custom') opt.style.color=themes[t];
-  if(t==='white') opt.selected=true;
-  themeS.appendChild(opt);
+
+// Define Custom themeS Object to handle .value and .addEventListener seamlessly
+const themeS = {
+  get value() {
+    return currTheme;
+  },
+  set value(val) {
+    if (themes[val] !== undefined) {
+      currTheme = val;
+      const elVal = el('cie-theme-val');
+      if (elVal) {
+        elVal.textContent = val[0].toUpperCase() + val.slice(1);
+        elVal.className = (val === 'spectral') ? 'theme-spectral' : '';
+        if (val === 'spectral') {
+          elVal.style.color = '';
+        } else if (val === 'custom') {
+          elVal.style.color = '#ccc';
+        } else {
+          elVal.style.color = themes[val];
+        }
+      }
+    }
+  },
+  addEventListener(event, callback) {
+    if (event === 'change') {
+      this._changeHandler = callback;
+    }
+  }
+};
+
+function selectTheme(val) {
+  prevTheme = currTheme;
+  themeS.value = val;
+  themeAlpha = 0;
+  if (themeS._changeHandler) {
+    themeS._changeHandler();
+  }
+  el('cie-theme-options').style.display = 'none';
+}
+
+const themeTrigger = el('cie-theme-trigger');
+const themeOptions = el('cie-theme-options');
+
+if (themeTrigger && themeOptions) {
+  themeTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isVisible = themeOptions.style.display === 'block';
+    themeOptions.style.display = isVisible ? 'none' : 'block';
+  });
+  
+  document.addEventListener('click', () => {
+    themeOptions.style.display = 'none';
+  });
+  
+  themeKeys.forEach(t => {
+    const opt = document.createElement('div');
+    opt.className = 'cie-custom-select-option';
+    opt.dataset.val = t;
+    
+    if (t === 'spectral') {
+      opt.classList.add('theme-spectral');
+      opt.textContent = 'Spectral';
+      opt.style.cssText = 'background-image:var(--spectral-grad); background-clip:text; -webkit-background-clip:text; color:transparent;';
+    } else {
+      opt.textContent = t[0].toUpperCase() + t.slice(1);
+      if (t !== 'custom') {
+        opt.style.color = themes[t];
+      }
+    }
+    
+    opt.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectTheme(t);
+    });
+    
+    themeOptions.appendChild(opt);
+  });
+}
+el('cie-mode').addEventListener('change', () => {
+  enforceSafety();
+  pushSliderState();
 });
-themeS.addEventListener('change',()=>{ prevTheme=currTheme; currTheme=themeS.value; themeAlpha=0; });
 
 // ── CYCLE MODE ──
 function getCycleMode(){ return document.querySelector('input[name="cycleMode"]:checked')?.value||'off'; }
@@ -1742,7 +2311,7 @@ document.querySelectorAll('.cie-tab').forEach(tab=>{
 
 // ── PING-PONG ──
 document.querySelectorAll('.cie-ping-pong').forEach(b=>{
-  b.addEventListener('click',()=>{ const k=b.dataset.key; pps[k]=!pps[k]; b.classList.toggle('active',pps[k]); ppd[k]=1; });
+  b.addEventListener('click',()=>{ const k=b.dataset.key; pps[k]=!pps[k]; b.classList.toggle('active',pps[k]); if(ppd[k]===undefined) ppd[k]=1; });
 });
 function runPP(){
   if(isPaused) return;
@@ -1820,7 +2389,7 @@ container.addEventListener('mousedown',e=>{
   e.shiftKey?isRotating=true:isPanning=true;
   e.preventDefault();
 });
-rHandle.addEventListener('mousedown',e=>{ if(!isDocked) return; isResizingPanel=true; lastMX=e.clientX; e.preventDefault(); });
+rHandle.addEventListener('mousedown',e=>{ if(!isDocked) return; isResizingPanel=true; lastMX=e.clientX; lastMY=e.clientY; e.preventDefault(); });
 
 let activeResizeEdge = null;
 document.querySelectorAll('.cie-resize-edge').forEach(edge => {
@@ -1862,10 +2431,27 @@ document.addEventListener('mousemove',e=>{
     }
   }
   if(isResizingPanel){
-    dockWidth=Math.max(140,Math.min(window.innerWidth*0.7,dockWidth+(lastMX-e.clientX)));
-    controls.style.setProperty('--dock-width',dockWidth+'px');
-    // Update the hardcoded width for docked
-    controls.style.width=dockWidth+'px';
+    if (currentDock === 'right') {
+      const dx = lastMX - e.clientX;
+      dockWidth = Math.max(160, Math.min(window.innerWidth * 0.7, dockWidth + dx));
+      controls.style.setProperty('--dock-width', dockWidth + 'px');
+      controls.style.width = dockWidth + 'px';
+    } else if (currentDock === 'left') {
+      const dx = e.clientX - lastMX;
+      dockWidth = Math.max(160, Math.min(window.innerWidth * 0.7, dockWidth + dx));
+      controls.style.setProperty('--dock-width', dockWidth + 'px');
+      controls.style.width = dockWidth + 'px';
+    } else if (currentDock === 'bottom') {
+      const dy = lastMY - e.clientY;
+      dockHeight = Math.max(80, Math.min(window.innerHeight * 0.7, dockHeight + dy));
+      controls.style.setProperty('--dock-height', dockHeight + 'px');
+      controls.style.height = dockHeight + 'px';
+    } else if (currentDock === 'top') {
+      const dy = e.clientY - lastMY;
+      dockHeight = Math.max(80, Math.min(window.innerHeight * 0.7, dockHeight + dy));
+      controls.style.setProperty('--dock-height', dockHeight + 'px');
+      controls.style.height = dockHeight + 'px';
+    }
     doResize();
   }
   if(isResizingBLPanel){
@@ -1973,75 +2559,168 @@ document.addEventListener('keydown',e=>{
 
 el('cie-fsBtn').addEventListener('click',()=>{ document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen?.(); });
 document.querySelectorAll('#cie-helpBtn, #cie-helpBtn-options').forEach(b => {
-  b.addEventListener('click',()=>el('cie-help-overlay').classList.add('visible'));
+  b.addEventListener('click', () => {
+    el('cie-help-overlay').classList.add('visible');
+    positionHelpModal();
+  });
 });
 el('cie-help-close').addEventListener('click',()=>el('cie-help-overlay').classList.remove('visible'));
 el('cie-help-overlay').addEventListener('click',e=>{ if(e.target===el('cie-help-overlay')) e.target.classList.remove('visible'); });
 
 // ── MINIMIZE ── (no lastBGKey reset)
 el('cie-minBtn').addEventListener('click',()=>{
-  const isMin=contentEl.style.display==='none';
-  contentEl.style.display=isMin?'':'none';
-  actionBar.style.display=isMin?'':'none';
-  tabsEl.style.display=isMin?'':'none';
-  if(chk('opt-miniViz')) miniViz.style.display=isMin?'block':'none';
-  else miniViz.style.display='none';
-  el('cie-minBtn').textContent=isMin?'_':'□';
+  const isMin=controls.classList.toggle('minimized');
+  el('cie-minBtn').textContent=isMin?'□':'_';
   // Use rAF to let layout settle before resizing canvas
   requestAnimationFrame(doResize);
 });
 
-// ── DOCK ──
-el('cie-dockBtn').addEventListener('click',()=>{
-  isDocked=!isDocked;
-  if(isDocked){
-    // Save current floating styles before docking
-    floatTop = controls.style.top || '0';
-    floatLeft = controls.style.left || 'auto';
-    floatRight = controls.style.right || '0';
-    floatWidth = controls.style.width || '276px';
-    floatHeight = controls.style.height || '';
-
-    controls.classList.add('docked');
-    mainArea.appendChild(controls);
-    controls.style.cssText='';
-    controls.style.width=dockWidth+'px';
-    el('cie-dockBtn').title='Float panel';
-    el('cie-dockBtn').innerHTML='<span style="font-size:10px;color:#888">⇤</span>';
-    contentEl.style.display='';actionBar.style.display='';tabsEl.style.display='';
-    if(chk('opt-miniViz')) miniViz.style.display='block';
-    el('cie-minBtn').textContent='_';
+// ── MULTIDIRECTIONAL DOCK ──
+function positionHelpModal() {
+  const box = el('cie-help-box');
+  const overlay = el('cie-help-overlay');
+  if (!box || !overlay) return;
+  
+  if (!isDocked) {
+    box.style.left = '50%';
+    box.style.top = '50%';
+    box.style.right = 'auto';
+    box.style.transform = 'translate(-50%, -50%)';
+  } else if (currentDock === 'right') {
+    box.style.left = '20px';
+    box.style.right = 'auto';
+    box.style.top = '40px';
+    box.style.transform = 'none';
+  } else if (currentDock === 'left') {
+    box.style.right = '20px';
+    box.style.left = 'auto';
+    box.style.top = '40px';
+    box.style.transform = 'none';
   } else {
-    controls.classList.remove('docked');
-    document.body.appendChild(controls);
-    controls.style.position='absolute';
-    controls.style.top=floatTop;
-    controls.style.left=floatLeft;
-    controls.style.right=floatRight;
-    controls.style.height=floatHeight;
-    controls.style.width=floatWidth;
-    el('cie-dockBtn').title='Dock to right';
-    el('cie-dockBtn').innerHTML='<span class="icon-dock-rect" style="transform:rotate(-90deg);display:inline-block"></span>';
+    // Docked top or bottom
+    box.style.left = '50%';
+    box.style.top = '50%';
+    box.style.right = 'auto';
+    box.style.transform = 'translate(-50%, -50%)';
   }
+}
+
+// Ensure the help overlay is also positioned when showing the overlay
+
+function setDockSide(side) {
+  // Clear any existing dock classes first from controls
+  controls.classList.remove('docked', 'dock-left', 'dock-right', 'dock-top', 'dock-bottom');
+  
+  if (side === 'float') {
+    isDocked = false;
+    currentDock = 'float';
+    
+    // Append to body for absolute floating
+    document.body.appendChild(controls);
+    controls.style.position = 'absolute';
+    controls.style.top = floatTop;
+    controls.style.left = floatLeft;
+    controls.style.right = floatRight;
+    controls.style.height = floatHeight || 'auto';
+    controls.style.width = floatWidth;
+    
+    // Reset parent direction
+    mainArea.style.flexDirection = 'row';
+    
+    // Show tabs inside controls
+    tabsEl.style.display = '';
+    rHandle.style.cssText = 'display:none;';
+  } else {
+    isDocked = true;
+    currentDock = side;
+    
+    // Save current float coords before docking (in case we was floating)
+    if (controls.parentNode !== mainArea) {
+      floatTop = controls.style.top || '0px';
+      floatLeft = controls.style.left || 'auto';
+      floatRight = controls.style.right || '0px';
+      floatWidth = controls.style.width || '283px';
+      floatHeight = controls.style.height || '';
+    }
+    
+    // Append to mainArea for relative flex placement
+    mainArea.appendChild(controls);
+    controls.classList.add('docked', 'dock-' + side);
+    
+    // Clear styles so docking CSS rules take over
+    controls.style.cssText = '';
+    
+    // Setup resize handles and flex layouts
+    if (side === 'left') {
+      mainArea.style.flexDirection = 'row-reverse';
+      controls.style.width = dockWidth + 'px';
+      rHandle.style.cssText = 'position:absolute;right:0;top:0;bottom:0;width:3px;cursor:col-resize;background:#333;z-index:200;display:block;left:auto;height:100%;top:auto;bottom:auto;';
+    } else if (side === 'right') {
+      mainArea.style.flexDirection = 'row';
+      controls.style.width = dockWidth + 'px';
+      rHandle.style.cssText = 'position:absolute;left:0;top:0;bottom:0;width:3px;cursor:col-resize;background:#333;z-index:200;display:block;right:auto;height:100%;top:auto;bottom:auto;';
+    } else if (side === 'top') {
+      mainArea.style.flexDirection = 'column-reverse';
+      controls.style.height = dockHeight + 'px';
+      rHandle.style.cssText = 'position:absolute;bottom:0;left:0;right:0;height:3px;cursor:row-resize;background:#333;z-index:200;display:block;top:auto;width:100%;left:auto;right:auto;';
+    } else if (side === 'bottom') {
+      mainArea.style.flexDirection = 'column';
+      controls.style.height = dockHeight + 'px';
+      rHandle.style.cssText = 'position:absolute;top:0;left:0;right:0;height:3px;cursor:row-resize;background:#333;z-index:200;display:block;bottom:auto;width:100%;left:auto;right:auto;';
+    }
+  }
+  
+  // Re-position the help box
+  positionHelpModal();
+  
+  // Update canvas size
   requestAnimationFrame(doResize);
-});
+}
+
+// Toggle Dock dropdown visibility
+const dockMenuBtn = el('cie-dockMenuBtn');
+const dockOptions = el('cie-dockOptions');
+
+if (dockMenuBtn && dockOptions) {
+  dockMenuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isVisible = dockOptions.style.display === 'block';
+    dockOptions.style.display = isVisible ? 'none' : 'block';
+  });
+  
+  document.addEventListener('click', () => {
+    dockOptions.style.display = 'none';
+  });
+  
+  document.querySelectorAll('.cie-dock-opt').forEach(opt => {
+    opt.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const side = opt.dataset.side;
+      setDockSide(side);
+      dockOptions.style.display = 'none';
+    });
+  });
+}
 
 el('cie-hideBtn').addEventListener('click',()=>{ controls.style.display='none'; el('cie-showBtn').style.display='block'; });
 el('cie-showBtn').addEventListener('click',()=>{ controls.style.display='flex'; el('cie-showBtn').style.display='none'; });
 el('opt-miniViz').addEventListener('change',()=>{ miniViz.style.display=chk('opt-miniViz')?'block':'none'; requestAnimationFrame(doResize); });
 el('opt-fps').addEventListener('change',()=>{ fpsEl.style.display=chk('opt-fps')?'block':'none'; });
+const updateScrollbars=()=>{ document.body.classList.toggle('cie-hide-scrollbars', !chk('opt-scroll')); };
+el('opt-scroll').addEventListener('change', updateScrollbars);
+updateScrollbars();
 
 // Recenter
 el('cie-recenterBtn').addEventListener('click',()=>{ panX=0; panY=0; });
 
 // ── PRESETS ──
 const PRESETS_DEFAULT=[
-  {name:'🌀 Vortex', s:{depth:9,mode:'kaleid',theme:'spectral',cycleMode:'cycle',cSpeed:2,anim:true,pSpeed:3,pDepth:0.18,rotate:true,rSpeed:1.5,trail:true,tDens:0.08,glow:true,gRad:12,thick:1.2,op:0.9,mirror:false,bg:'#000000',bg2:'#000000',bgFade:0,invert:false,multi:true,msSpeed:1,zoom:0,phase:0.5,sync:false,converge:0}},
+  {name:'🌀 Vortex', s:{depth:7,mode:'kaleid',theme:'spectral',cycleMode:'cycle',cSpeed:2,anim:true,pSpeed:3,pDepth:0.18,rotate:true,rSpeed:1.5,trail:true,tDens:0.08,glow:true,gRad:12,thick:1.2,op:0.9,mirror:false,bg:'#000000',bg2:'#000000',bgFade:0,invert:false,multi:true,msSpeed:1,zoom:0,phase:0.5,sync:false,converge:0}},
   {name:'💥 Nova',   s:{depth:7,mode:'4plus',theme:'orange',cycleMode:'off',anim:true,pSpeed:5,pDepth:0.35,rotate:true,rSpeed:0.8,trail:true,tDens:0.05,glow:true,gRad:25,thick:2,op:0.8,mirror:true,bg:'#000000',bg2:'#000000',bgFade:0,invert:false,multi:false,zoom:0,phase:1,sync:true,converge:0}},
-  {name:'❄️ Crystal',s:{depth:10,mode:'kaleid12',theme:'cyan',cycleMode:'off',anim:true,pSpeed:1,pDepth:0.07,rotate:true,rSpeed:0.3,trail:false,tDens:0.1,glow:true,gRad:8,thick:0.7,op:1,mirror:false,bg:'#000020',bg2:'#000020',bgFade:0,invert:false,multi:false,zoom:0,phase:0.3,sync:false,converge:0}},
+  {name:'❄️ Crystal',s:{depth:7,mode:'kaleid12',theme:'cyan',cycleMode:'off',anim:true,pSpeed:1,pDepth:0.07,rotate:true,rSpeed:0.3,trail:false,tDens:0.1,glow:true,gRad:8,thick:0.7,op:1,mirror:false,bg:'#000020',bg2:'#000020',bgFade:0,invert:false,multi:false,zoom:0,phase:0.3,sync:false,converge:0}},
   {name:'🌿 Forest', s:{depth:8,mode:'fractal',theme:'green',cycleMode:'off',anim:true,pSpeed:1.5,pDepth:0.1,rotate:false,rSpeed:0,trail:true,tDens:0.15,glow:true,gRad:6,thick:1.5,op:0.9,mirror:false,bg:'#001500',bg2:'#001500',bgFade:0,invert:false,multi:false,zoom:0,phase:0.2,sync:false,converge:0}},
   {name:'👾 Retro',  s:{depth:6,mode:'lissajous',theme:'green',cycleMode:'off',anim:true,pSpeed:2,pDepth:0.12,rotate:false,rSpeed:0,trail:true,tDens:0.12,glow:true,gRad:10,thick:1.5,op:1,mirror:false,bg:'#000000',bg2:'#000000',bgFade:0,invert:false,multi:false,zoom:0,phase:0.8,sync:false,converge:0}},
-  {name:'🔮 Dark',   s:{depth:9,mode:'4',theme:'purple',cycleMode:'off',anim:true,pSpeed:2,pDepth:0.2,rotate:true,rSpeed:0.5,trail:true,tDens:0.07,glow:true,gRad:20,thick:1,op:0.85,mirror:true,bg:'#050005',bg2:'#050005',bgFade:0,invert:false,multi:false,zoom:0,phase:0.6,sync:false,converge:0}},
+  {name:'🔮 Dark',   s:{depth:5,mode:'4',theme:'purple',cycleMode:'off',anim:true,pSpeed:2,pDepth:0.2,rotate:true,rSpeed:0.5,trail:true,tDens:0.07,glow:true,gRad:20,thick:1,op:0.85,mirror:true,bg:'#050005',bg2:'#050005',bgFade:0,invert:false,multi:false,zoom:0,phase:0.6,sync:false,converge:0}},
   {name:'🌀 Spiral', s:{depth:8,mode:'spiral',theme:'spectral',cycleMode:'cycle',cSpeed:1,anim:true,pSpeed:2,pDepth:0.15,rotate:true,rSpeed:0.6,trail:true,tDens:0.09,glow:true,gRad:10,thick:1.5,op:1,mirror:false,bg:'#000000',bg2:'#000000',bgFade:0,invert:false,multi:true,msSpeed:2,zoom:0,phase:0.4,sync:false,converge:0}},
 ];
 let PRESETS=JSON.parse(localStorage.getItem('cie_presets')||'null')||PRESETS_DEFAULT.map(p=>({...p,s:{...p.s}}));
@@ -2054,7 +2733,7 @@ function renderPresets(){
     const chip=document.createElement('button'); chip.className='cie-preset-chip'; chip.textContent=p.name;
     chip.addEventListener('click',()=>loadSettings(p.s));
     const eb=document.createElement('button');
-    eb.style.cssText='background:none;border:none;color:#333;cursor:pointer;font-size:9px;padding:0 1px;line-height:1';
+    eb.style.cssText='background:none;border:none;color:#ffbc00;cursor:pointer;font-size:10px;padding:0';
     eb.textContent='✏'; eb.title='Edit preset';
     eb.addEventListener('click',e=>{ e.stopPropagation(); openPresetEdit(i); });
     wrap.appendChild(chip); wrap.appendChild(eb); bar.appendChild(wrap);
@@ -2132,8 +2811,39 @@ el('cie-shareBtn').addEventListener('click',()=>{
 renderConfigs();
 
 // ── RESET / RANDOM ──
-const DEFAULTS={depth:8,mode:'2h',theme:'white',cycleMode:'off',cSpeed:1,bgFade:0,custom:'#ffffff',bg:'#000000',bg2:'#ffffff',invert:false,infiniteZoom:false,anim:false,pSpeed:1,pDepth:0.05,phase:0,rSpeed:0,zoom:0,sync:false,glow:false,gRad:8,trail:false,tDens:0.10,thick:1,op:1,pps:{},rotate:false,blend:'source-over',wobble:false,wobbleAmp:0.1,wobbleFreq:1,distort:false,distortAmp:10,distortFreq:3,chroma:false,chromaAmt:4,scanlines:false,scanlinesOp:0.3,scanlinesSp:4,vignette:false,vignetteAmt:0.5,echo:false,echoAmt:0.7,multi:false,smoothFade:true,msSpeed:1,scaleWidth:false,converge:0,modeMode:'off',modeSpeed:1,timeline:0,motionBlur:false,motionBlurAmt:0.5,motionBlurSteps:5,lineInvert:0};
-el('cie-resetBtn').addEventListener('click',()=>{ pTime=0;rTime=0;panX=0;panY=0;manualRot=0;manualRotY=0; transformHistory=[]; loadSettings(DEFAULTS); });
+const DEFAULTS={depth:8,mode:'2h',theme:'white',cycleMode:'off',cSpeed:1,bgFade:0,custom:'#ffffff',bg:'#000000',bg2:'#ffffff',invert:false,infiniteZoom:false,anim:false,pSpeed:1,pDepth:0.05,phase:0,rSpeed:0,zoom:0,sync:false,glow:false,gRad:8,trail:false,tDens:0.10,thick:1,op:1,pps:{},rotate:false,blend:'source-over',wobble:false,wobbleAmp:0.1,wobbleFreq:1,distort:false,distortAmp:10,distortFreq:3,chroma:false,chromaAmt:4,scanlines:false,scanlinesOp:0.3,scanlinesSp:4,vignette:false,vignetteAmt:0.5,echo:false,echoAmt:0.7,multi:false,smoothFade:true,msSpeed:1,scaleWidth:false,converge:0,modeMode:'off',modeSpeed:1,timeline:0,motionBlur:false,motionBlurAmt:0.5,motionBlurSteps:5,lineInvert:0,filBlur:false,filBlurAmt:0,filBrightness:false,filBrightnessAmt:1,filContrast:false,filContrastAmt:1,filGrayscale:false,filGrayscaleAmt:0,filHueRotate:false,filHueRotateAmt:0,filSaturate:false,filSaturateAmt:1,filSepia:false,filSepiaAmt:0};
+el('cie-resetBtn').addEventListener('click',()=>{
+  pTime=0;rTime=0;panX=0;panY=0;manualRot=0;manualRotY=0; transformHistory=[];
+  
+  // Clear/reset all pp directions
+  Object.keys(ppd).forEach(k => ppd[k] = 1);
+  
+  // Reset all ping-pong range limits (as if .cie-limits-reset-btn was pressed)
+  Object.keys(ppLimits).forEach(k => {
+    delete ppLimits[k];
+    const slider = el(uiMap[k]);
+    if (slider) {
+      const lmin = el('cie-lmin-' + k);
+      const lmax = el('cie-lmax-' + k);
+      if (lmin) lmin.value = slider.min;
+      if (lmax) lmax.value = slider.max;
+    }
+  });
+  
+  // Re-render limit overlays to reflect cleared states
+  Object.keys(uiMap).forEach(k => {
+    updateSliderLimitOverlay(k);
+  });
+
+  // Disable all continuous random effect instances
+  document.querySelectorAll('.cie-random-slider-btn').forEach(btn => {
+    if (btn._disableContinuous) {
+      btn._disableContinuous();
+    }
+  });
+
+  loadSettings(DEFAULTS);
+});
 el('cie-randBtn').addEventListener('click',()=>{
   transformHistory=[];
   const modes=['1h','1v','2h','2v','2h_inv','2v_inv','4plus','4','kaleid','kaleid12','spiral','fractal','lissajous','3d4plus','3d2h'];
@@ -2206,6 +2916,9 @@ function getSettings(){
   s.scanlines=chk('cie-scanlines'); s.vignette=chk('cie-vignette'); s.echo=chk('cie-echo');
   s.scaleWidth=chk('cie-scaleWidth');
   s.motionBlur=chk('cie-motionBlur');
+  s.filBlur=chk('cie-filBlur'); s.filBrightness=chk('cie-filBrightness'); s.filContrast=chk('cie-filContrast');
+  s.filGrayscale=chk('cie-filGrayscale'); s.filHueRotate=chk('cie-filHueRotate'); s.filSaturate=chk('cie-filSaturate');
+  s.filSepia=chk('cie-filSepia');
   s.speedScales = {...speedScales};
   return s;
 }
@@ -2274,6 +2987,9 @@ function loadSettings(s){
   el('cie-vignette').checked=!!s.vignette; el('cie-echo').checked=!!s.echo;
   el('cie-scaleWidth').checked=!!s.scaleWidth;
   el('cie-motionBlur').checked=!!s.motionBlur;
+  el('cie-filBlur').checked=!!s.filBlur; el('cie-filBrightness').checked=!!s.filBrightness; el('cie-filContrast').checked=!!s.filContrast;
+  el('cie-filGrayscale').checked=!!s.filGrayscale; el('cie-filHueRotate').checked=!!s.filHueRotate; el('cie-filSaturate').checked=!!s.filSaturate;
+  el('cie-filSepia').checked=!!s.filSepia;
   updateDistortUI();
   enforceSafety();
   pushSliderState();
@@ -2832,7 +3548,7 @@ function update(){
     distort:chk('cie-distort'), distortAmp:val('cie-distortAmp'), distortFreq:val('cie-distortFreq'),
     converge:val('cie-converge'),
   };
-  canvas.style.filter = 'none';
+/*  canvas.style.filter = 'none';*/
 
   const rgb1=getRGB(el('cie-bgColor').value),rgb2=getRGB(el('cie-bgColor2').value),t=val('cie-bgFade');
   const baseBg={r:rgb1.r+(rgb2.r-rgb1.r)*t,g:rgb1.g+(rgb2.g-rgb1.g)*t,b:rgb1.b+(rgb2.b-rgb1.b)*t};
@@ -3000,6 +3716,18 @@ function update(){
     ctx.drawImage(offCanvas,-amt,0);ctx.drawImage(offCanvas,amt,0);ctx.restore();
   }
   if(chk('cie-echo') && canvas.width > 0 && canvas.height > 0 && echoCanvas.width > 0 && echoCanvas.height > 0){ echoCtx.clearRect(0,0,echoCanvas.width,echoCanvas.height); echoCtx.drawImage(canvas,0,0); }
+  
+  // Apply dynamic CSS filters to the canvase element
+  let filterStr = '';
+  if (chk('cie-filBlur')) filterStr += ` blur(${val('cie-filBlurAmt')}px)`;
+  if (chk('cie-filBrightness')) filterStr += ` brightness(${val('cie-filBrightnessAmt')})`;
+  if (chk('cie-filContrast')) filterStr += ` contrast(${val('cie-filContrastAmt')})`;
+  if (chk('cie-filGrayscale')) filterStr += ` grayscale(${val('cie-filGrayscaleAmt')})`;
+  if (chk('cie-filHueRotate')) filterStr += ` hue-rotate(${val('cie-filHueRotateAmt')}deg)`;
+  if (chk('cie-filSaturate')) filterStr += ` saturate(${val('cie-filSaturateAmt')})`;
+  if (chk('cie-filSepia')) filterStr += ` sepia(${val('cie-filSepiaAmt')})`;
+  canvas.style.filter = filterStr.trim() || 'none';
+
   if(chk('opt-miniViz')){ updateMiniViz(baseR*(o.pulse?1+Math.sin(pTime)*o.pDepth:1)); }
 
   requestAnimationFrame(update);
@@ -3042,7 +3770,7 @@ function doResize(){
 
   miniViz.width=controls.offsetWidth||210; miniViz.height=20;
 }
-// Sync DOM titles to document.title so we only have to change it in one place (at the top of index.html)
+// Sync DOM titles to document.title so it only has to change in 1 place (at top of index.html)
 const cieAppName = document.title;
 const hdrTextSpan = document.querySelector('.hdr-text');
 if (hdrTextSpan) {

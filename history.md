@@ -1,16 +1,16 @@
-# ♾️ Circular Infinity Engine - Development Archive & Chat History
+# ♾⚙ Circulospherical Infinity Engine - Development Archive & Chat History
 
-This document serves as the persistent, durable **in-workspace archive** of the full design history, requested features, user decisions, and development checkpoints for the **Circular Infinity Engine**. 
+This document serves as the persistent, durable **in-workspace archive** of the full design history, requested features, user decisions, and development checkpoints for the **Circulospherical Infinity Engine** (originally "Circular Infinity Engine"), or **CIE**.
 
 Because chat platform windows may refresh or clear across sessions, this file is **actively updated by the assistant at every checkpoint/version** to preserve 100% of the app's progress, documentation, and customization instructions.
 
 ## 📅 Project Metadata
 * **App Name:** Circulospherical Infinity Engine
-* **Current Version:** v1.167 (Stable)
-* **Status:** Build succeeds perfectly (`npm run build` is 100% green).
-* **Environment:** React-free high-performance pure HTML5 / JavaSript Canvas hybrid structure for sub-millisecond drawing loops.
+* **Current Version:** v1.19.0 (Stable)
+* **Status:** Build succeeds perfectly (`npm run build` is 100% green)
+* **Environment:** React-free high-performance pure HTML5 / JavaSript Canvas hybrid structure for sub-millisecond drawing loops
 
-## 🚀 Chronological Chat History & Feature Versions
+## 🚀 Chronological Feature Version History
 
 ### 📍 Version 1.01: Core Engine Initialization & Infinite Math
 * **User Intent:** Create a mathematically sound, mesmerizing interactive art piece of nested orbits, spirals, or geometric curves.
@@ -169,7 +169,7 @@ Because chat platform windows may refresh or clear across sessions, this file is
   * **Static Unified Title Synchronization**: Eliminated dynamic title text manipulation logic in the main loop. Programmed a lightweight startup script reading `document.title` and binding it instantly to both the header `.hdr-text` and help menu title header `#cie-help-title`, protecting static, seamless future version bumps.
   * **Interactive Sticky CSS Headers**: Modified `.cie-docked-section-header` styles in CSS, applying `position: sticky; top: 0; z-index: 10;`. Anchored by the scrolling `.cie-content` body, headers now intelligently hover and stack sequentially on scroll, improving control visibility.
 
-### 📍 Version 1.155: Interactive Hover & Tap Label Micro-Animations
+### 📍 Version 1.15.1: Interactive Hover & Tap Label Micro-Animations
 * **User Intent:**
   * Add a gorgeous chromatic aberration style to the "Chroma split" label that splits red and cyan colors on hover or tap.
   * Implement professional micro-effects for "Motion blur" (horizontal motion trailing blurs), "Vignette" (radial-like linear fade on start & end boundaries), "Steps" (stagger-animates letters vertically to form steps), and "Feedback echo" (layered echoing text-shadows).
@@ -194,7 +194,7 @@ Because chat platform windows may refresh or clear across sessions, this file is
   * **Line & Background Invert Separation**: Added a separate mathematical line-color invert slider `cie-lineInvert` right under Line Color section. Extracted background elements (background pickers, fading ranges, and background color invert toggles) into a beautifully self-contained `Background` option box, mathematically inverting and rendering colors independently without bulky global canvas filters.
   * **Subtle Hover Animations**: Connected a `'s p a c e d  o u t'` spacing zoom transition to 'Spacing' and 'Distance' labels. Hooked a dynamic scanning animation to the 'Scanlines' parent label for instant interactive visual feedback.
 
-### 📍 Version 1.165: Flawless, Continuous Infinite Zoom Rendering Engine with Seamless Coloring
+### 📍 Version 1.16.1: Flawless, Continuous Infinite Zoom Rendering Engine with Seamless Coloring
 * **User Intent:**
   * Adopt a fully recursive floating-point depth zoom pattern like the attached standard reference.
   * Prevent structural popping/flickering of outer expanded boundaries and newborn inner cores.
@@ -206,7 +206,7 @@ Because chat platform windows may refresh or clear across sessions, this file is
   * **Flicker-Free Color Gradients**: Extended the core `getThemeRGB` engine to accept continuous fractional depth parameters. By performing a safe floating-point modulo cycle `(d % md + md) % md` before color-mapping, hue values now glide continuously along gradients during zooms, entirely removing "color popping" artifacts.
   * **Robust glow & 3D Integration**: Unified these smooth color, opacity and glow fading transformations across all interactive modes, including 3D rendering environments.
 
-### 📍 Version 1.166: Pixel-Perfect Infinite Zoom & Designs Ordering Fix
+### 📍 Version 1.16.2: Pixel-Perfect Infinite Zoom & Designs Ordering Fix
 * **User Intent:**
   * Resolve line width halving/depleting issues at different zoom intervals (especially zooms 2 and 24).
   * Ensure outer layers of recursive designs remain rendered gracefully until they are fully outside the canvas boundary.
@@ -218,7 +218,7 @@ Because chat platform windows may refresh or clear across sessions, this file is
   * **Unified Label Action**: Cleanly associated the Infinite Zoom toggle input with a proper visual label `<label for="cie-infiniteZoom">` with cursor-pointing cues, aligning click responsiveness perfectly.
   * **Original-Sorted Design Indices**: Rewrote `renderConfigs` to map each saved design item back to its true original Array index `originalIndex` in `localStorage` before sorting, preventing the dreaded index misalignment bug where renamed or reverse-dated slots loaded the incorrect preset data.
 
-### 📍 Version 1.167: High-Fidelity Continuous Infinite Zoom & Color Index Bounds Protection
+### 📍 Version 1.16.3: High-Fidelity Continuous Infinite Zoom & Color Index Bounds Protection
 * **User Intent:**
   * Fully resolve all remaining infinite zoom rendering artifacts, specifically visual shrinking/resets and premature culling/fade-outs during zooms.
   * Assure that outer circles persist visible on-screen until they expand fully out of view.
@@ -238,26 +238,191 @@ Because chat platform windows may refresh or clear across sessions, this file is
   * **Expanded Sidebar Docking Boundaries (Manual Polish)**: Widened the docked sidebar layout width bounds from `256px`/`260px` up to `274px` / `276px` in CSS rules and JavaScript state trackers. This protects control elements from getting squished or crowded on narrow aspect ratios and preserves pixel-perfect layouts during Floating Panel swaps.
   * **Unified Background Swatch Group (Manual Polish)**: Merged the two custom background colors cleanly under a single, direct, space-optimized line titled `▨🎨Background color`, improving the visual rhythm of the panel options.
 
-## 🛠️ Complete Feature Index & Shortcuts
+### 📍 Version 1.17: Automated Safety Clamping, Advanced Ping-Pong Limits controls, and Continuous Randomizer
+* **User Intent:**
+  * Fix lag-reducing depth checks when switching patterns or themes automatically.
+  * Reset ping-pong animated ranges when clicking the global "Reset all" button.
+  * Ensure drag overlays render instantly on panel popover toggle.
+  * Elevate design layout spacing inside of limits popovers.
+  * Support hold-down continuous randomization modes on all slider dynamic keys.
+* **Implementation:**
+  * **Automated Safety Clamping & Handshake**: Improved `enforceSafety` logic to update active animating mathematical buffers (`ppValues`), assuring invalid nested depths do not trigger high-latency recursion spikes when changing modes/patterns.
+  * **Limits Multi-Reset Tying**: Coordinated `cie-resetBtn` listeners to clear internal slider bounds (`ppLimits`), reset limit inputs, and instantly restore the dynamic canvas overlay markers on any active parameters.
+  * **Instant Popover Overlay Refresh**: Configured both popover panel toggle actions and click-away closers to force immediate re-draw calls on boundary lines, showing/hiding markers instantly dynamically.
+  * **Flex-Compatible Layouts**: Recast depth and option popup boxes with specific HTML `<span>` elements around numeric controls and control close buttons, offering superior aesthetic spacing on the control panel.
+  * **Holds & Pointer Event Handshifts**: Integrated precise pointer press checks (`pointerdown`/`pointerup`/`pointercancel`/`pointerleave`) on `.cie-random-slider-btn` buttons, allowing smooth click-resets and hold-triggered continuous intervals.
+  * **Precise Drag Tooltips**: Added beautiful absolute-positioned dynamic tooltips below moving markers when being dragged, presenting accurate numeric position information instantly.
+* **Manual Edits Summary (User-applied):**
+  * **Chroma Split Text-Shadow Enhancement**: Increased text shadow offsets from `-0.5px`/`-0.25px` to `-2px`/`-1px` to enhance visual clarity and split aberration alignment.
+  * **Motion Blur Filter Refinement**: Adjusted the motion blur hover filter from `blur(0.25px)` to `blur(0.5px)` for a smoother transit trace effect on the sidebar labels.
+  * **Pulse Heading Gradient Background Polish**: Rescaled the interactive gradient background width of hover headings from `200%` to `100%` for better container-constrained visual mapping.
+  * **Echo Text-Shadow Extension**: Extended the Akousmatic Echo text shadow width from `0.75px` to a crisper `2px` spacing to highlight layered visual echoing.
+  * **Scanline Sizing Adjustment**: Recalculated the Scanline label background-size boundary from `100% 3px` to `2px` for pristine, compact scanning simulation aesthetics.
+  * **FX Panel Structural commenting Formatting**: Restructured, comment-organized, and encased Chrome Split, Feedback Echo, Motion Blur, Scanlines, and Vignette controls into beautifully self-contained DOM boxes.
+  * **Browser Sizing Resets**: Declared `canvas { display: block }` and relaxed standard options element bounds (`option { min-block-size: unset; min-inline-size: unset; }`) to neutralize Chromium rendering discrepancies in dropdown selectors.
+  * **Sidebar Width Bounds Expansion**: Expanded the docked sidebar default width boundary check limits from `256px`/`260px` to `274px` / `276px` in CSS rules and JS tracking states to secure nested layouts during panel transitions.
+  * **Floating Resizer Width Defaults**: Relocated floating panels' default fallback width setting to `276px` to keep layouts intact.
+  * **Background Options Unification**: Coordinated custom background colors neatly under a single, space-optimized line titled `▨🎨Background color` from the `🎨 Colors` dropdown block.
+  * **Help Modal Documentation Refinement**: Revamped the inline documentation, mapping interactive link items (`#cie-help-link`), updating pattern titles ("4-Way Cross", "4-Way +"), adding comprehensive layout explanation rows and shortcuts.
+  * **Limit Markers and Inputs Tweaks**: Polished select backgrounds to `#0f0f0f` and color to `#ccc`, trimmed text inputs padding, and adjusted `.cie-limit-marker` hover layout metrics.
+  * **Safety Depth Parameters and Presets Optimization**: Optimized vortex depth safety bounds (restraining Vortex safety trigger to 7, Crystal to 7, Dark to 5) to protect engine stability under heavy recursive loops.
+  * **Interactive Slider Limit UI Tuning**: Repositioned `.cie-limit-track` and `.cie-limit-marker` overlays to the bottom of the slider track (`bottom: 3px; top: unset;`) to avoid top overlapping. Magnified marker hover/active font size to `14px` and set offset margins (`-3px` left, `3px` right) for highly responsive draggable interactions.
+  * **Marker Tooltip Layout Adjustment**: Clustered `.cie-limit-marker-tooltip` with other limit rules in CSS, tuning its bottom alignment to `10px` and padding to `0 4px` for seamless visual tracking.
+  * **Dynamic Steps Wrapper Spacing**: Cleaned up spacing and inline declarations for the `.cie-steps-wrapper` rules to keep overall styles compact.
 
-| Hotkey / Control | Action | Details |
-| :--- | :--- | :--- |
-| **`Space`** | Pause / Resume | Freezes the animation math immediately |
-| **`R`** | Randomize Design | Swaps all parameters to a beautifully computed procedural art matrix |
-| **`F`** | Toggle Fullscreen | Expands the canvas experience to the full display size |
-| **`H`** | Hide UI | Toggles visibility of the entire controls panel |
-| **`M`** | Minimize Menu | Collapses controls to a tiny top bar |
-| **`W` / `A` / `S` / `D`** | Pan Canvas | Iteratively shifts current `panX` and `panY` coordinates |
-| **`Q` / `E`** | Rotate View | Iteratively rotates the viewport transform matrix |
-| **`↑` / `↓` (Arrow Keys)** | Zoom | Scales canvas graphics smoothly around center coordinate |
-| **Mouse Drag** | Free Pan | Left click & drag over the empty background space to pan |
-| **Shift + Drag** | Rotate | Rotates around the canvas center point |
-| **Scroll / Pinch** | Scale | Zoom in and out seamlessly |
-| **`Timeline` Slider** | Manual Scrubbing | Drag to manually drive and inspect specific geometric moments in real time |
-| **`Motion Blur` Setup** | Temporal Trail FX | Blends past frame transforms procedurally beneath the current scene |
+### 📍 Version 1.18: Multidirectional Docking System, Custom Gradient CSS Dropdowns, and Narrow Help Sidebars
+* **User Intent / Feedback:**
+  * Support choosing the docking side dynamically from a 'Dock' menu option. Allow docked view styles on Left, Right, Top, and Bottom screen edges.
+  * Reorder slider interactive row buttons: move reset `↺` buttons to the far right after random `🎲` buttons, and position the speed scale container/icon right after the limits `🎚️` buttons.
+  * When reset `↺` is clicked, halt any running ping-pong animation of that slider.
+  * Correct option rendering color for 'Spectral' color choice in dropdowns; support a genuine CSS rainbow linear-gradient text clip.
+  * Supply precise descriptive tooltips to all checkbox inputs and accompanying labels.
+  * Polish help modal layout: keep the titlebar sticky and make the narrow `#cie-help-box` scroll overlay items internally using AI Studio custom scrollbars. Position the help sidebar on the opposite edge of the docking sidebar to preserve double visibility.
+  * Resolve menu-minimize issues where vertical limits overrides prevented full collapsing during docked layouts (e.g. only action bar hiding).
+  * Bring back missing Ping-Pong Animation limit controls (`🎚️` limits button, limits popovers) and random sweep trigger buttons (`🎲` randomize buttons) for Feedback Echo and Vignette FX sliders.
+  * Connect and display the interactive Custom 'Dock' dropdown menu properly on click in the window header bar.
+  * Prevent the hidden speed-select dropdown from overlapping adjacent randomize click thresholds.
+  * Adjust theme trigger button properties (trim padding, strip redundant layout sizing rules) and correct theme options dropdown styles (replace bottom alignment to open down, remove shadow overlays, convert to overflow-x scrolling, and auto-unset max-height limit on taller viewports).
+  * Polish theme selector list options (remove excess animations, and design charcoal grey contrast background for the dark/black color choice so that black text remains perfectly legible).
+* **Implementation:**
+  * **Multidirectional Docking System**: Replaced the toggle button in the header with a Custom 'Dock' dropdown selector. Engineered flexible flex layouts, direction transformations (`row`, `row-reverse`, `column`, `column-reverse`), and dynamic variable updates (`currentDock`, `dockWidth`, `dockHeight`) supporting left, right, top, bottom, and float coordinates.
+  * **Interactive Row Layout Reordering**: Swapped dynamic programming builders to append layout items in custom row alignment directions. Reset buttons are positioned far-right with absolute precision.
+  * **Ping-Pong Resets**: Coordinated the reset click event pipeline to assign `pps[k] = false`, halting sweeps and removing active highlight styling from the ↔ animation buttons.
+  * **Custom Gradient Option Selectors**: Refamiliared theme picker selects with a lightweight CSS-styled custom div popover. Integrated proxy getter/setters for the `themeS` state handle to fully secure retroactive preset updates. Styled 'Spectral' natively utilizing `background-clip: text`.
+  * **Checkbox Hover Tooltips**: Authored comprehensive and descriptive titles (`title="..."`) for all ten checkbox inputs and label elements, maximizing interface accessibility.
+  * **Sticky Title Help Sidebar**: Redesigned `#cie-help-box` with absolute coordinates opposite the docked control sidebar (`left` if docked `right`, and vice versa). Structured the dialog to keep a custom border header static at the top while wrapping body rows in an independently scrollable `#cie-help-scroll-container` matching Gemini custom templates.
+  * **Absolute Minimization Control**: Engineered a dedicated `.cie-controls.minimized` CSS state block setting absolute maximum height to `24px` (header size) and applying `display: none !important;` to child panels, fully securing uniform, flicker-free collapsing in both floating and multi-docked states.
+  * **Dynamic Docking Setup**: Injected the correct responsive `#cie-dock-container`, `#cie-dockMenuBtn` and `#cie-dockOptions` dropdown nodes into the HTML layout header, restoring real-time multidirectional docking interactions seamlessly.
+  * **Limits and Swapper Integration**: Appended missing `.cie-limits-btn` triggers and their `.cie-limits-popover` DOM frames to both Feedback Echo (`echoAmt`) and Vignette (`vignetteAmt`) slider markups, prompting the JS constructor to auto-bind dynamic ping-pong sweeps and randomizing algorithms correctly.
+  * **Overlap Protection**: Applied default `display: none !important;` and negative index style parameters to hidden `.cie-speed-select` selectors, reactivating layout displays exclusively during active parent hover thresholds to eliminate target collisions.
+  * **Theme Dropdown and Text Gradients**: Upgraded `.theme-spectral` with absolute `!important` text layout clips, protecting its rainbow gradient style from hover state color overrides. Trimmed the theme trigger button inline sizes, converted the options popover to downward opening `top:100%`, applied a clean `#cie-content` matching scrollbar, and bound screen-height media queries unlimiting `max-height` above 200px.
+  * **Dark Contrast Legibility**: Assigned custom dark background counters (`background: #555 !important`) and sharp solid color values specifically to the `black` theme selector, making black-on-black list options highly legible.
+
+### 📍 Version 1.18.1: Absolute Minimization Control, Dynamic Docking Setup, and UI Detail Polish
+* **User Intent / Feedback ("Bug fixes"):**
+  * Resolve fine-tuning UI tweaks and coordinate alignment adjustments to version 1.18 additions.
+  * Incorporate and integrate recent manual edits correcting historical sub-version listings across release notes.
+  * Correct syntax errors immediately.
+* **Implementation:**
+  * **Version Synchronization**: Synced the application version reference to `1.18.1` uniformly across document title headers, navigation text, and structural indexes to comply with bug fix increment protocols.
+  * **Uncaught Syntax Error Fix**: Fixed a JavaScript runtime syntax error inside the `themeS` state getter/setter, restoring the `: ""` fallback evaluation to prevent the `Unexpected token ';'` error.
+* **Manual Edits Summary (User-applied):**
+  * **Historical Version Index Rationalization**: Normalised minor sub-version designations across 1.15 and 1.16 listings to a standard 3-part decimal configuration (`1.15.1`, `1.16.1`, `1.16.2`, `1.16.3` instead of standard appending/concatenating tail numbers), maintaining uniform notation.
+  * **App Version Increment Rules**: Documented the bug fix versioning guideline to increment by `.0.0.1` thousandths separated by decimal notation.
+  * **Typography and Strings Refinement**: Corrected visual display symbols from `Scope ×8/×12` to a standardized compact lowercase `x8/x12` in the patterns index.
+  * **Layout and Control Repositioning**: Moved the entire Viewport controls box (`🖥️Viewport`) from the FX tab to the Anim tab under Timeline. Prepend 〰️ to the Distortion ripple label, pre-pended 💾 to Saved listings label, updated global reset button to "⚠↺", and cleaned up text headers from "Global speed slider" concepts to compact labels.
+  * **Aesthetic and Preset Sidebar Polish**: Configured `max-height: 5.375em` on saved design configurations lists, updated text colors of `.config-edit-btn` to high contrast yellow (`#ffbc00`), hidden disabled panels entirely, and appended a stylish text-shadow glow (`text-shadow: 0 0 5px rgba(255,255,255,1)`) to interactive reset counters on hover thresholds.
+  * **Aesthetic Help Overlay Restyle**: Upgraded `#cie-help-overlay` to present an elegant semi-transparent dark container backdrop (`rgba(0,0,0,0.5)`), expanded the responsive box limits up to 70% width and 100% height, and stripped unnecessary padding, restoring excellent layout symmetry.
+  * **Theme Picker Realignment**: Restored the Custom Color theme selector box to position itself inline right beside the custom color picker input element. Trimmed extra custom options class styling parameters (`font-bold`) to render perfectly compact gradients.
+
+### 📍 Version 1.18.2: Docking split-screen resize bars, titlebar size accommodations, header styling configurations
+* **User Intent / Feedback ("UI bugs fixes"):**
+  * Support split-screen resize bars for all docked `#cie-controls` positions (left, right, top, bottom), so they have a visible and tactile visual indicator matching the initial state even when re-docked.
+  * Widen left/right docked `#cie-controls` to accommodate the titlebar text (`.hdr-text`) and `.cie-header-btns` on the same line to prevent line wrapping completely.
+  * Set `#cie-header` `gap: 0` and disable wrapper wrapping.
+  * Fix right-offscreen overflow on `#cie-dockOptions` when the `#cie-controls` are docked to the right edge.
+* **Implementation:**
+  * **Visible Split-Screen Resize Bars**: Configured `#cie-resize-handle` to always draw a styled `#333` background with high-visibility cursor and hover overrides across left, right, top, and bottom docking configurations. Setup explicit border overrides in CSS to keep boundary split borders robust during state transitions.
+  * **Titlebar Wrapping Prevention**: Widen docking widths and floating widths to naturally accommodate version strings on a single line. Styled the header with `flex-wrap: nowrap` and `gap: 0` to preserve elegant baseline alignment.
+  * **Dock Dropdown Positioning**: Anchored `#cie-dockOptions` with `right: 0` positioning relative to its trigger wrapper container, guaranteeing dropdown menus remain fully on screen when sidebar controls are docked right.
+  * **Floating Handle Precision**: Enforced `.cie-controls:not(.docked) #cie-resize-handle {display: none !important;}` and set `rHandle.style.cssText = 'display:none;';` in floating states to guarantee the partition resize bars do not render or respond to hover highlights.
+  * **Scrollbar Visibility Toggle**: Added a small, tightly packed checkbox labeled "Scrollbars" in the Display options row that dynamically toggles `.cie-hide-scrollbars` on `body` to hide all system scrollbars seamlessly in all tab panels and lists.
+* **Manual Edits Summary (User-applied):**
+  * **Dock Width Refinement**: Adjusted left/right docked `#cie-controls` panel widths to `283px` instead of `340px` to optimize overall screen real estate.
+  * **Options Header Details**: Upgraded section headers for "Display" and "Audio Reactivity" inside the Options tab to a highly legible `12px` font size with `#ccc` coloring and `0` padding.
+  * **Controls Keyboard Bindings Alignment**: Re-styled the controls section inside the Options tab to display keys like Space, R, F, H, M, and Zoom guides in neatly aligned inline flex groupings with informative custom symbols (⏸▶, 🔀, ⛶ and 🔄).
+  * **Resize Border Improvements**: Implemented discrete 3px wide border configurations for docked handles, defaulting to a transparent background (`#3330`) highlightable on hovered thresholds.
+  * **Dock Panel Styles Scrollbar Integration**: Appended custom dark-theme `-webkit-scrollbar` styling rules directly to the general un-docked controls container to ensure design continuity.
+  * **Preset Configurations Layout Cleanups**: Swapped preset headings and config options labels, trimmed nested spacing containers, and restored consistent baseline alignment across display elements.
+
+### 📍 Version 1.19: Persistent Ping-pong directions, dynamic Input/Slider attribute syncing, and 7 CSS Canvas Filters
+* **User Intent / Feedback ("Minor Feature Implementation"):**
+  * Automatically match the min, max, and step attributes of every control's numeric input (`.cie-controls input[type=number]#cie-*`) to its range input counterpart (`input[type=range]#cie-*`) to prevent manual entry mismatches.
+  * Enable the Ping-Pong animation controller to preserve and resume its dynamic oscillation direction (left/right) when paused and resumed physically.
+  * Introduce 7 core CSS hardware-accelerated filter controls impacting `canvas#cie-canvas` inside the FX tab, fully integrated with checkboxes, range sliders, high-precision numeric inputs, resets, speed parameters, continuous randomness, and bounding popovers.
+* **Implementation:**
+  * **Dynamic Attribute Alignment**: Embedded startup scripts directly aligning numeric input min, max, and step validation states to match matching slider configurations.
+  * **Directional Animation Persistence**: Modified the ping-pong state machine to avoid wiping the cached step variable `ppd[k]` when disengaging a sweep toggle, only resetting movement direction to default when explicitly reset.
+  * **HTML5 Canvas CSS Filters**: Formatted and injected 7 newly integrated CSS Filters into the active FX scroll panel: CSS Blur (0-100), CSS Brightness (0-10), CSS Contrast (0-10), CSS Grayscale (0-1), CSS Hue-rotate (0-360°), CSS Saturate (0-10), and CSS Sepia (0-1). Built a dynamic string translator applying the active style components inline to the canvas layout every animation loop frame.
+* **Manual Edits Summary (User-applied):**
+  * **Vertical/Horizontal Docking Styling Simplification**: Eliminated redundant `!important` markers across vertical (left/right) and horizontal (top/bottom) docking layouts for `.cie-controls` styles.
+  * **Tab Panel and Layout Display Overrides**: Streamlined conditional tab panels visibility rules inside vertical and horizontal docks, stripping strict override flags.
+  * **Scrollbar Design Consistency**: Compressed custom dark-theme `-webkit-scrollbar` rules with unified tracking and smooth thumb scroll bounds inside `#cie-theme-options` list wrapper.
+  * **Interactive Text Shadows & Glow Highlights**: Compacted `#cie-fps` text shadow padding elements, and synchronized interactive reset buttons (`.cie-reset-btn`) hover transformation rules.
+  * **Inner Section Separator Rules**: Stripped extra spacing elements from standard `.cie-box-title` before and after element border dividers.
+  * **Unified Spectral Theme Gradients**: Replaced custom `.theme-spectral` typography background-clip properties with native styling rules.
+  * **Control Limits Popovers Absolute Anchoring**: Modified the `.cie-limits-popover` padding and absolute width boundaries (`white-space: nowrap; width: 100%`) for clean visual display across overlapping controls.
+  * **Dynamic Interactive Limit Tracks**: Integrated high-fidelity hover scaling (`transform: scaleY(1.5)`) to interactive track divisions, and removed legacy arrow indicators (`|` instead of `>|` or `|<`) from `.cie-limit-marker` guidelines.
+  * **Active CSS State Toggle Transitions**: Dropped verbose `!important` tags from continuous animation state classes (`.active-continuous`), and synchronized active hover pulses.
+  * **Aesthetic Transitions & Animation Delays**: Optimized typography movement speeds across complex text styles (Chroma, Vignette, Echo, Scanlines, Distort, Motion Blur).
+  * **Interactive Element Wrapping Alignment**: Nested inner shift labels style selectors under elegant `.cie-shift-effect` elements to align interactive button margins smoothly.
+  * **FX Filters Label Streamlining**: Renamed FX CSS canvas filters to highly compact, lightweight human terms ("Blur", "Brightness", "Contrast", etc.), and calibrated sepia input bounds (`min="0" max="1" step="0.01"`).
+  * **Designs and Presets Inline Integration**: Aligned preset items cleanly alongside visual headers in a standard flex alignment inside the Designs menu wrapper.
+  * **Control Limit Popovers Flex Organization**: Organized `.cie-limits-popover` structures, placing the min/max inputs and control buttons in distinct `<span>` wrappers to permit dual-justified alignment across both edges cleanly.
+
+## 🛠️ Complete Feature Index & Shortcuts
+For a complete, in-depth view of all controls, refer directly to the in-app help modal (`#cie-help-overlay`, accessible by clicking the help button or pressing the help keys). Below is the comprehensive index transcribing all available engine features and interactions:
+
+### 🌀 Patterns & Geometry
+* **1-Way Horizontal/Vertical**: Circles grow from small to large in one direction from center
+* **2-Way Horizontal/Vertical**: Classic "circular infinity": recursive circles branching symmetrically in one axis
+* **2-Way Inverted H/V**: Like 2-Way but circles grow larger toward the edges
+* **4-Way +**: Both axes simultaneously
+* **4-Way Cross**: Both axes simultaneously but packed ("squaring the circle")
+* **3D 2-Way Horizontal**: True 3D perspective 2-Way horizontal branching rotating in space
+* **3D 4-Way +**: True 3D perspective recursive circles rotating in space
+* **Kaleidoscope x8/x12**: 8-/12-Way *; mirrored wedge radial symmetry
+* **Spiral**: Circles along a rotating expanding spiral arm
+* **Fractal Tree**: Branching organic tree that sways and breathes
+* **Lissajous**: Stacked harmonic orbit rings per depth level
+
+### 🎨 Color Themes & Strobe
+* **Static / Custom**: Single theme color, no cycling
+* **Cycle**: Auto-advances through all themes in order of select options
+* **Random**: Picks a random theme each interval
+* **Multi-strobe / Multi**: Each depth ring gets a different color offset
+
+### 🎬 Animation & Modulators
+* **Global speed**: Scales all animation speeds in unison
+* **Pulse frequency**: Enables pulse animation; slider sets oscillation speed
+* **Pulse distance**: How far circles "breathe" in and out
+* **Pulse shift**: Phase offset per depth level, creating a ripple wave effect
+* **Converge**: Collapses all circles toward a single concentric point (0 = normal, 1 = fully collapsed)
+* **Orbit rotation**: Orbit/rotate/twist nested depths independently
+* **Sync pulse**: Syncs the pulse timing to the rotation timeline instead of the pulse timeline, aligning breathing swells with rotation
+* **Wobble amplitude**: Secondary radius modulation layered on top of pulse
+* **Wobble frequency**: Speed of the wobble oscillation
+* **Distortion ripple**: Displaces each circle center by an animated sine-wave offset
+* **Trail length**: Lower value = longer trails (less background clear per frame)
+* **↔ Ping-pong**: Slider oscillates between its min and max automatically
+* **🎚️ Limits button**: Set custom min/max extents for ping-pong animation
+* **↺ Reset button**: Resets a single slider to its default value
+* **Pattern Cycle/Random**: Auto-cycles through render patterns (similar to color cycling)
+* **Manual Timeline Scrub**: Drag to manually drive and inspect specific geometric moments in real time
+
+### ✨ FX Filters & Video Blend
+* **Blend Composites**: Canvas composite operation: Burn, Difference=inversion, Dodge, Exclusion, Hard/Soft Light, Lighter (Add)=additive glow, Multiply, Overlay, Screen, XOR
+* **Chroma split**: RGB lens aberration via screen-blend offset copies
+* **Feedback echo**: Previous frame blended back in — high values create tunnel feedback
+* **Scanlines**: CRT-style horizontal lines overlay
+* **Vignette**: Radial edge darkening
+* **Motion Blur Setup**: Temporal trail FX; blends past frame transforms procedurally beneath the current scene
+
+### 🎹 Keyboard & Canvas Interactions
+* **`Space`** : Pause / Resume
+* **`R`** : Random design
+* **`F`** : Fullscreen
+* **`H`** : Hide / show menu
+* **`M`** : Minimize menu
+* **`W` / `A` / `S` / `D`** : Pan canvas up / left / down / right
+* **`Q` / `E`** : Rotate canvas left / right
+* **`↑` / `↓`** : Zoom in / out (smoothly scales canvas graphics around the center)
+* **Mouse Drag / Touch** : Pan over the background space
+* **Shift + Mouse Drag** : Rotate canvas layout
+* **Scroll Wheel / Pinch-to-Zoom** : Zoom/scale viewport dynamically
 
 ## ⚙️ Build and Development Configuration
-Your environment is configured with **Vite** serving index.html instantly on Port 3000. Under the hood, the project is configured with zero external heavy frameworks to safeguard peak performance and render loop latency:
+The environment is configured with **Vite** serving index.html instantly on Port 3000. Under the hood, the project is configured with zero external heavy frameworks to safeguard peak performance and render loop latency:
 
 * **Entry point:** `/index.html` (embedded styles, control panel HTML, Canvas, WebGL/2D mathematical shading context, and event listeners).
 * **Styles:** Clean dark-mode layout with customizable borders, custom sliders, responsive popover positioning, and dynamic range overlays.
@@ -266,12 +431,12 @@ Your environment is configured with **Vite** serving index.html instantly on Por
   * `npm run build` — static compilation to `/dist` to guarantee fast delivery via Cloud Run.
 
 ## 📝 Guidelines for Next Sessions
-1. **Never Discard History:** The AI agent must always read `/CHAT_HISTORY.md` at the beginning of the journey to align with the complete state of the art.
-2. **Synchronous Updates:** When adding a new feature, slider, parameter mapping, or audio utility, append it to the [Chronological Chat History](#) sections above.
-3. **Save and Build Verify:** Complete validation with `compile_applet` before closing a turn.
-4. App version incrementing:
-   * Bug fixes increment version by 0.001 (1 thousandths)
-   * Minor changes (especially if mostly UI-related) increment app version by 0.01 (hundredths)
-   * Normal changes increment app version by 0.1 (tenths)
-   * Major changes (I will let you know when) increment app version by 1 (integers)
-   * If AI agent is unsure what constitutes "minor", "normal", and/or "major" changes, ask for clarification.
+* **Never Discard History:** The AI agent must always read `/history.md` (formerly `/CHAT_HISTORY.md`) at the beginning of the journey to align with the complete state of the art.
+* **Synchronous Updates:** When adding a new feature, slider or other user interface (UI) element, parameter mapping, audio utility, etc., append it to the [Chronological Feature Version History](#) section above.
+* **Save and Build Verify:** Complete validation with `compile_applet` before closing a turn.
+* **App version incrementing:** When updating the app version, use semantic versioning: Major.Normal/Minor.Patch/Bug-fix as defined by certain changes:
+  * Major: many (5+) new features, can include bug-fixes; prompt will let AI agent know; increment app version by 1 (non-negative integers)
+  * Normal/Minor: some (`<`5) new features (mostly UI-related), can include bug-fixes; increment app version by 0.1 (tenths)
+  * Patch/Bug fix: bug-fixes *only*; increment version by 0.0.1 (1 thousandths separated by a decimal)
+  * If AI agent is unsure what constitutes "major", "normal", "minor", and/or "patch"/"bug-fix" changes, ask prompter.
+* **Update on manual edit:** whenever a "manual edit" ("I made some changes." prompt) is done (except for edits to 'history.md'), append a summary of the manual edit to the last (most recent) app version in 'history.md', unless otherwise instructed.
