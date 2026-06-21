@@ -1,8 +1,8 @@
 (See history.md for initial GitHub project state and "release notes".)
  
-The Circulospherical Infinity Engine (CIE) was initially created ~May 24, 2026 in the web app Google Gemini 3  After some technical issues in trying to save the code, it was lost, and I recreated CIE the next day and, after a couple days, started hitting the "prompt/query token limit" (whatever it's called)...on a 45K file. So, I tried using Anthropic Claude and, while it handled the 45K file fine, it's free tier is more limited in what it can do (maybe 2 full builds) every 5 hours.
+The Circulospherical Infinity Engine (CIE) was initially created ~May 24, 2026 in the web app Google Gemini 3  After some technical issues in trying to save the code, it was lost, and I recreated CIE the next day and, after a couple days, started hitting the "prompt/query token limit" (whatever it's called)...on a 45K file. So, I tried using Anthropic Claude and, while it handled the 45K file fine, its free tier is more limited in what it can do (maybe 2 full builds) every 5 hours.
 
-Then I discovered Google AI Studio, which basically uses the same Gemini as the web app (i.e. Google Search) but has a much larger prompt/query window and I have yet to reach the free-tier limits after having done about 15 "milestones" (what it called "versions" until I gave it new direction (see chat_history.md for more details).
+Then I discovered Google AI Studio, which basically uses the same Gemini as the web app (i.e. Google Search) but has a much larger prompt/query window and I have yet to reach the free-tier limits after having done about 15 "milestones" (what it called "versions" until I gave it new direction (see history.md for more details).
 
 Speaking (typing) of versions, version numbering since using the Gemini web app up to what it dubbed "version 5" used an "integeral" rapid version numbering system instead of the more rational decimal technique. I have decided to collapse the 5.x version into a more manageable 1.xx version to more easily facilitate many changes ("builds") without bloating the overall version number (hi, Google Chrome v.freaking 148! 🙄🤦‍♂️).
 
